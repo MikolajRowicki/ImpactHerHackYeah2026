@@ -85,6 +85,9 @@ if EMAIL_MODE == "smtp":
 else:
     EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
+# A password reset link works for 1 hour (the default of Django is 3 days).
+PASSWORD_RESET_TIMEOUT = 3600
+
 # The old register operation signs a person in without checking the address. On by default only
 # while debugging (tests, mock mode); sign-up with an e-mail link replaces it.
 ALLOW_LEGACY_REGISTER = env.flag("ALLOW_LEGACY_REGISTER", default=DEBUG)
