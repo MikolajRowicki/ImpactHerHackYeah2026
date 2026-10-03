@@ -1,1 +1,24 @@
-repo-ginekologia
+# Reference project kept locally, not part of this repository
+repo-ginekologia/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Local config and data
+.env
+*.sqlite3
+db.sqlite3
+media/
+
+# Test artifacts
+test-results/
+playwright-report/
+
+# Local Claude settings
+.claude/settings.local.json
