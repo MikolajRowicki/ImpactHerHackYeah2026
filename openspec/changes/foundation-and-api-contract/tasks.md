@@ -19,10 +19,10 @@ Branch: `change/foundation-and-api-contract`. One group is one commit. Run `ruff
 
 ## 3. Frontend shell with mock mode
 
-- [ ] 3.1 Create `src/frontend/index.html`, base CSS with design tokens, `js/app.js` with a hash router, `js/strings.pl.js` and one placeholder screen that shows the current user. Verify the page opens from a static server started in the repo root.
-- [ ] 3.2 Add the API client with live and mock adapters, the `?mock=1` and `?mock=0` switch kept in `sessionStorage`, the CSRF header on unsafe live calls, and the sample-data banner. Verify with Playwright: banner visible in mock mode and absent otherwise, no request to `/api/v1` in mock mode (specs: Mock call, Mock mode is remembered, Notice on every screen, No notice in live mode).
-- [ ] 3.3 Add the Playwright setup (fixtures, artifacts in a git-ignored directory) and a smoke test for the page at 375 px and 1280 px width without horizontal scroll (specs: Static serving, Phone width). Verify `pytest tests_e2e` passes headless.
-- [ ] 3.4 Verify the live adapter against the running Django app: the health call succeeds and the page served by Django loads its static files. Check by hand and with a Playwright test (spec: Live mode uses the same origin).
+- [x] 3.1 Create `src/frontend/index.html`, base CSS with design tokens, `js/app.js` with a hash router, `js/strings.pl.js` and one placeholder screen that shows the current user. Verify the page opens from a static server started in the repo root.
+- [x] 3.2 Add the API client with live and mock adapters, the `?mock=1` and `?mock=0` switch kept in `sessionStorage`, the CSRF header on unsafe live calls, and the sample-data banner. Verify with Playwright: banner visible in mock mode and absent otherwise, no request to `/api/v1` in mock mode (specs: Mock call, Mock mode is remembered, Notice on every screen, No notice in live mode).
+- [x] 3.3 Add the Playwright setup (fixtures, artifacts in a git-ignored directory) and a smoke test for the page at 375 px and 1280 px width without horizontal scroll (specs: Static serving, Phone width). Verify `pytest tests_e2e` passes headless.
+- [x] 3.4 Verify the live adapter against the running Django app: the health call succeeds and the page served by Django loads its static files. Check by hand and with a Playwright test (spec: Live mode uses the same origin).
 
 ## 4. Documentation and frontend brief
 
