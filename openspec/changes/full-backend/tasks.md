@@ -38,10 +38,10 @@ main session after it has checked their work. Agents never commit.
 
 ## 5. Tasks, help, reminders (agent C)
 
-- [ ] 5.1 `list_tasks`, `create_task`, `claim_task`, `complete_task`, `release_task`, `list_task_suggestions` with atomic updates; verify the care-tasks scenarios pass, including the claim race with two threads
-- [ ] 5.2 Help data (crisis lines with source links, 16 voivodeship paths), `get_help`; verify the help-paths scenarios, the 16-voivodeship completeness test and the wording guard
-- [ ] 5.3 `list_reminders`, the `send_reminders` command with the log table, sending through the mail service; verify the reminders scenarios pass, including a second run the same day sending nothing
-- [ ] 5.4 Run `ruff` and the suite; main session commits
+- [x] 5.1 `list_tasks`, `create_task`, `claim_task`, `complete_task`, `release_task`, `list_task_suggestions` with atomic updates; verify the care-tasks scenarios pass, including the claim race with two threads
+- [x] 5.2 Help data (crisis lines with source links, 16 voivodeship paths), `get_help`; verify the help-paths scenarios, the 16-voivodeship completeness test and the wording guard
+- [x] 5.3 `list_reminders`, the `send_reminders` command with the log table, sending through the mail service; verify the reminders scenarios pass, including a second run the same day sending nothing
+- [x] 5.4 Run `ruff` and the suite; main session commits
 
 ## 6. AI assistance and Groq (agent D)
 

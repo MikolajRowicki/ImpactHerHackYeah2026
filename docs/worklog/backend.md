@@ -88,4 +88,23 @@ One entry per task group. Change: `full-backend`, branch `change/full-backend`.
 - **Verification:** `ruff check .`, `ruff format --check .`, `pytest tests` (791 passed). The agent
   broke nine rules one at a time in a throwaway copy (lifetime, single use, active account
   changed, mail to any address, clock use, wrong current password, ...) and each failed a test.
-- **Commit:** see the git log, subject `feat(backend): account security`.
+- **Commit:** `1736508`
+
+## Group 5: Tasks, help, reminders (built by a parallel agent, checked by the main session)
+
+- **Goal:** shared care tasks with atomic state changes, crisis help per voivodeship, reminders.
+- **Built:** `core/api/{tasks,help,reminders}.py`, `core/services/{tasks,help,reminders}.py`,
+  content modules (8 task suggestions, help data for 16 voivodeships, reminder texts), the
+  `send_reminders` command, 174 tests. Every task change is one conditional UPDATE.
+- **Deviations / assumptions:**
+  - When the mail service refuses a reminder (limit), the command removes the `ReminderLog` row it
+    inserted, so a later run the same day can retry. A delivery failure after queuing keeps the row.
+  - Help data holds only 112, 116 123 and 800 70 2222 and the NFZ site for every region; the
+    owner must verify it before the demo (comment at the top of `help_data.py`).
+  - The wording guard also forbids "depresj", "diagnoz", "rozpozna" in help texts.
+  - An empty `?voivodeship=` is a value outside the 16 and gives 422.
+- **Verification:** `ruff check .`, `ruff format --check .`, `pytest tests` (973 passed with the
+  other groups merged). The agent broke five rules in a throwaway copy (claim without the status
+  filter, complete without the claimer filter, no opt-out filter, log row not written first, a
+  diagnosis in a help text) and each failed a test.
+- **Commit:** see the git log, subject `feat(backend): care tasks, help paths and reminders`.
