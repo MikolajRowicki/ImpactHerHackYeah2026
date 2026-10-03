@@ -2,7 +2,8 @@ import functools
 import threading
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from wsgiref.simple_server import WSGIRequestHandler, make_server
+from socketserver import ThreadingMixIn
+from wsgiref.simple_server import WSGIRequestHandler, WSGIServer, make_server
 
 import pytest
 
@@ -25,6 +26,12 @@ def static_url():
     server.shutdown()
 
 
+class ThreadingWSGIServer(ThreadingMixIn, WSGIServer):
+    # The page loads its ES modules in parallel; one thread would refuse some connections.
+    daemon_threads = True
+    request_queue_size = 64
+
+
 class QuietWSGIHandler(WSGIRequestHandler):
     def log_message(self, *args):
         pass
@@ -35,7 +42,13 @@ def django_url():
     """The real Django app on its own port. It uses no database, so no test database is needed."""
     from django.core.wsgi import get_wsgi_application
 
-    server = make_server("127.0.0.1", 0, get_wsgi_application(), handler_class=QuietWSGIHandler)
+    server = make_server(
+        "127.0.0.1",
+        0,
+        get_wsgi_application(),
+        server_class=ThreadingWSGIServer,
+        handler_class=QuietWSGIHandler,
+    )
     thread = threading.Thread(target=server.serve_forever, daemon=True)
     thread.start()
     yield f"http://127.0.0.1:{server.server_address[1]}"

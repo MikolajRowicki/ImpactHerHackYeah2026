@@ -1,0 +1,22 @@
+/* Styles for the help place. */
+
+.help__list {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.help-card {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+}
+
+.help-card h2 {
+  font-size: var(--font-size-h3);
+  margin-bottom: var(--space-1);
+}
+
+.help-card p {
+  margin: 0;
+  color: var(--color-ink-soft);
+}

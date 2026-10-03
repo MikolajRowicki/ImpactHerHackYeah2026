@@ -57,8 +57,8 @@ def test_mock_mode_works_when_django_serves_the_page(page, django_url):
 
     page.goto(f"{django_url}/static/index.html?mock=1")
 
-    expect(page.get_by_text("Zalogowano jako Anna.")).to_be_visible()
-    expect(page.get_by_role("status")).to_contain_text("Tryb demonstracyjny")
+    expect(page.get_by_role("heading", name="Cześć, Anna")).to_be_visible()
+    expect(page.get_by_role("region", name="Tryb demonstracyjny")).to_be_visible()
     assert requests == []
 
 
