@@ -71,3 +71,21 @@ One entry per task group. Change: `full-backend`, branch `change/full-backend`.
   database. `db.sqlite3` is empty; it was copied to `db.sqlite3.bak` (git-ignored) before any
   migrate, and no migrate ran on it.
 - **Commit:** `dd8682e`
+
+## Group 7: Account security (built by a parallel agent, checked by the main session)
+
+- **Goal:** sign-up with e-mail activation, resending, password reset and change, answers that never
+  reveal whether an address has an account.
+- **Built:** `core/api/auth_security.py`, `core/services/account_security.py` (signed activation
+  token, 3 days, single use; reset token from Django's generator on the frozen clock, 1 hour;
+  conditional updates so a token works once even in a race), `core/content/mail_texts.py`, 71 tests.
+- **Deviations / assumptions:**
+  - Signing up again with an inactive address replaces its pending password and name (the latest
+    submission wins; activation proves the mailbox). An older activation link stays valid.
+  - Django's reset token covers `last_login`, so signing in after asking for a reset invalidates
+    that link; the person asks again.
+  - Race tests simulate the race by patching the lookup; there are no real-thread tests for sign-up.
+- **Verification:** `ruff check .`, `ruff format --check .`, `pytest tests` (791 passed). The agent
+  broke nine rules one at a time in a throwaway copy (lifetime, single use, active account
+  changed, mail to any address, clock use, wrong current password, ...) and each failed a test.
+- **Commit:** see the git log, subject `feat(backend): account security`.

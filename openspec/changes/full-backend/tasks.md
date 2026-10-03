@@ -53,10 +53,10 @@ main session after it has checked their work. Agents never commit.
 
 ## 7. Account security (agent E)
 
-- [ ] 7.1 `signup`, `activate_account`, `resend_activation` with signed tokens (3 days, single use) and the Polish mail texts; verify the sign-up, activation and resend scenarios pass, including identical answers for known and unknown addresses (compared byte for byte)
-- [ ] 7.2 `request_password_reset`, `confirm_password_reset`, `change_password`; verify the reset and change scenarios pass, including token reuse, expiry, other sessions ending and a weak password keeping the token valid
-- [ ] 7.3 Mail behaviour through the service: failing SMTP, limits, no address or token in logs; verify the mail-delivery and mail-limits scenarios pass using the outbox fixture and a failing backend
-- [ ] 7.4 Run `ruff` and the suite; main session commits
+- [x] 7.1 `signup`, `activate_account`, `resend_activation` with signed tokens (3 days, single use) and the Polish mail texts; verify the sign-up, activation and resend scenarios pass, including identical answers for known and unknown addresses (compared byte for byte)
+- [x] 7.2 `request_password_reset`, `confirm_password_reset`, `change_password`; verify the reset and change scenarios pass, including token reuse, expiry, other sessions ending and a weak password keeping the token valid
+- [x] 7.3 Mail behaviour through the service: failing SMTP, limits, no address or token in logs; verify the mail-delivery and mail-limits scenarios pass using the outbox fixture and a failing backend
+- [x] 7.4 Run `ruff` and the suite; main session commits
 
 ## 8. Integration, regression and the demo (main session)
 
