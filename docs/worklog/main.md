@@ -69,7 +69,7 @@ One entry per task group. Change: `foundation-and-api-contract`, branch
     them in files.
   - The frontend session also owns `tests_e2e/`, because the shell tests check the placeholder
     screen it will replace.
-  - This entry has no commit hash yet; it is added in the next commit.
+  - The hash of this group is added in a follow-up commit, because a commit cannot contain its own hash.
 - **Verification:** all three Mermaid blocks render with Mermaid 11 in headless Chromium; the
   README and the brief were followed step by step in a fresh clone.
-- **Commit:** see below.
+- **Commit:** `3d9581a`
