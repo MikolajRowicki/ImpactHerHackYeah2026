@@ -24,4 +24,12 @@ export const OPERATIONS = {
   claim_task: ["POST", "/api/v1/tasks/{task_id}/claim", 200],
   complete_task: ["POST", "/api/v1/tasks/{task_id}/complete", 200],
   list_self_care: ["GET", "/api/v1/self-care", 200],
+  // Added after v0, adopted by this frontend.
+  signup: ["POST", "/api/v1/auth/signup", 202],
+  activate_account: ["POST", "/api/v1/auth/activate", 200],
+  resend_activation: ["POST", "/api/v1/auth/resend-activation", 202],
+  request_password_reset: ["POST", "/api/v1/auth/password-reset", 202],
+  confirm_password_reset: ["POST", "/api/v1/auth/password-reset/confirm", 200],
+  change_password: ["POST", "/api/v1/auth/change-password", 200],
+  release_task: ["POST", "/api/v1/tasks/{task_id}/release", 200],
 };

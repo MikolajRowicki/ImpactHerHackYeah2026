@@ -1,29 +1,138 @@
 /* Design tokens. Screens use these custom properties and no raw values. */
-:root {
-  --color-bg: #fbf7f4;
-  --color-surface: #ffffff;
-  --color-ink: #2b2a33;
-  --color-ink-soft: #5d5a68;
-  --color-primary: #6b4e71;
-  --color-primary-ink: #ffffff;
-  --color-accent: #2f7d79;
-  --color-line: #e6dfe3;
-  --color-notice-bg: #fff3d6;
-  --color-notice-ink: #5a4200;
-  --color-error: #a3202f;
+@font-face {
+  font-family: "Nunito";
+  font-style: normal;
+  font-weight: 200 1000;
+  font-display: swap;
+  src: url("../fonts/nunito-latin-ext.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308,
+    U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113,
+    U+2C60-2C7F, U+A720-A7FF;
+}
 
-  --font-body: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+@font-face {
+  font-family: "Nunito";
+  font-style: normal;
+  font-weight: 200 1000;
+  font-display: swap;
+  src: url("../fonts/nunito-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304,
+    U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+:root {
+  color-scheme: light;
+
+  --color-bg: #faf7f2;
+  --color-surface: #ffffff;
+  --color-surface-soft: #f1eee6;
+  --color-ink: #24302a;
+  --color-ink-soft: #56635b;
+  --color-primary: #3e5a47;
+  --color-primary-hover: #324a3a;
+  --color-primary-ink: #ffffff;
+  --color-primary-soft: #dce6de;
+  --color-sage: #7a9a82;
+  --color-accent: #f2b79c;
+  --color-accent-hover: #eca587;
+  --color-accent-ink: #3a2318;
+  --color-accent-soft: #fbe6dc;
+  --color-line: #e3ded3;
+  --color-line-strong: #8a948d;
+  --color-error: #9e3b2e;
+  --color-error-soft: #f8e7e3;
+  --color-notice-bg: #fbe6dc;
+  --color-notice-ink: #3a2318;
+  --color-focus: #3e5a47;
+
+  --shadow-card: 0 1px 2px rgb(36 48 42 / 6%), 0 4px 16px rgb(36 48 42 / 6%);
+  --shadow-raised: 0 8px 32px rgb(36 48 42 / 14%);
+
+  --font-body: "Nunito", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
   --font-size-base: 1.0625rem;
-  --font-size-small: 0.875rem;
-  --font-size-title: clamp(1.5rem, 1.2rem + 1.5vw, 2.125rem);
-  --line-height: 1.55;
+  --font-size-small: 0.9375rem;
+  --font-size-tiny: 0.8125rem;
+  --font-size-lead: 1.1875rem;
+  --font-size-h3: 1.125rem;
+  --font-size-h2: 1.3125rem;
+  --font-size-title: clamp(1.625rem, 1.3rem + 1.5vw, 2.25rem);
+  --line-height: 1.6;
+  --weight-regular: 450;
+  --weight-medium: 600;
+  --weight-bold: 750;
 
   --space-1: 0.25rem;
   --space-2: 0.5rem;
   --space-3: 1rem;
   --space-4: 1.5rem;
   --space-5: 2.5rem;
+  --space-6: 4rem;
 
-  --radius: 0.75rem;
+  --radius-small: 0.625rem;
+  --radius: 1rem;
+  --radius-large: 1.5rem;
+  --radius-pill: 999px;
+
+  --touch: 2.75rem;
   --content-width: 40rem;
+  --wide-width: 64rem;
+  --nav-height: 4.25rem;
+  --transition: 160ms ease;
+}
+
+/* The same dark values twice: once for the system setting, once for the manual switch. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+
+    --color-bg: #1c2420;
+    --color-surface: #24302a;
+    --color-surface-soft: #2c3a33;
+    --color-ink: #e9efea;
+    --color-ink-soft: #b5c2b9;
+    --color-primary: #9cc2a6;
+    --color-primary-hover: #b2d2ba;
+    --color-primary-ink: #13201a;
+    --color-primary-soft: #2f4237;
+    --color-accent: #f2b79c;
+    --color-accent-hover: #f6c8b2;
+    --color-accent-ink: #3a2318;
+    --color-accent-soft: #4a3830;
+    --color-line: #3a4a41;
+    --color-line-strong: #7f9186;
+    --color-error: #f0a496;
+    --color-error-soft: #4a2e29;
+    --color-notice-bg: #4a3830;
+    --color-notice-ink: #fbe6dc;
+    --color-focus: #f2b79c;
+    --shadow-card: 0 1px 2px rgb(0 0 0 / 25%);
+    --shadow-raised: 0 8px 32px rgb(0 0 0 / 45%);
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --color-bg: #1c2420;
+  --color-surface: #24302a;
+  --color-surface-soft: #2c3a33;
+  --color-ink: #e9efea;
+  --color-ink-soft: #b5c2b9;
+  --color-primary: #9cc2a6;
+  --color-primary-hover: #b2d2ba;
+  --color-primary-ink: #13201a;
+  --color-primary-soft: #2f4237;
+  --color-accent: #f2b79c;
+  --color-accent-hover: #f6c8b2;
+  --color-accent-ink: #3a2318;
+  --color-accent-soft: #4a3830;
+  --color-line: #3a4a41;
+  --color-line-strong: #7f9186;
+  --color-error: #f0a496;
+  --color-error-soft: #4a2e29;
+  --color-notice-bg: #4a3830;
+  --color-notice-ink: #fbe6dc;
+  --color-focus: #f2b79c;
+  --shadow-card: 0 1px 2px rgb(0 0 0 / 25%);
+  --shadow-raised: 0 8px 32px rgb(0 0 0 / 45%);
 }

@@ -1,0 +1,77 @@
+/* Styles for the mother's start, check-in and history. */
+
+.self-care {
+  list-style: none;
+  display: grid;
+  gap: var(--space-3);
+}
+
+.self-care__item {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+  padding: var(--space-3) var(--space-4);
+}
+
+.self-care__text {
+  min-width: 0;
+}
+
+.self-care__title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-1);
+  font-size: var(--font-size-base);
+}
+
+.self-care__text p {
+  margin: 0;
+  color: var(--color-ink-soft);
+  font-size: var(--font-size-small);
+}
+
+.tasks-preview__item {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+  padding: var(--space-3) var(--space-4);
+}
+
+.check-in-form .choice-group + .choice-group {
+  margin-top: var(--space-5);
+}
+
+.check-in-card > .notice {
+  margin-bottom: var(--space-4);
+}
+
+.history__entry {
+  padding: var(--space-3) var(--space-4);
+}
+
+.history__entry h3 {
+  margin-bottom: var(--space-2);
+  font-size: var(--font-size-base);
+}
+
+.history__entry h3::first-letter {
+  text-transform: uppercase;
+}
+
+.history__answers {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: var(--space-1) var(--space-3);
+  margin: 0;
+}
+
+.history__answers dt {
+  color: var(--color-ink-soft);
+}
+
+.history__answers dd {
+  margin: 0;
+  font-weight: var(--weight-medium);
+}

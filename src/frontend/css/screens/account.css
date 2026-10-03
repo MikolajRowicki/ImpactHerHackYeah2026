@@ -1,0 +1,95 @@
+/* Styles for sign-in, registration, onboarding and the waiting screen. */
+
+.account {
+  max-width: 28rem;
+  margin: 0 auto;
+  padding-top: var(--space-3);
+}
+
+.account__mark {
+  display: block;
+  width: 3.5rem;
+  height: 3.5rem;
+  margin-bottom: var(--space-3);
+  border-radius: 50% 50% 50% 8%;
+  background: linear-gradient(135deg, var(--color-sage), var(--color-accent));
+  opacity: 0.85;
+}
+
+.account .notice {
+  margin-bottom: var(--space-3);
+}
+
+.account__card .button[type="submit"] {
+  width: 100%;
+}
+
+.account__switch {
+  margin-top: var(--space-4);
+  text-align: center;
+  color: var(--color-ink-soft);
+}
+
+.start-choices {
+  list-style: none;
+  display: grid;
+  gap: var(--space-3);
+}
+
+.start-choice {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  padding: var(--space-4);
+  border: 1.5px solid var(--color-line);
+  border-radius: var(--radius-large);
+  background: var(--color-surface);
+  color: var(--color-ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  box-shadow: var(--shadow-card);
+  transition: border-color var(--transition), background var(--transition);
+}
+
+.start-choice:hover {
+  border-color: var(--color-primary);
+}
+
+.start-choice > svg:last-child {
+  color: var(--color-primary);
+}
+
+.start-choice__text {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.start-choice__title {
+  display: block;
+  font-size: var(--font-size-h3);
+  font-weight: var(--weight-bold);
+}
+
+.start-choice__lead {
+  display: block;
+  margin-top: var(--space-1);
+  color: var(--color-ink-soft);
+}
+
+.waiting .card {
+  margin-top: var(--space-3);
+}
+
+.account__resend,
+.account__again {
+  display: grid;
+  gap: var(--space-2);
+  justify-items: start;
+}
+
+.account__again {
+  margin-top: var(--space-4);
+  text-align: left;
+}

@@ -43,7 +43,7 @@ def call(page, operation, **options):
 
 def test_anna_reads_her_summary_and_the_page_knows_her(page, seeded):
     page.goto(f"{seeded}/")
-    expect(page.get_by_text("Nie jesteś zalogowana ani zalogowany.")).to_be_visible()
+    expect(page.get_by_role("heading", level=1)).to_have_text("Zaloguj się")
 
     signed_in = call(page, "login", body={"email": "anna@example.com", "password": PASSWORD})
     assert signed_in["ok"], signed_in
@@ -55,10 +55,10 @@ def test_anna_reads_her_summary_and_the_page_knows_her(page, seeded):
     assert summary["narrative"]["source"] == "mock"
 
     page.reload()
-    expect(page.get_by_text("Zalogowano jako Anna.")).to_be_visible()
+    expect(page.get_by_role("heading", level=1)).to_have_text("Cześć, Anna")
     assert call(page, "logout")["ok"]
     page.reload()
-    expect(page.get_by_text("Nie jesteś zalogowana ani zalogowany.")).to_be_visible()
+    expect(page.get_by_role("heading", level=1)).to_have_text("Zaloguj się")
 
 
 def test_marta_takes_a_task_and_the_refusals_are_readable(page, seeded):

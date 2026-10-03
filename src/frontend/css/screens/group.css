@@ -1,0 +1,104 @@
+/* Styles for the group screen and invitations. */
+
+.group > * + * {
+  margin-top: var(--space-4);
+}
+
+.member {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+}
+
+.member__text {
+  flex: 1 1 12rem;
+  min-width: 0;
+}
+
+.member__text p {
+  margin: 0;
+}
+
+.member__name {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  font-weight: var(--weight-bold);
+}
+
+.member__role {
+  color: var(--color-ink);
+}
+
+.member__joined {
+  color: var(--color-ink-soft);
+  font-size: var(--font-size-small);
+}
+
+.invite-link {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border-radius: var(--radius);
+  background: var(--color-surface-soft);
+}
+
+.invite-link__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.invite-link__input {
+  flex: 1 1 14rem;
+  min-width: 0;
+  font-size: var(--font-size-small);
+}
+
+.invite-link__status {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  margin: 0;
+  color: var(--color-primary);
+  font-weight: var(--weight-bold);
+}
+
+.invite-link__status:empty {
+  display: none;
+}
+
+.invite-link .field__hint {
+  margin: 0;
+}
+
+.invitation__label {
+  margin: 0;
+  color: var(--color-ink-soft);
+  font-size: var(--font-size-small);
+  font-weight: var(--weight-medium);
+}
+
+.invitation__role {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: var(--space-1) 0 var(--space-2);
+  font-size: var(--font-size-h2);
+  font-weight: var(--weight-bold);
+}
+
+.invitation__expiry {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  color: var(--color-ink-soft);
+}
+
+.invite-offer .button {
+  margin-top: var(--space-1);
+}
