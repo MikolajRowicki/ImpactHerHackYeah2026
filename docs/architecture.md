@@ -206,15 +206,64 @@ and the operations marked with `*` need an active group (otherwise 409 `group_pe
 Privacy rules the contract enforces: her check-ins are readable only by her; the summary holds
 general statements and a trend label, never a single answer and never its author.
 
-## AI provider
+## Trend and summary
 
-Generated texts (the summary narrative) come from a provider chosen by `AI_PROVIDER` in `.env`.
+```mermaid
+flowchart LR
+    CI[check-ins] --> F[daily facts, last 7 Warsaw days]
+    OB[observation answers] --> F
+    F --> R{plain rules}
+    R --> T[trend + reason codes]
+    T --> ST[fixed Polish statements, reminder, reasons]
+    T --> H{needs_attention?}
+    H -- yes --> HELP[help block: crisis lines, care path]
+    ST --> N[narrative: provider, or fixed text]
+```
 
-| Value | Behaviour |
+The rules are in `core/services/trend.py` (a pure function over per-day booleans, no author id).
+`needs_attention` when she has 3 signal days, observations have 3, both have 2, or a check-in of
+today or yesterday has very low mood and strong anxiety. `stable` needs data on 3 days and at most
+one signal day. Otherwise `uncertain`. Statements depend only on the trend and on the reader's
+role, never on which source fired, so one observer cannot be singled out. The narrative prompt gets
+the trend and the general statements only.
+
+## AI seam
+
+```mermaid
+flowchart LR
+    F[narrative, say it for me, guide] --> A[assist.generate]
+    A --> K[knowledge source: none by default]
+    K -->|passages| P[prompt]
+    A --> P --> G{provider}
+    G -->|mock| M[mock text, source mock]
+    G -->|groq| Q[Groq over HTTPS, 8 s, source groq]
+    Q -->|error, timeout, empty| FB[fixed text, source rules]
+```
+
+A provider is a class with `generate(prompt) -> Generation(text, source)` in `core/ai/`; it raises
+only `ProviderError`. `assist.generate(feature, prompt, fallback)` is the one entry point: it
+turns every failure into the fixed fallback with source `rules`, and lists the passages of the
+knowledge source in `sources` (empty until retrieval exists, so adding it changes no response
+shape). "Say it for me" checks fixed crisis phrases before any provider is called; a match returns
+`crisis: true` with the help block and no generated text.
+
+| `AI_PROVIDER` | Behaviour |
 |---|---|
-| `mock` (default) | Offline and deterministic: the same input gives the same text. Its output carries `source: "mock"`, so mock text is never shown as real model output. |
-| `groq` | Not available yet; the adapter arrives in a later change. Its key will live in `.env` as `GROQ_API_KEY`. |
+| `mock` (default) | Offline and deterministic, labelled `mock`. |
+| `groq` | Needs `GROQ_API_KEY`; the key never appears in logs or responses. |
 
-A provider is a class with `generate(prompt) -> Generation(text, source)` in `src/backend/core/ai/`.
-Any other value stops startup with a message that lists the available values; the check runs when
-the `core` app starts. The values of `source` are listed in the contract (summary `narrative`).
+Any other value, or `groq` without a key, stops startup with a message that names the problem.
+
+## Operations added after v0
+
+`contracts/README.md` lists the 19 operations added after v0. Their roles:
+
+| Operation | woman | partner | supporter | Notes |
+|---|---|---|---|---|
+| signup, activate_account, resend_activation, request_password_reset, confirm_password_reset | anyone | anyone | anyone | identical answers for known and unknown addresses |
+| change_password, delete_account, get_preferences, update_preferences, get_help | x | x | x | any signed-in person |
+| leave_group | | x | x | the woman closes the group instead (409) |
+| list_invitations, revoke_invitation | x | x | | the partner only while the group is pending |
+| get_summary_extended, list_task_suggestions, release_task, list_reminders | x | x | x | |
+| ai_say_it_for_me | x | | | |
+| ai_conversation_guide | | x | x | |
