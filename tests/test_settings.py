@@ -28,3 +28,61 @@ def test_database_path_comes_from_the_environment(load_settings, monkeypatch):
     monkeypatch.setenv("DATABASE_PATH", "/tmp/example.sqlite3")
     settings = load_settings(DJANGO_SECRET_KEY="x")
     assert settings.DATABASES["default"]["NAME"] == "/tmp/example.sqlite3"
+
+
+def test_mail_goes_to_the_console_by_default(load_settings):
+    settings = load_settings(DJANGO_SECRET_KEY="x")
+    assert settings.EMAIL_MODE == "console"
+    assert settings.EMAIL_BACKEND.endswith("console.EmailBackend")
+
+
+@pytest.mark.parametrize("missing", ["EMAIL_USER", "EMAIL_PASS"])
+def test_smtp_mode_without_credentials_stops_startup(load_settings, missing):
+    env = {
+        "DJANGO_SECRET_KEY": "x",
+        "EMAIL_MODE": "smtp",
+        "EMAIL_USER": "a@b.pl",
+        "EMAIL_PASS": "p",
+    }
+    env[missing] = ""
+    with pytest.raises(ImproperlyConfigured, match=missing):
+        load_settings(**env)
+
+
+def test_smtp_mode_with_credentials_uses_the_smtp_backend(load_settings):
+    settings = load_settings(
+        DJANGO_SECRET_KEY="x", EMAIL_MODE="smtp", EMAIL_USER="a@b.pl", EMAIL_PASS="secret"
+    )
+    assert settings.EMAIL_BACKEND.endswith("smtp.EmailBackend")
+    assert (settings.EMAIL_HOST, settings.EMAIL_PORT) == ("smtp.gmail.com", 587)
+    assert settings.EMAIL_HOST_USER == "a@b.pl"
+    assert settings.DEFAULT_FROM_EMAIL == "a@b.pl"
+
+
+def test_an_unknown_mail_mode_is_refused(load_settings):
+    with pytest.raises(ImproperlyConfigured, match="EMAIL_MODE"):
+        load_settings(DJANGO_SECRET_KEY="x", EMAIL_MODE="carrier-pigeon")
+
+
+def test_links_start_with_the_configured_base_url(load_settings):
+    settings = load_settings(DJANGO_SECRET_KEY="x", APP_BASE_URL="https://mama.example/")
+    assert settings.APP_BASE_URL == "https://mama.example/"
+
+
+def test_legacy_registration_follows_debug_unless_set(load_settings):
+    assert load_settings(DJANGO_DEBUG="1").ALLOW_LEGACY_REGISTER is True
+    assert load_settings(DJANGO_SECRET_KEY="x").ALLOW_LEGACY_REGISTER is False
+    assert load_settings(DJANGO_SECRET_KEY="x", ALLOW_LEGACY_REGISTER="1").ALLOW_LEGACY_REGISTER
+    off = load_settings(DJANGO_DEBUG="1", ALLOW_LEGACY_REGISTER="0")
+    assert off.ALLOW_LEGACY_REGISTER is False
+
+
+def test_groq_and_knowledge_settings_have_safe_defaults(load_settings):
+    settings = load_settings(DJANGO_SECRET_KEY="x")
+    assert settings.GROQ_API_KEY == ""
+    assert settings.GROQ_MODEL
+    assert settings.KNOWLEDGE_SOURCE == "none"
+
+
+def test_the_custom_user_model_is_the_login_model(load_settings):
+    assert load_settings(DJANGO_SECRET_KEY="x").AUTH_USER_MODEL == "core.User"

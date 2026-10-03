@@ -198,6 +198,17 @@ export function createMockStore({ base, storage, perspective = "", fetchFn = (..
     return null;
   }
 
+  function mail(s, kind, email) {
+    s.outbox = s.outbox || [];
+    s.outbox.push({ kind, email, token: randomToken(), used: false });
+  }
+
+  function takeMail(s, kind, token) {
+    const letter = (s.outbox || []).find((m) => m.kind === kind && m.token === token && !m.used);
+    if (letter) letter.used = true;
+    return letter;
+  }
+
   function findTask(s, group, id) {
     return s.tasks.find((task) => task.group_id === group.id && task.id === Number(id));
   }
@@ -232,7 +243,7 @@ export function createMockStore({ base, storage, perspective = "", fetchFn = (..
     login(s, _me, { body = {} }) {
       const email = String(body.email || "").trim().toLowerCase();
       const person = s.people.find((p) => p.email === email && p.password === body.password);
-      if (!person) return refuse(401, "login.401.json");
+      if (!person || person.inactive) return refuse(401, "login.401.json");
       s.signedIn = true;
       s.current = person.id;
       return meView(s, person);
@@ -447,14 +458,111 @@ export function createMockStore({ base, storage, perspective = "", fetchFn = (..
       return taskView(task);
     },
 
+    // Account security. Answers never tell whether an address has an account; the "e-mails"
+    // land in a demo outbox that the screens can show in mock mode.
+    signup(s, _me, { body = {} }) {
+      const email = String(body.email || "").trim().toLowerCase();
+      const fields = {};
+      if (!String(body.display_name || "").trim()) fields.display_name = t.mock.errors.nameMissing;
+      if (String(body.password || "").length < 8) fields.password = t.mock.errors.passwordShort;
+      if (Object.keys(fields).length) return invalid(fields);
+      if (!EMAIL.test(email)) return refuse(422, "resend_activation.422.json");
+      if (!s.people.some((p) => p.email === email)) {
+        s.people.push({
+          key: null,
+          id: nextId(s),
+          email,
+          display_name: String(body.display_name).trim(),
+          password: String(body.password),
+          membership: null,
+          inactive: true,
+        });
+        mail(s, "activate", email);
+      }
+      return { status: "ok" };
+    },
+
+    activate_account(s, _me, { body = {} }) {
+      const letter = takeMail(s, "activate", body.token);
+      if (!letter) return refuse(404, "activate_account.404.json");
+      const person = s.people.find((p) => p.email === letter.email);
+      if (person) person.inactive = false;
+      return { status: "ok" };
+    },
+
+    resend_activation(s, _me, { body = {} }) {
+      const email = String(body.email || "").trim().toLowerCase();
+      if (!EMAIL.test(email)) return refuse(422, "resend_activation.422.json");
+      if (s.people.some((p) => p.email === email && p.inactive)) mail(s, "activate", email);
+      return { status: "ok" };
+    },
+
+    request_password_reset(s, _me, { body = {} }) {
+      const email = String(body.email || "").trim().toLowerCase();
+      if (!EMAIL.test(email)) return refuse(422, "request_password_reset.422.json");
+      if (s.people.some((p) => p.email === email)) mail(s, "reset", email);
+      return { status: "ok" };
+    },
+
+    confirm_password_reset(s, _me, { body = {} }) {
+      const letter = (s.outbox || []).find(
+        (m) => m.kind === "reset" && m.token === body.token && !m.used,
+      );
+      if (!letter) return refuse(404, "confirm_password_reset.404.json");
+      // A weak password keeps the link usable, like the backend.
+      if (String(body.password || "").length < 8) return refuse(422, "confirm_password_reset.422.json");
+      letter.used = true;
+      const person = s.people.find((p) => p.email === letter.email);
+      if (person) person.password = String(body.password);
+      return { status: "ok" };
+    },
+
+    change_password(s, me, { body = {} }) {
+      if (body.current_password !== me.password) return refuse(422, "change_password.422.json");
+      if (String(body.new_password || "").length < 8) {
+        return invalid({ new_password: t.mock.errors.passwordShort });
+      }
+      me.password = String(body.new_password);
+      return { status: "ok" };
+    },
+
+    release_task(s, me, { params = {} }, group) {
+      const blocked = requireActive("release_task", group);
+      if (blocked) return blocked;
+      const task = findTask(s, group, params.task_id);
+      if (!task) return refuse(404, "release_task.404.json");
+      if (task.status !== "claimed") return refuse(409, "release_task.409.json");
+      if (task.claimed_by.id !== me.id) return refuse(403, "release_task.403.json");
+      task.status = "open";
+      task.claimed_by = null;
+      return taskView(task);
+    },
+
     list_self_care(s, me) {
       if (me.membership.role !== "woman") return refuse(403, "list_self_care.403.json");
       return example("list_self_care.200.json");
     },
   };
 
-  const ANYONE = new Set(["health", "register", "login", "get_invitation"]);
-  const SIGNED_IN = new Set(["logout", "get_me", "create_group", "get_group", "accept_invitation"]);
+  const ANYONE = new Set([
+    "health",
+    "register",
+    "login",
+    "get_invitation",
+    "signup",
+    "activate_account",
+    "resend_activation",
+    "request_password_reset",
+    "confirm_password_reset",
+  ]);
+  const SIGNED_IN = new Set([
+    "logout",
+    "get_me",
+    "create_group",
+    "get_group",
+    "accept_invitation",
+    "change_password",
+  ]);
 
   async function call(operationId, options = {}) {
     if (!OPERATIONS[operationId]) throw new Error(`Unknown operation: ${operationId}`);
@@ -492,6 +600,16 @@ export function createMockStore({ base, storage, perspective = "", fetchFn = (..
       s.signedIn = true;
       s.current = PERSON_OF[key] || PERSON_OF.woman;
       save(s);
+    },
+
+    // The newest unused demo e-mail of a kind for an address, so mock mode can show its link.
+    async lastMail(kind, email) {
+      const s = await state();
+      const address = String(email || "").trim().toLowerCase();
+      const letters = (s.outbox || []).filter(
+        (m) => m.kind === kind && m.email === address && !m.used,
+      );
+      return letters.at(-1) || null;
     },
 
     async reset() {

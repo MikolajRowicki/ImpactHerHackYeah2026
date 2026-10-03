@@ -1,0 +1,6 @@
+{
+  "error": {
+    "code": "not_task_claimer",
+    "message": "Zadanie oddaje osoba, która je wzięła."
+  }
+}

@@ -36,3 +36,9 @@
 .message-slot:not(:empty) {
   margin-bottom: var(--space-3);
 }
+
+.task__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}

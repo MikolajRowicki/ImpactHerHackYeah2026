@@ -6,7 +6,7 @@ import { checkIn } from "./screens/check-in.js";
 import { group } from "./screens/group.js";
 import { help } from "./screens/help.js";
 import { invite } from "./screens/invite.js";
-import { login, register } from "./screens/account.js";
+import { account, activate, forgot, login, register, reset } from "./screens/account.js";
 import { notAllowed, notFound } from "./screens/not-found.js";
 import { questions } from "./screens/questions.js";
 import { start } from "./screens/start.js";
@@ -26,6 +26,10 @@ const match = createRouter([
   { path: "/group", screen: group, member: true },
   { path: "/invite/:token", screen: invite, access: "anyone" },
   { path: "/help", screen: help, access: "anyone" },
+  { path: "/activate/:token", screen: activate, access: "anyone" },
+  { path: "/forgot", screen: forgot, access: "anyone" },
+  { path: "/reset/:token", screen: reset, access: "anyone" },
+  { path: "/account", screen: account, access: "signed-in" },
 ]);
 
 function storage() {

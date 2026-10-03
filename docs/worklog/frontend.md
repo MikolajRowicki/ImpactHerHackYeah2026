@@ -169,4 +169,32 @@ One entry per task group. Change: `frontend-app`, branch `change/frontend-app`.
 - **Contract requests waiting:** `20261004-person-id-is-account-id.md`.
 - **Verification:** `ruff check .`, `ruff format --check .`, `pytest` (356 passed),
   `pytest tests_e2e` (126 passed).
-- **Commit:** this entry's commit, `test(frontend): contrast and layout checks`.
+- **Commit:** `311ea25`
+
+## After the merge of main: account security and releasing a task
+
+- **Goal:** handle the messages in `docs/from-be-to-fe/` after merging `main`.
+- **Built:**
+  - Seven operations added to `js/operations.js`: `signup`, `activate_account`,
+    `resend_activation`, `request_password_reset`, `confirm_password_reset`, `change_password`,
+    `release_task`.
+  - Sign-up now uses `signup` and shows "Sprawdź skrzynkę" (no session). `#/activate/:token`,
+    `#/forgot`, `#/reset/:token` and `#/account` (change password, from the header) are new.
+    Sign-in offers "send the activation link again" after a 401 and a "forgot password" link. No
+    text says whether an account exists; the wording is "if the address is right".
+  - A task's claimer can hand it back ("Oddaj zadanie", `release_task`).
+  - The mock store mirrors all of it, with a demo outbox so the "e-mail" link can be opened in
+    mock mode ("Demo: otwórz link z wiadomości").
+  - After sign-in, a person without a group returns only to an invitation; other remembered
+    addresses lead to the start.
+  - Main's `test_live_mode.py` and `test_live_journey.py` moved to the new screens.
+- **Not adopted, on purpose:** the other new operations (`get_summary_extended`, `get_help`,
+  preferences, reminders, task suggestions, `leave_group`, invitation list and revoke,
+  `delete_account`, the two AI operations). The overview says v0 keeps working and the frontend
+  "may move" to them; the help place stays a placeholder until its change. A later change should
+  adopt them. `accept_invitation` with the unknown 409 code `role_taken` already shows the
+  server's message.
+- **Known gap:** four tests in `tests/api` (backend, not edited here) fail on Windows because
+  they read example files without UTF-8; they compare mojibake with correct text.
+- **Verification:** `ruff check .`, `ruff format --check .`, `pytest tests` without `tests/api`,
+  `pytest tests_e2e` (136 passed).

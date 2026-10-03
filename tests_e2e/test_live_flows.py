@@ -154,21 +154,36 @@ def test_signing_in_from_the_navigation_still_returns_to_the_invitation(mock_pag
     expect(mock_page.get_by_role("button", name="Przyjmij zaproszenie")).to_be_visible()
 
 
-def test_registration_after_a_redirect_lands_on_starting_a_group(mock_page):
+def test_first_sign_in_after_a_redirect_lands_on_starting_a_group(mock_page):
     answers = {
         "GET /api/v1/me": (401, example("get_me.401.json")),
-        "POST /api/v1/auth/register": (201, me_with(None, name="Ola")),
+        "POST /api/v1/auth/login": (200, me_with(None, name="Ola")),
     }
     live(mock_page, answers, "/tasks")
     expect(h1(mock_page)).to_have_text("Zaloguj się")
 
-    mock_page.get_by_role("link", name="Załóż konto").click()
-    expect(h1(mock_page)).to_have_text("Załóż konto")
-    mock_page.get_by_label("Jak mamy się do Ciebie zwracać?").fill("Ola")
     mock_page.get_by_label("Adres e-mail").fill("ola@example.com")
     mock_page.get_by_label("Hasło").fill("dlugie-haslo")
     answers["GET /api/v1/me"] = (200, me_with(None, name="Ola"))
-    mock_page.get_by_role("button", name="Załóż konto").click()
+    mock_page.get_by_role("button", name="Zaloguj się").click()
 
     expect(h1(mock_page)).to_have_text("Cześć, Ola")
     expect(mock_page.get_by_role("heading", name="Załóż grupę")).to_be_visible()
+
+
+def test_signup_sends_the_form_and_opens_no_session(mock_page):
+    answers = {
+        "GET /api/v1/me": (401, example("get_me.401.json")),
+        "POST /api/v1/auth/signup": (202, example("signup.202.json")),
+    }
+    calls = live(mock_page, answers, "/register")
+    expect(h1(mock_page)).to_have_text("Załóż konto")
+
+    mock_page.get_by_label("Jak mamy się do Ciebie zwracać?").fill("Ola")
+    mock_page.get_by_label("Adres e-mail").fill("ola@example.com")
+    mock_page.get_by_label("Hasło").fill("dlugie-haslo")
+    mock_page.get_by_role("button", name="Załóż konto").click()
+
+    expect(h1(mock_page)).to_have_text("Sprawdź skrzynkę")
+    assert "POST /api/v1/auth/signup" in calls
+    assert "POST /api/v1/auth/register" not in calls

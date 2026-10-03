@@ -211,6 +211,7 @@ def test_pending_group_accepts_no_data():
         "create_task",
         "claim_task",
         "complete_task",
+        "release_task",
     }
     marked = {op["operationId"] for _, _, op in c.operations() if op.get("x-requires-active-group")}
     assert marked == expected

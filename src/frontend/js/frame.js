@@ -69,7 +69,12 @@ export function createFrame({ onSignOut }) {
     icon("logout", 20),
     h("span", { class: "sign-out__label" }, t.nav.signOut),
   );
-  const actions = h("div", { class: "header-actions" }, themeButton(), signOut);
+  const accountLink = h(
+    "a",
+    { class: "icon-button", href: "#/account", "aria-label": t.account.accountLink, title: t.account.accountLink },
+    icon("user"),
+  );
+  const actions = h("div", { class: "header-actions" }, themeButton(), accountLink, signOut);
   inner.replaceChildren(brand, nav, actions);
 
   return {
@@ -95,6 +100,7 @@ export function createFrame({ onSignOut }) {
       );
       document.body.classList.toggle("has-nav", items.length > 0);
       signOut.hidden = !me;
+      accountLink.hidden = !me;
     },
   };
 }

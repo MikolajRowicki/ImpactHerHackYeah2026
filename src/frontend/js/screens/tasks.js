@@ -107,8 +107,11 @@ export async function tasks(ctx) {
       control = button(t.tasks.take, { small: true, iconName: "hand" });
       control.addEventListener("click", () => act("claim_task", task, control));
     } else if (!closed && task.status === "claimed" && task.claimed_by?.id === me.id) {
-      control = button(t.tasks.finish, { small: true, variant: "ghost", iconName: "check" });
-      control.addEventListener("click", () => act("complete_task", task, control));
+      const finish = button(t.tasks.finish, { small: true, variant: "ghost", iconName: "check" });
+      finish.addEventListener("click", () => act("complete_task", task, finish));
+      const release = button(t.tasks.release, { small: true, variant: "quiet", iconName: "back" });
+      release.addEventListener("click", () => act("release_task", task, release));
+      control = h("div", { class: "task__actions" }, finish, release);
     }
     return h(
       "li",

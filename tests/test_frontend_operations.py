@@ -22,4 +22,10 @@ def contract_operations():
 
 
 def test_frontend_operation_table_matches_the_contract():
-    assert frontend_operations() == contract_operations()
+    # Operations added after v0 may be missing until the frontend adopts them; the ones it lists
+    # must be exact, and it must still list every v0 operation.
+    from .tools.baseline import V0_OPERATIONS
+
+    frontend, contract = frontend_operations(), contract_operations()
+    assert {name: contract.get(name) for name in frontend} == frontend
+    assert set(V0_OPERATIONS) <= set(frontend)

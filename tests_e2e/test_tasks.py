@@ -184,3 +184,12 @@ def test_focus_stays_on_the_task_after_taking_it(mock_page):
     task(mock_page, "Do wzięcia", "Ugotować obiad").get_by_role("button", name="Biorę to").click()
 
     expect(task(mock_page, "W toku", "Ugotować obiad")).to_be_focused()
+
+
+def test_the_person_who_took_a_task_can_hand_it_back(mock_page):
+    open_tasks(mock_page, "supporter")
+
+    task(mock_page, "W toku", "Zrobić zakupy").get_by_role("button", name="Oddaj zadanie").click()
+
+    expect(task(mock_page, "Do wzięcia", "Zrobić zakupy")).to_be_visible()
+    expect(column(mock_page, "W toku").get_by_role("listitem")).to_have_count(0)

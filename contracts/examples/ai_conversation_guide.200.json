@@ -1,0 +1,17 @@
+{
+  "topic": "how_are_you",
+  "opening_lines": [
+    "Myślałem o Tobie dziś. Jak się naprawdę czujesz?",
+    "Mam chwilę tylko dla Ciebie. Opowiesz, jak minął Ci dzień?"
+  ],
+  "avoid": [
+    "Rad w stylu \"weź się w garść\".",
+    "Porównywania z innymi mamami."
+  ],
+  "questions": [
+    "Co dziś było najtrudniejsze?",
+    "Co mogłoby Ci pomóc w najbliższych godzinach?"
+  ],
+  "source": "mock",
+  "sources": []
+}

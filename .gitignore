@@ -13,6 +13,7 @@ htmlcov/
 # Local config and data
 .env
 *.sqlite3
+*.sqlite3.bak
 db.sqlite3
 media/
 
@@ -22,3 +23,6 @@ playwright-report/
 
 # Local Claude settings
 .claude/settings.local.json
+
+# Agent worktrees
+.claude/worktrees/
