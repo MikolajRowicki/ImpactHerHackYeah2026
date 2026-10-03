@@ -80,4 +80,25 @@ One entry per task group. Change: `frontend-app`, branch `change/frontend-app`.
 - **Verification:** `ruff check .`, `ruff format --check .`, `pytest` (356 passed),
   `pytest tests_e2e` (80 passed, twice in a row). Screenshots checked: onboarding, waiting and
   sign-in at 375 px, group at 1280 px, invitation at 375 px dark.
+- **Commit:** `c448a1e`
+
+## Group 3: The mother's space
+
+- **Goal:** a private, gentle place for her: start, check-in, her history in words, self-care.
+- **Built:**
+  - Mother's start (`screens/start.js`): greeting, check-in call to action, the summary card,
+    self-care suggestions with kind icons and minutes, open tasks preview; two columns from
+    960 px.
+  - `screens/check-in.js`: three closed choice groups in words, privacy note, check before
+    sending, warm confirmation, history in words newest first with an empty state; a closed
+    group keeps the history and hides the form.
+  - `screens/tasks-preview.js`, shared with the loved ones' start in group 4.
+  - Tests: `test_wellbeing.py` (10).
+- **Deviations:**
+  - The check-in route stays open for a closed group so she can still read her history.
+  - The answer words ("Raczej słabo", "Prawie wcale") are this branch's choice; the contract has
+    only the enum values.
+- **Verification:** `ruff check .`, `ruff format --check .`, `pytest` (356 passed),
+  `pytest tests_e2e` (90 passed). Screenshots checked: start at 1280 px, check-in at 375 px
+  (fixed the separator line crossing the legends) and at 1280 px dark.
 - **Commit:** see the next entry.

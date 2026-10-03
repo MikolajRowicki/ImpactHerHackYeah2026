@@ -211,4 +211,43 @@ export const t = {
       supporter: "Pomożesz w codziennych sprawach i od czasu do czasu odpowiesz na krótkie pytania.",
     },
   },
+  wellbeing: {
+    title: "Mój dzień",
+    lead: "Kilka kliknięć, bez ocen i bez liczb. Zaznacz to, co jest najbliżej prawdy.",
+    privacy:
+      "Te wpisy widzisz tylko Ty. Bliscy nigdy nie zobaczą pojedynczego wpisu, najwyżej ogólny obraz.",
+    mood: {
+      legend: "Jak się dziś czujesz?",
+      label: "Samopoczucie",
+      options: {
+        good: "Dobrze",
+        okay: "W porządku",
+        low: "Raczej słabo",
+        very_low: "Bardzo ciężko",
+      },
+    },
+    sleep: {
+      legend: "Jak Ci się spało?",
+      label: "Sen",
+      options: { enough: "Wystarczająco", little: "Mało", almost_none: "Prawie wcale" },
+    },
+    anxiety: {
+      legend: "Czy coś Cię dziś niepokoi?",
+      label: "Niepokój",
+      options: { none: "Raczej nie", some: "Trochę", strong: "Bardzo" },
+    },
+    pickOne: "Wybierz jedną z odpowiedzi.",
+    save: "Zapisz wpis",
+    saved: "Dziękujemy, że się zatrzymałaś. Wpis jest zapisany.",
+    closed: "Grupa jest zamknięta, więc nie dodasz już nowych wpisów. Twoje wpisy zostają tutaj.",
+    historyTitle: "Moje wpisy",
+    historyEmpty: "Nie masz jeszcze wpisów. Pierwszy zajmie mniej niż minutę.",
+    ctaTitle: "Jak się dziś czujesz?",
+    ctaLead: "Zapisz to w minutę. Widzisz to tylko Ty.",
+    selfCareTitle: "Chwila dla siebie",
+    minutes: (n) => `${n} min`,
+    tasksTitle: "Otwarte zadania bliskich",
+    tasksEmpty: "Nie ma teraz otwartych zadań.",
+    allTasks: "Wszystkie zadania",
+  },
 };

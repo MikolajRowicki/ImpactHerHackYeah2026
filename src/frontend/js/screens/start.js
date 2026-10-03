@@ -1,9 +1,10 @@
 import { h } from "../dom.js";
-import { icon } from "../icons.js";
+import { icon, SELF_CARE_ICONS } from "../icons.js";
 import { t } from "../strings.pl.js";
-import { linkButton, pageHead } from "../ui/layout.js";
+import { linkButton, pageHead, section } from "../ui/layout.js";
 import { summaryCard } from "../ui/summary.js";
 import { onboarding, waiting } from "./onboarding.js";
+import { tasksPreview } from "./tasks-preview.js";
 
 // `#/` shows a different start for each situation of the signed-in person.
 export async function start(ctx) {
@@ -21,6 +22,21 @@ function greeting(ctx) {
   });
 }
 
+function ctaCard(href, iconName, title, lead) {
+  return h(
+    "a",
+    { class: "cta-card", href },
+    h("span", { class: "icon-badge" }, icon(iconName, 26)),
+    h(
+      "span",
+      { class: "cta-card__text" },
+      h("span", { class: "cta-card__title" }, title),
+      h("span", { class: "cta-card__lead" }, lead),
+    ),
+    icon("arrow"),
+  );
+}
+
 // Shown to the mother while nobody else is in her group yet.
 function invitePartnerCard() {
   return h(
@@ -32,19 +48,72 @@ function invitePartnerCard() {
   );
 }
 
+function selfCare(items) {
+  return section(
+    { title: t.wellbeing.selfCareTitle, id: "self-care-title" },
+    h(
+      "ul",
+      { class: "self-care" },
+      ...items.map((item) =>
+        h(
+          "li",
+          { class: "card self-care__item" },
+          h("span", { class: "icon-badge" }, icon(SELF_CARE_ICONS[item.kind] || "sparkle")),
+          h(
+            "div",
+            { class: "self-care__text" },
+            h(
+              "h3",
+              { class: "self-care__title" },
+              item.title,
+              h(
+                "span",
+                { class: "chip" },
+                icon("clock", 14),
+                t.wellbeing.minutes(item.duration_minutes),
+              ),
+            ),
+            h("p", {}, item.description),
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
 async function motherStart(ctx) {
-  const [summary, members] = await Promise.all([
+  const [summary, members, care, tasks] = await Promise.all([
     ctx.api.call("get_summary"),
     ctx.api.call("list_members"),
+    ctx.api.call("list_self_care"),
+    ctx.api.call("list_tasks"),
   ]);
-  const alone = members.items.length < 2 && ctx.session.groupStatus === "active";
-  return h(
+  const active = ctx.session.groupStatus === "active";
+  const alone = members.items.length < 2 && active;
+  const node = h(
     "div",
-    { class: "stack-large" },
+    { class: "mother-start" },
     greeting(ctx),
-    alone && invitePartnerCard(),
-    summaryCard(summary),
+    h(
+      "div",
+      { class: "start-grid" },
+      h(
+        "div",
+        { class: "start-grid__main stack-large" },
+        active && ctaCard("#/check-in", "leaf", t.wellbeing.ctaTitle, t.wellbeing.ctaLead),
+        alone && invitePartnerCard(),
+        summaryCard(summary),
+      ),
+      h(
+        "div",
+        { class: "start-grid__side" },
+        selfCare(care.items),
+        tasksPreview(tasks.items, { title: t.wellbeing.tasksTitle, empty: t.wellbeing.tasksEmpty }),
+      ),
+    ),
   );
+  node.dataset.wide = "true";
+  return node;
 }
 
 async function lovedStart(ctx) {

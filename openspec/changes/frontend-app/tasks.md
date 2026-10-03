@@ -30,9 +30,9 @@ Groups 2, 3 and 4 may run in parallel after group 1; each touches only the files
 
 ## 3. The mother's space
 
-- [ ] 3.1 Build the mother's start screen: greeting, summary, check-in call to action, self-care cards with kind icons and minutes, open tasks preview; verify with e2e tests for "Mother's summary" and "Suggestions on her start"
-- [ ] 3.2 Build `#/check-in` with three choice groups in words, privacy note, warm confirmation, and history in words newest first with an empty state; verify with e2e tests for every `frontend-wellbeing` scenario
-- [ ] 3.3 Add the worklog entry and commit `feat(frontend): check-in, history, self-care and summary`
+- [x] 3.1 Build the mother's start screen: greeting, summary, check-in call to action, self-care cards with kind icons and minutes, open tasks preview; verify with e2e tests for "Mother's summary" and "Suggestions on her start"
+- [x] 3.2 Build `#/check-in` with three choice groups in words, privacy note, warm confirmation, and history in words newest first with an empty state; verify with e2e tests for every `frontend-wellbeing` scenario
+- [x] 3.3 Add the worklog entry and commit `feat(frontend): check-in, history, self-care and summary`
 
 ## 4. The loved ones' space and shared tasks
 
