@@ -74,7 +74,7 @@ def close_group(request):
 
 @router.post("/groups/current/leave", response=OkOut, operation_id="leave_group")
 def leave_group(request):
-    # The contract lists partner and supporter; the woman gets her own answer from the service.
+    # The woman may leave only a closed group; the service gives her the 409 for an active one.
     groups.leave_group(member_context(request, ROLES))
     return {"status": "ok"}
 

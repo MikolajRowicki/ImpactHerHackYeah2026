@@ -21,7 +21,7 @@ new operation carries more, and you may move to it. Everything in v0 keeps worki
 | `list_reminders` | all | what is due today: check-in, observation, a task in progress |
 | `list_task_suggestions` | all | ready-made care tasks to add in one tap |
 | `release_task` | all | the person who claimed a task hands it back |
-| `leave_group` | partner, supporter | leave the group |
+| `leave_group` | all | partner and supporter leave; the woman only after closing the group, and then the whole group is deleted with its data (ask her to confirm first); 409 `cannot_remove_owner` while it is active |
 | `list_invitations`, `revoke_invitation` | woman, partner | see and cancel unused invitations |
 | `delete_account` | signed in | delete the account and what the person wrote |
 | `ai_say_it_for_me` | woman | a suggested message from what she wants to say; may answer `crisis: true` with help and no message |

@@ -40,7 +40,7 @@ All under `/api/v1`, all with `x-roles`, examples and Polish error messages.
 | `delete_account` | DELETE `/me` | signed_in | delete the person and what they wrote |
 | `get_preferences` | GET `/me/preferences` | signed_in | voivodeship, e-mail reminder switch |
 | `update_preferences` | PUT `/me/preferences` | signed_in | save them |
-| `leave_group` | POST `/groups/current/leave` | partner, supporter | leave |
+| `leave_group` | POST `/groups/current/leave` | woman (closed group only), partner, supporter | leave |
 | `list_invitations` | GET `/invitations` | woman, partner | unused invitations |
 | `revoke_invitation` | DELETE `/invitations/{token}` | woman, partner | revoke one |
 | `signup` | POST `/auth/signup` | anyone | inactive account, activation link, always 202 |

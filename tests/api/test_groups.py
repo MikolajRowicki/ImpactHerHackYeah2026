@@ -11,9 +11,9 @@ import pytest
 from django.db import connections
 
 from core.constants import TASK_CLAIMED, TASK_DONE, TASK_OPEN
-from core.models import Group, Membership, Observation, ObservationAnswer, Task
+from core.models import Group, Invitation, Membership, Observation, ObservationAnswer, Task
 
-from ..factories import make_circle, make_group, make_user
+from ..factories import make_circle, make_group, make_invitation, make_user
 from ..helpers import Api
 
 pytestmark = pytest.mark.django_db
@@ -377,13 +377,28 @@ def test_the_woman_cannot_leave_an_active_group(api):
 
 def test_the_woman_leaves_a_closed_group_and_can_start_again(api):
     circle = make_circle()
+    make_observation(circle.membership(circle.marta))
+    make_invitation(circle.group, circle.anna)
+    Task.objects.create(
+        group=circle.group,
+        title="Obiad",
+        created_by=circle.anna,
+        status=TASK_DONE,
+        claimed_by=circle.piotr,
+        claimed_at=circle.group.created_at,
+        completed_at=circle.group.created_at,
+    )
     api.sign_in(circle.anna)
     assert api.call("close_group").status == 200
     assert api.call("leave_group").status == 200
     assert not Group.objects.exists()
-    assert not Membership.objects.filter(user=circle.anna).exists()
-    # Her partner and supporter are free as well, and she can start a new group.
     assert not Membership.objects.exists()
+    assert not Task.objects.exists()
+    assert not Invitation.objects.exists()
+    assert not ObservationAnswer.objects.exists()
+    assert api.call("leave_group").status == 403
+    # Her partner is free as well, and she can start a new group.
+    assert Api().sign_in(circle.piotr).call("get_group").status == 404
     assert api.call("create_group", body={"role": "woman"}).status == 201
 
 

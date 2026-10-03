@@ -53,7 +53,7 @@ The 19 operations added after v0 are:
 |---|---|
 | Account | `delete_account`, `get_preferences`, `update_preferences` |
 | Account security | `signup`, `activate_account`, `resend_activation`, `request_password_reset`, `confirm_password_reset`, `change_password` |
-| Group | `leave_group`, `list_invitations`, `revoke_invitation` |
+| Group | `leave_group` (the woman only from a closed group, which deletes it), `list_invitations`, `revoke_invitation` |
 | Summary and help | `get_summary_extended`, `get_help` |
 | Tasks and reminders | `list_task_suggestions`, `release_task`, `list_reminders` |
 | AI | `ai_say_it_for_me`, `ai_conversation_guide` |

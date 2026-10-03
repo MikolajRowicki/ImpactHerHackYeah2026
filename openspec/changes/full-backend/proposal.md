@@ -90,7 +90,8 @@ agents on separate modules, without breaking anything the frontend already relie
    has ever run, so choosing the model now costs nothing; changing it later would be painful.
 5. New operations are appended to `contracts/openapi.yaml` (not a second file) so the existing guard
    tests keep covering the whole API.
-6. A supporter may leave a group; the woman cannot leave and closes it instead.
+6. A partner or supporter may leave a group; the woman cannot leave an active group and closes it
+   first, after which she may leave and the group is deleted with her.
 7. A real mailbox is Gmail over SMTP with an app password (`EMAIL_MODE=smtp`, `EMAIL_USER`,
    `EMAIL_PASS`), as in the owner's earlier project. The default is `console`, so the demo works
    without a mailbox. Links point to `APP_BASE_URL` and have the forms `#/activate/<token>` and

@@ -434,7 +434,7 @@ paths:
       security:
         - sessionCookie: []
           csrfHeader: []
-      x-roles: [partner, supporter]
+      x-roles: [woman, partner, supporter]
       responses:
         "200":
           description: The person has left the group.
