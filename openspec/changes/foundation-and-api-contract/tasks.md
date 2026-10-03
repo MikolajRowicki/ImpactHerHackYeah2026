@@ -30,13 +30,13 @@ Branch: `change/foundation-and-api-contract`. One group is one commit. Run `ruff
 - [x] 4.2 Write `docs/architecture.md`: component diagram, request flow, planned data model as a Mermaid ER diagram, role and permission table. Keep it short. Verify the Mermaid blocks render in a Mermaid viewer or with `mmdc`.
 - [x] 4.3 Write `docs/frontend-brief.md`, self-contained for a session on another laptop and Claude account: setup from a clean clone (git, poetry, OpenSpec CLI 1.14.0, the `frontend-design` plugin), branch to start from, owned and forbidden paths, rules from `CLAUDE.md` that apply, mock mode, contract requests, product rules (nothing behind her back, no "krąg" or "wioska" in the UI, Polish UI strings, no diagnoses), how to hand back (push the branch, own worklog). Verify by following it step by step in a fresh clone in a temporary directory.
 - [x] 4.4 Change the worklog rule in `CLAUDE.md` to one file per session in `docs/worklog/` and start `docs/worklog/main.md` with entries for groups 1 to 4 and their commit hashes. Verify every group has goal, result, deviations and verification.
-- [ ] 4.5 Push the branch and tell the user that the frontend session can start (the brief and branch name go into the final message).
+- [x] 4.5 Push the branch and tell the user that the frontend session can start (the brief and branch name go into the final message).
 
 ## 5. AI provider switch
 
-- [ ] 5.1 Add the provider interface and the deterministic mock provider that labels its output as mock. Verify tests for repeated calls and the label (specs: Repeated call, Mock is labelled).
-- [ ] 5.2 Choose the provider from `AI_PROVIDER` (default `mock`) and fail startup on an unknown value, listing the available ones. Verify tests for the default, explicit mock and unknown value (specs: Default provider, Explicit mock, Unknown value).
-- [ ] 5.3 Add the AI variables to `.env.example` and a short section to `docs/architecture.md`. Verify the `.env.example` test still passes and the section matches the code.
+- [x] 5.1 Add the provider interface and the deterministic mock provider that labels its output as mock. Verify tests for repeated calls and the label (specs: Repeated call, Mock is labelled).
+- [x] 5.2 Choose the provider from `AI_PROVIDER` (default `mock`) and fail startup on an unknown value, listing the available ones. Verify tests for the default, explicit mock and unknown value (specs: Default provider, Explicit mock, Unknown value).
+- [x] 5.3 Add the AI variables to `.env.example` and a short section to `docs/architecture.md`. Verify the `.env.example` test still passes and the section matches the code.
 
 ## 6. Integration check
 

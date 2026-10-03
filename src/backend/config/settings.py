@@ -47,6 +47,9 @@ DATABASES = {
     }
 }
 
+# Which AI provider generates texts. Validated when the core app starts.
+AI_PROVIDER = env.get("AI_PROVIDER") or "mock"
+
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 LANGUAGE_CODE = "pl"

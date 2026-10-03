@@ -73,3 +73,19 @@ One entry per task group. Change: `foundation-and-api-contract`, branch
 - **Verification:** all three Mermaid blocks render with Mermaid 11 in headless Chromium; the
   README and the brief were followed step by step in a fresh clone.
 - **Commit:** `3d9581a`
+
+## Group 5: AI provider switch
+
+- **Goal:** the AI provider comes from `.env`, mock by default, so the demo needs no key.
+- **Built:** `core/ai/` (provider protocol, deterministic mock provider, `get_provider`),
+  `AI_PROVIDER` in the settings, a startup check in `CoreConfig.ready`, `.env.example` entry,
+  a section in `docs/architecture.md`, tests.
+- **Deviations:**
+  - The check runs in `CoreConfig.ready`, not in the settings module, so the settings stay free of
+    app imports. `manage.py check` fails with the list of available values.
+  - `GROQ_API_KEY` is only a comment in `.env.example`: nothing reads it until the Groq adapter
+    exists, and the `.env.example` test compares only variables that are read.
+  - The mock picks one of three fixed Polish sentences by the hash of the prompt.
+- **Verification:** `pytest` (339 passed), `ruff check .`, `ruff format --check .`;
+  `AI_PROVIDER=nope manage.py check` stops with "Available values: mock", the default passes.
+- **Commit:** see the git log (`feat(ai): add provider switch`).

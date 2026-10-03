@@ -22,6 +22,8 @@ cp .env.example .env
 
 `.env` is local and ignored by git. For local work the defaults are enough (`DJANGO_DEBUG=1`).
 With `DJANGO_DEBUG=0` the app refuses to start until `DJANGO_SECRET_KEY` is set.
+`AI_PROVIDER=mock` (default) keeps generated texts offline and labelled as mock; any other value
+that is not available stops startup.
 
 ## Run
 

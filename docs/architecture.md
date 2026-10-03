@@ -128,3 +128,16 @@ and the operations marked with `*` need an active group (otherwise 409 `group_pe
 
 Privacy rules the contract enforces: her check-ins are readable only by her; the summary holds
 general statements and a trend label, never a single answer and never its author.
+
+## AI provider
+
+Generated texts (the summary narrative) come from a provider chosen by `AI_PROVIDER` in `.env`.
+
+| Value | Behaviour |
+|---|---|
+| `mock` (default) | Offline and deterministic: the same input gives the same text. Its output carries `source: "mock"`, so mock text is never shown as real model output. |
+| `groq` | Not available yet; the adapter arrives in a later change. Its key will live in `.env` as `GROQ_API_KEY`. |
+
+A provider is a class with `generate(prompt) -> Generation(text, source)` in `src/backend/core/ai/`.
+Any other value stops startup with a message that lists the available values; the check runs when
+the `core` app starts. The values of `source` are listed in the contract (summary `narrative`).
