@@ -172,3 +172,26 @@ One entry per task group. Change: `full-backend`, branch `change/full-backend`.
   merged groups). The agent made five breaking changes in a throwaway copy and each failed a test;
   one harmless change (a wider query window) was not caught.
 - **Commit:** see the git log, subject `feat(backend): check-ins, observations, trend and summary`.
+
+## Group 8 (part 1): Demo data, regression journeys, mutation checks
+
+- **Goal:** a known demo state, journeys that guard v0, and proof that the important tests bite.
+- **Built:**
+  - `seed_demo` (`core/management/commands/seed_demo.py`): Anna, Piotr, Marta (ids 1 to 3 when
+    free, password `demo-haslo-1`), one active group, 13 check-ins and 5 observations over two
+    weeks, four tasks in every status, one open invitation (`demo-invite-1`). It goes through the
+    services with the clock set to each past moment, prints the database file, refuses with debug
+    off without `--allow-production`, and on a second run replaces only the three demo accounts
+    and their group. Anna has no check-in today on purpose, so a reminder shows.
+  - `tests/regression/test_journeys.py`: the core journey and the partner-first journey, calling
+    only v0 operations (a wrapper refuses anything else); `tests/test_zz_coverage.py`: every
+    operation was exercised with its success status (skipped when only part of the suite runs).
+- **Deviations:** the partner-first journey also covers "a pending group holds no data" across
+  areas, which the agent scenarios could not.
+- **Verification:** `ruff check .`, `ruff format --check .`, `pytest tests` (1501 passed).
+  Mutation checks in a throwaway copy, each making at least one test fail: claim without the open
+  status, a closed group taking data (both fail the core journey), an answer quoted in the summary,
+  a claim that is not atomic, a missing role check on check-ins, the crisis check after the
+  provider call, a different answer for an unknown e-mail on password reset. The baseline guard
+  was checked in group 1.
+- **Commit:** see the git log, subject `feat(backend): demo data and regression journeys`.
