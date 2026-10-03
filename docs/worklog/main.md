@@ -132,3 +132,9 @@ acted on: `/?mock=1` redirected without its query string and so switched mock mo
 redirect now keeps the query (unit test). Left as is: closed-group examples for `create_check_in`
 and `create_observation` do not exist (not a spec scenario), `[::1]` is not in the default
 `DJANGO_ALLOWED_HOSTS`.
+
+## Archive
+
+Change archived as `openspec/changes/archive/2026-10-03-foundation-and-api-contract`. The three
+capabilities (`api-contract`, `frontend-mock-mode`, `ai-provider-config`) are now main specs
+(16 requirements). `openspec validate --specs` passes.
