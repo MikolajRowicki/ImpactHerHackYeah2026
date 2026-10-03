@@ -111,7 +111,7 @@ trend engine (plain, explainable rules) reads them.
 ## Roles and permissions
 
 `x` means allowed. Every group operation also needs a membership (otherwise 403 `not_a_member`),
-and the operations marked with `*` need an active group (otherwise 409 `group_pending`).
+and the operations marked with `*` need an active group (otherwise 409 `group_pending`, or `group_closed` after she closed it).
 
 | Operation | woman | partner | supporter | Notes |
 |---|---|---|---|---|

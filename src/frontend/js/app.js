@@ -29,7 +29,7 @@ let shown = 0;
 async function show() {
   const ticket = ++shown;
   const path = location.hash.replace(/^#/, "") || "/";
-  const screen = routes[path] || notFound;
+  const screen = Object.hasOwn(routes, path) ? routes[path] : notFound;
   const node = await screen({ api });
   if (ticket !== shown) return;
   outlet.replaceChildren(node);

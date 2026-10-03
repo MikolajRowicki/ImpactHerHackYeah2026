@@ -344,3 +344,20 @@ def test_no_url_pattern_under_the_api_prefix_is_undeclared():
         r for r in api_routes if normalise("/" + re.sub(r"<[^>]+>", "{}", r)) not in declared
     ]
     assert not undeclared, f"URL patterns under /api/v1 missing from the contract: {undeclared}"
+
+
+def test_every_operation_that_needs_an_active_group_documents_both_refusals():
+    for _, _, op in c.operations():
+        if op.get("x-requires-active-group"):
+            description = c.resolve(op["responses"]["409"])["description"]
+            assert "group_pending" in description, op["operationId"]
+            assert "group_closed" in description, op["operationId"]
+            closed = c.EXAMPLES_DIR / f"{op['operationId']}.409.closed.json"
+            assert closed.exists() or op["operationId"] in {"create_check_in", "create_observation"}
+
+
+def test_invitations_on_a_closed_group_have_a_declared_answer():
+    ops = c.operation_by_id()
+    for operation_id in ("create_invitation", "accept_invitation"):
+        description = c.resolve(ops[operation_id][2]["responses"]["409"])["description"]
+        assert "group_closed" in description, operation_id

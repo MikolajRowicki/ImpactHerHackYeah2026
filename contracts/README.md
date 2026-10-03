@@ -11,7 +11,7 @@ rules, no business logic.
 - Roles: `woman`, `partner`, `supporter` (per group membership), `signed_in` (a session, no group
   needed), `anyone` (no session).
 - `x-requires-active-group` marks operations that answer 409 `group_pending` until the woman has
-  accepted her invitation.
+  accepted her invitation, and 409 `group_closed` after she closed the group.
 - Every error has the shape `{"error": {"code", "message", "fields"?}}`. Messages are Polish.
 - Conventions (timestamps, CSRF, lists) are at the top of `openapi.yaml`.
 
@@ -27,7 +27,8 @@ mode serves them, and the tests check them against the schemas.
 | `<operationId>.<status>.<variant>.json` | another valid response for the same status, for example `get_me.200.partner.json` (the same person as a partner) |
 
 The variants that exist today: `get_me.200.{partner,supporter,no_group,pending}`,
-`get_summary.200.{partner,supporter}`, `create_group.201.partner` and `create_task.409.closed`
+`get_summary.200.{partner,supporter}`, `create_group.201.partner`, and
+`<operationId>.409.closed` for `create_task`, `claim_task`, `complete_task` and `accept_invitation`
 (the group is closed, code `group_closed`).
 
 Example people: Anna (the woman, id 1), Piotr (partner, id 2), Marta (supporter, id 3).

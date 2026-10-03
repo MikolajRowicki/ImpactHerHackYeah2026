@@ -111,3 +111,16 @@ Findings and what changed:
   fields, every `date-time` says UTC, URL patterns under `/api/v1` must be declared (not only
   django-ninja routes), settings code reads the environment only through the helper.
 - Group 5 hash recorded (above).
+
+## Review round 2 (independent reviewer): FAIL, fixed
+
+- The 409 `group_closed` answer was documented only in the shared response; `claim_task`,
+  `complete_task`, `architecture.md` and `contracts/README.md` still said only `group_pending`.
+  All now name both codes, with `<operationId>.409.closed.json` examples; a test requires both
+  codes for every operation marked `x-requires-active-group`.
+- Invitations on a closed group had no declared answer: `create_invitation` and `accept_invitation`
+  now declare 409 `group_closed`.
+- `#constructor` in the URL showed `[object Object]` because routes were looked up on a plain
+  object; the lookup uses `Object.hasOwn`, with a browser test (checked with a mutation).
+- Left as is: the unreachable 409 `group_pending` on `create_check_in` (harmless over-declaration)
+  and inline `#` comments in `.env` lines, which the small loader does not strip.

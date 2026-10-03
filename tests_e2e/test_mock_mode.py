@@ -50,3 +50,9 @@ def test_without_mock_the_page_calls_the_api_and_shows_no_notice(mock_page):
     expect(mock_page.get_by_text("Nie udało się wczytać danych.")).to_be_visible()
     expect(mock_page.get_by_text(NOTICE)).to_have_count(0)
     assert any(url.endswith("/api/v1/me") for url in mock_page.api_requests)
+
+
+def test_a_route_named_like_an_object_property_is_not_found(mock_page):
+    mock_page.goto(f"{mock_page.base}?mock=1#constructor")
+
+    expect(mock_page.get_by_role("heading", name="Nie ma takiej strony")).to_be_visible()

@@ -290,6 +290,11 @@ paths:
               schema: { $ref: "#/components/schemas/Invitation" }
         "401": { $ref: "#/components/responses/Unauthorized" }
         "403": { $ref: "#/components/responses/Forbidden" }
+        "409":
+          description: The group is closed and issues no invitations (code `group_closed`).
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
         "422": { $ref: "#/components/responses/ValidationFailed" }
 
   /api/v1/invitations/{token}:
@@ -342,7 +347,9 @@ paths:
             application/json:
               schema: { $ref: "#/components/schemas/Error" }
         "409":
-          description: The person already belongs to a group (code `already_in_group`).
+          description: |
+            The person already belongs to a group (code `already_in_group`), or the group was closed
+            after the invitation was issued (code `group_closed`).
           content:
             application/json:
               schema: { $ref: "#/components/schemas/Error" }
@@ -515,7 +522,8 @@ paths:
         "409":
           description: |
             The task is not open (code `task_not_open`), or the group is pending (code
-            `group_pending`). Two people claiming at once: one gets 200, the other this answer.
+            `group_pending`) or closed (code `group_closed`). Two people claiming at once: one gets
+            200, the other this answer.
           content:
             application/json:
               schema: { $ref: "#/components/schemas/Error" }
@@ -543,7 +551,9 @@ paths:
         "403": { $ref: "#/components/responses/Forbidden" }
         "404": { $ref: "#/components/responses/TaskNotFound" }
         "409":
-          description: The task is not claimed (code `task_not_claimed`), or the group is pending.
+          description: |
+            The task is not claimed (code `task_not_claimed`), or the group is pending (code
+            `group_pending`) or closed (code `group_closed`).
           content:
             application/json:
               schema: { $ref: "#/components/schemas/Error" }
