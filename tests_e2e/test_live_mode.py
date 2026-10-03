@@ -12,8 +12,8 @@ def test_django_serves_the_page_and_its_static_files(page, django_url):
 
     expect(page).to_have_url(f"{django_url}/static/index.html")
     expect(page.get_by_role("link", name="MaydayMama")).to_be_visible()
-    # The backend has no /api/v1/me yet, so the live call fails and the page says so.
-    expect(page.get_by_text("Nie udało się wczytać danych.")).to_be_visible()
+    # Nobody is signed in, so /api/v1/me answers 401 and the page says so.
+    expect(page.get_by_text("Nie jesteś zalogowana ani zalogowany.")).to_be_visible()
     expect(page.get_by_text("Tryb demonstracyjny")).to_have_count(0)
     assert failed == []
 

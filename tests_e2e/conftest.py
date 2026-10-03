@@ -31,15 +31,16 @@ class QuietWSGIHandler(WSGIRequestHandler):
 
 
 @pytest.fixture(scope="session")
-def django_url():
-    """The real Django app on its own port. It uses no database, so no test database is needed."""
+def django_url(django_db_setup, django_db_blocker):
+    """The real Django app on its own port, on the test database (never the configured one)."""
     from django.core.wsgi import get_wsgi_application
 
-    server = make_server("127.0.0.1", 0, get_wsgi_application(), handler_class=QuietWSGIHandler)
-    thread = threading.Thread(target=server.serve_forever, daemon=True)
-    thread.start()
-    yield f"http://127.0.0.1:{server.server_address[1]}"
-    server.shutdown()
+    with django_db_blocker.unblock():
+        server = make_server("127.0.0.1", 0, get_wsgi_application(), handler_class=QuietWSGIHandler)
+        thread = threading.Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        yield f"http://127.0.0.1:{server.server_address[1]}"
+        server.shutdown()
 
 
 @pytest.fixture

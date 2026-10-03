@@ -22,6 +22,8 @@ ALLOWED_HOSTS = [
     if host.strip()
 ]
 
+AUTH_USER_MODEL = "core.User"
+
 INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.auth",
@@ -35,6 +37,7 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "core.middleware.ApiMiddleware",
 ]
 
 ROOT_URLCONF = "config.urls"
@@ -49,6 +52,49 @@ DATABASES = {
 
 # Which AI provider generates texts. Validated when the core app starts.
 AI_PROVIDER = env.get("AI_PROVIDER") or "mock"
+GROQ_API_KEY = env.get("GROQ_API_KEY")
+GROQ_MODEL = env.get("GROQ_MODEL") or "llama-3.3-70b-versatile"
+# Where passages with cited sources come from. "none" is the only value until retrieval exists.
+KNOWLEDGE_SOURCE = env.get("KNOWLEDGE_SOURCE") or "none"
+
+# Sessions and CSRF. The frontend reads the csrftoken cookie, so it must not be HttpOnly.
+SESSION_COOKIE_SAMESITE = "Lax"
+SESSION_COOKIE_HTTPONLY = True
+CSRF_COOKIE_HTTPONLY = False
+CSRF_COOKIE_SAMESITE = "Lax"
+
+# E-mail: "console" writes messages to the terminal, "smtp" sends them (for example through Gmail
+# with an app password). Links in messages start with APP_BASE_URL.
+EMAIL_MODE = (env.get("EMAIL_MODE") or "console").strip().lower()
+if EMAIL_MODE not in ("console", "smtp"):
+    raise ImproperlyConfigured(f"EMAIL_MODE={EMAIL_MODE!r} is not available. Use console or smtp.")
+EMAIL_HOST = env.get("EMAIL_HOST") or "smtp.gmail.com"
+EMAIL_PORT = int(env.get("EMAIL_PORT") or "587")
+EMAIL_HOST_USER = env.get("EMAIL_USER")
+EMAIL_HOST_PASSWORD = env.get("EMAIL_PASS")
+EMAIL_USE_TLS = True
+# A mail server that hangs must not hold a request for long.
+EMAIL_TIMEOUT = 10
+DEFAULT_FROM_EMAIL = env.get("EMAIL_FROM") or EMAIL_HOST_USER or "MaydayMama <noreply@localhost>"
+APP_BASE_URL = env.get("APP_BASE_URL") or "http://localhost:8000/"
+if EMAIL_MODE == "smtp":
+    for _name, _value in (("EMAIL_USER", EMAIL_HOST_USER), ("EMAIL_PASS", EMAIL_HOST_PASSWORD)):
+        if not _value:
+            raise ImproperlyConfigured(f"{_name} is missing. It is required when EMAIL_MODE=smtp.")
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+else:
+    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
+# The old register operation signs a person in without checking the address. On by default only
+# while debugging (tests, mock mode); sign-up with an e-mail link replaces it.
+ALLOW_LEGACY_REGISTER = env.flag("ALLOW_LEGACY_REGISTER", default=DEBUG)
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {"console": {"class": "logging.StreamHandler"}},
+    "loggers": {"core": {"handlers": ["console"], "level": "INFO"}},
+}
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
