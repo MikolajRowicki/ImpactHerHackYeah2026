@@ -16,7 +16,7 @@ ALREADY_IN_GROUP = "Należysz już do grupy."
 NO_GROUP = "Nie należysz jeszcze do żadnej grupy."
 NO_SUCH_MEMBER = "Nie ma takiej osoby w grupie."
 CANNOT_REMOVE_OWNER = "Nie można usunąć właścicielki grupy."
-OWNER_CANNOT_LEAVE = "Właścicielka nie może opuścić grupy. Może ją zamknąć."
+OWNER_CANNOT_LEAVE = "Właścicielka nie może opuścić aktywnej grupy. Może ją zamknąć."
 ONLY_OWNER_CLOSES = "Tylko właścicielka może zamknąć grupę."
 ONLY_OWNER_REMOVES = "Tylko właścicielka może usuwać osoby z grupy."
 
@@ -97,5 +97,9 @@ def remove_member(ctx: MemberContext, member_id: int) -> None:
 
 def leave_group(ctx: MemberContext) -> None:
     if ctx.role == ROLE_WOMAN:
-        raise ApiError(409, "cannot_remove_owner", OWNER_CANNOT_LEAVE)
+        if ctx.group.status != GROUP_CLOSED:
+            raise ApiError(409, "cannot_remove_owner", OWNER_CANNOT_LEAVE)
+        # She closed it and now walks away: the group goes with her, as with a deleted account.
+        cleanup.delete_group(ctx.group.pk)
+        return
     cleanup.remove_membership(ctx.membership)

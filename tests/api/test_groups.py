@@ -365,12 +365,26 @@ def test_the_last_member_leaving_deletes_the_empty_group(api):
     assert api.call("create_group", body={"role": "woman"}).status == 201
 
 
-def test_the_woman_cannot_leave(api):
+def test_the_woman_cannot_leave_an_active_group(api):
     circle = make_circle()
     result = api.sign_in(circle.anna).call("leave_group")
     assert (result.status, result.code) == (409, "cannot_remove_owner")
-    assert result.error["message"] == "Właścicielka nie może opuścić grupy. Może ją zamknąć."
+    assert (
+        result.error["message"] == "Właścicielka nie może opuścić aktywnej grupy. Może ją zamknąć."
+    )
     assert Membership.objects.filter(user=circle.anna).exists()
+
+
+def test_the_woman_leaves_a_closed_group_and_can_start_again(api):
+    circle = make_circle()
+    api.sign_in(circle.anna)
+    assert api.call("close_group").status == 200
+    assert api.call("leave_group").status == 200
+    assert not Group.objects.exists()
+    assert not Membership.objects.filter(user=circle.anna).exists()
+    # Her partner and supporter are free as well, and she can start a new group.
+    assert not Membership.objects.exists()
+    assert api.call("create_group", body={"role": "woman"}).status == 201
 
 
 def test_a_person_without_a_group_cannot_leave(api):

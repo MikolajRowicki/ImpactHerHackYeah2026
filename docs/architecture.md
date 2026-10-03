@@ -262,7 +262,7 @@ Any other value, or `groq` without a key, stops startup with a message that name
 |---|---|---|---|---|
 | signup, activate_account, resend_activation, request_password_reset, confirm_password_reset | anyone | anyone | anyone | identical answers for known and unknown addresses |
 | change_password, delete_account, get_preferences, update_preferences, get_help | x | x | x | any signed-in person |
-| leave_group | | x | x | the woman closes the group instead (409) |
+| leave_group | | x | x | the woman closes the group first (409 while active); after closing she may leave and the group is deleted |
 | list_invitations, revoke_invitation | x | x | | the partner only while the group is pending |
 | get_summary_extended, list_task_suggestions, release_task, list_reminders | x | x | x | |
 | ai_say_it_for_me | x | | | |

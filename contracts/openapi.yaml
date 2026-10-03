@@ -428,8 +428,9 @@ paths:
       summary: Leave the group
       description: |
         A partner or a supporter leaves. Their observation answers are deleted and tasks they
-        claimed become open again. The woman cannot leave; she closes the group instead (409, code
-        `cannot_remove_owner`).
+        claimed become open again. The woman cannot leave an active group; she closes it instead
+        (409, code `cannot_remove_owner`). Once the group is closed she can leave it, and the
+        whole group is deleted with her.
       security:
         - sessionCookie: []
           csrfHeader: []
@@ -443,7 +444,7 @@ paths:
         "401": { $ref: "#/components/responses/Unauthorized" }
         "403": { $ref: "#/components/responses/Forbidden" }
         "409":
-          description: The woman cannot leave her group (code `cannot_remove_owner`).
+          description: The woman cannot leave an active group (code `cannot_remove_owner`).
           content:
             application/json:
               schema: { $ref: "#/components/schemas/Error" }

@@ -123,15 +123,19 @@ Only the woman SHALL remove a member or close the group. Removal deletes the mem
 - **THEN** its status is `closed` and data operations answer 409 with code `group_closed`
 
 ### Requirement: Leaving a group
-A partner or a supporter SHALL be able to leave their group. The woman SHALL NOT leave; she closes the group instead.
+A partner or a supporter SHALL be able to leave their group. The woman SHALL NOT leave an active group; she closes it instead. The woman SHALL be able to leave a closed group, which deletes the group with all its data, and she SHALL then be able to create a new group.
 
 #### Scenario: Supporter leaves
 - **WHEN** a supporter calls `leave_group`
 - **THEN** the response is 200, they have no group, their observation answers are deleted and their claimed tasks are open again
 
-#### Scenario: Woman tries to leave
-- **WHEN** the woman calls `leave_group`
-- **THEN** the response is 409 with code `cannot_remove_owner`
+#### Scenario: Woman tries to leave an active group
+- **WHEN** the woman calls `leave_group` while the group is active
+- **THEN** the response is 409 with code `cannot_remove_owner` and she stays in the group
+
+#### Scenario: Woman leaves a closed group
+- **WHEN** the woman closes the group and then calls `leave_group`
+- **THEN** the response is 200, the group and its data are deleted, every former member has no group, and she can create a new group
 
 ### Requirement: Managing issued invitations
 The woman, and the partner of a pending group, SHALL list the unused invitations of their group and revoke one.

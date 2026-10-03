@@ -33,13 +33,18 @@ def remove_membership(membership: Membership) -> None:
             Group.objects.filter(pk=group_id).delete()
 
 
+def delete_group(group_id: int) -> None:
+    """Remove the whole group; this cascades to memberships, check-ins, observations, tasks and
+    invitations."""
+    Group.objects.filter(pk=group_id).delete()
+
+
 def delete_account(user) -> None:
     """Delete the person and what they wrote. The woman takes the whole group with her."""
     membership = membership_of(user)
     with transaction.atomic():
         if membership is not None and membership.role == ROLE_WOMAN:
-            # Cascades to memberships, check-ins, observations, tasks and invitations.
-            Group.objects.filter(pk=membership.group_id).delete()
+            delete_group(membership.group_id)
         elif membership is not None:
             remove_membership(membership)
         # Task.claimed_by is SET_NULL, which a finished task cannot take (the database wants a
