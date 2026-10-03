@@ -65,6 +65,11 @@ python3 -m http.server 8000
   `git push -u origin change/frontend-app`.
 - Never push to `main`, never force-push, never rewrite history.
 
+## 3a. Messages from the backend
+
+At the start of every session, read the files in `docs/from-be-to-fe/` (see its README), handle
+them, and delete each one in the commit that handles it.
+
 ## 4. Who owns what
 
 | Path | Owner | You |
@@ -73,6 +78,7 @@ python3 -m http.server 8000
 | `tests_e2e/` | you from now on | edit; the shell tests there check the placeholder screen, so update them when you replace it |
 | `openspec/changes/<your change>/` | you | edit |
 | `docs/worklog/frontend.md` | you | create and edit |
+| `docs/from-be-to-fe/` | backend session writes | read, then delete the messages you handled |
 | `contracts/requests/` | you add new files | add; never edit or delete existing files |
 | `src/backend/`, `tests/` | backend session | read only |
 | `contracts/openapi.yaml`, `contracts/examples/`, `contracts/README.md` | main session | read only |

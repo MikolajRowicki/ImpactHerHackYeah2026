@@ -1,0 +1,15 @@
+{
+  "audience": "supporter",
+  "trend": "stable",
+  "statements": [
+    "Ostatnie dni wyglądają spokojnie."
+  ],
+  "care_reminder": "Zajrzyj do niej tak jak zwykle. Samo pytanie o samopoczucie ma znaczenie.",
+  "narrative": {
+    "text": "To przykładowy tekst. Prawdziwe podsumowanie powstanie z zapisanych odpowiedzi.",
+    "source": "mock"
+  },
+  "generated_at": "2026-10-03T20:05:00Z",
+  "reasons": [],
+  "help": null
+}

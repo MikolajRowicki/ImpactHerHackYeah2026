@@ -1,0 +1,6 @@
+{
+  "error": {
+    "code": "forbidden",
+    "message": "Ta funkcja jest tylko dla właścicielki grupy."
+  }
+}

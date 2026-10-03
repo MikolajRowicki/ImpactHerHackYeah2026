@@ -28,10 +28,12 @@ build-backend = "poetry.core.masonry.api"
 line-length = 100
 target-version = "py312"
 src = [".", "src/backend"]
-extend-exclude = ["repo-ginekologia"]
+extend-exclude = ["repo-ginekologia", "src/backend/core/migrations"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP", "DJ"]
+# Models print as "<name> <id>" through Django's default; a custom __str__ would carry no more.
+ignore = ["DJ008"]
 
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "tests.settings"

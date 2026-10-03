@@ -31,7 +31,38 @@ The variants that exist today: `get_me.200.{partner,supporter,no_group,pending}`
 `<operationId>.409.closed` for `create_task`, `claim_task`, `complete_task` and `accept_invitation`
 (the group is closed, code `group_closed`).
 
+Variants added after v0: `get_summary_extended.200.{partner,stable}`, `get_help.200.general`
+(no voivodeship), `list_reminders.200.empty`, `ai_say_it_for_me.200.crisis` (the answer for a text
+that matched the crisis rules: `crisis` is true, no message, with help) and
+`release_task.409.closed`.
+
 Example people: Anna (the woman, id 1), Piotr (partner, id 2), Marta (supporter, id 3).
+
+## Versions: v0 is frozen
+
+The 23 operations of v0 never change: not their paths, schemas, error codes or examples.
+`contracts/baseline/v0.json` holds a fingerprint of each, and `tests/test_contract_baseline.py`
+fails with the name of anything that changed or went missing. New behaviour is a new operation, a
+new schema or a new example file; those are added to `openapi.yaml` and never rewrite what is above
+them. A new method on an old path (for example `DELETE /api/v1/me`) is a new operation too. When a v0
+response is not enough, a new operation carries more and the frontend moves to it.
+
+The 19 operations added after v0 are:
+
+| Area | Operations |
+|---|---|
+| Account | `delete_account`, `get_preferences`, `update_preferences` |
+| Account security | `signup`, `activate_account`, `resend_activation`, `request_password_reset`, `confirm_password_reset`, `change_password` |
+| Group | `leave_group` (the woman only from a closed group, which deletes it), `list_invitations`, `revoke_invitation` |
+| Summary and help | `get_summary_extended`, `get_help` |
+| Tasks and reminders | `list_task_suggestions`, `release_task`, `list_reminders` |
+| AI | `ai_say_it_for_me`, `ai_conversation_guide` |
+
+Two things follow from the freeze. The v0 text of `accept_invitation` lists only
+`already_in_group` and `group_closed` for its 409; the backend also answers 409 `role_taken` when
+the group already has a woman and a `woman` invitation is accepted. Handle an unknown 409 code by
+showing its `message`. Links in e-mails have the forms `<APP_BASE_URL>#/activate/<token>` and
+`<APP_BASE_URL>#/reset/<token>`.
 
 ## Asking for a change
 

@@ -1,0 +1,6 @@
+{
+  "error": {
+    "code": "cannot_remove_owner",
+    "message": "Właścicielka nie może opuścić aktywnej grupy. Może ją zamknąć."
+  }
+}

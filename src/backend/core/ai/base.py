@@ -2,6 +2,10 @@ from dataclasses import dataclass
 from typing import Protocol
 
 
+class ProviderError(Exception):
+    """The only failure a provider raises. Its message never holds a key or a request header."""
+
+
 @dataclass(frozen=True)
 class Generation:
     text: str

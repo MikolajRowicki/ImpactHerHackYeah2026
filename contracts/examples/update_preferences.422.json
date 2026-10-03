@@ -1,0 +1,9 @@
+{
+  "error": {
+    "code": "validation_error",
+    "message": "Popraw zaznaczone pola.",
+    "fields": {
+      "voivodeship": "Wybierz województwo z listy."
+    }
+  }
+}
