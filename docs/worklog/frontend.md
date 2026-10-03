@@ -101,4 +101,31 @@ One entry per task group. Change: `frontend-app`, branch `change/frontend-app`.
 - **Verification:** `ruff check .`, `ruff format --check .`, `pytest` (356 passed),
   `pytest tests_e2e` (90 passed). Screenshots checked: start at 1280 px, check-in at 375 px
   (fixed the separator line crossing the legends) and at 1280 px dark.
+- **Commit:** `f7dac98`
+
+## Group 4: The loved ones' space and shared tasks
+
+- **Goal:** partners and supporters see their summary with the care reminder, answer the closed
+  questions, and everyone shares the everyday tasks without grading anyone.
+- **Built:**
+  - Loved ones' start: call to action to the questions, the summary card with the care reminder,
+    open tasks preview; two columns from 960 px.
+  - `screens/questions.js`: questions as labelled single choices, privacy note, only answered
+    questions are sent, at least one is required, a thank-you screen that replaces the form.
+  - `screens/tasks.js`: open, taken and done lists with who added and who took, an add form
+    (title 1 to 120, details up to 500), take and finish by rule, reload after any action so a
+    conflict shows who took the task first, no counts per person; read-only when closed.
+  - `app.js`: a link to the address already open re-renders the screen, so "Pytania" after the
+    thank-you shows an empty form.
+  - The two-column `.start-grid` moved to `components.css`, as three screens use it.
+  - Tests: `test_observations.py` (6), `test_tasks.py` (14), including the "Task taken in the
+    demo" mock-mode scenario left over from group 1.
+- **Deviations:**
+  - "Group not active" is shown in the add form's message slot (next to the action) and above
+    the lists for take and finish.
+  - The question and task "nothing sent" checks run in live mode against routed answers, where
+    requests can be counted; mock mode makes no requests to observe.
+- **Verification:** `ruff check .`, `ruff format --check .`, `pytest` (356 passed),
+  `pytest tests_e2e` (110 passed). Screenshots checked: loved ones' start and tasks at 1280 px,
+  questions at 375 px, tasks at 375 px dark.
 - **Commit:** see the next entry.

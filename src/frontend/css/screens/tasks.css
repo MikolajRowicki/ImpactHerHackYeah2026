@@ -1,1 +1,38 @@
-/* Styles for the tasks screens. */
+/* Styles for the shared tasks screen. */
+
+.task-lists > .section:first-child {
+  margin-top: 0;
+}
+
+.task-lists .section {
+  margin-top: var(--space-4);
+}
+
+.task {
+  padding: var(--space-3) var(--space-4);
+}
+
+.task-row__title {
+  font-size: var(--font-size-base);
+}
+
+.task__details {
+  margin: var(--space-1) 0 0;
+}
+
+.task--done {
+  background: var(--color-surface-soft);
+  box-shadow: none;
+}
+
+.task--done .task-row__title {
+  color: var(--color-ink-soft);
+}
+
+.task-add .form > * + * {
+  margin-top: var(--space-3);
+}
+
+.message-slot:not(:empty) {
+  margin-bottom: var(--space-3);
+}

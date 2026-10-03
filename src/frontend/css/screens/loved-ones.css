@@ -1,1 +1,9 @@
-/* Styles for the loved-ones screens. */
+/* Styles for the loved ones' start and the questions. */
+
+.questions-form .choice-group + .choice-group {
+  margin-top: var(--space-5);
+}
+
+.questions-form .choice-group legend {
+  line-height: 1.4;
+}

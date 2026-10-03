@@ -1,26 +1,5 @@
 /* Styles for the mother's start, check-in and history. */
 
-.start-grid {
-  display: grid;
-  gap: var(--space-5);
-}
-
-.start-grid__side > .section:first-child {
-  margin-top: 0;
-}
-
-@media (min-width: 960px) {
-  .start-grid {
-    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
-    align-items: start;
-  }
-}
-
-.section__link {
-  font-weight: var(--weight-bold);
-  white-space: nowrap;
-}
-
 .self-care {
   list-style: none;
   display: grid;

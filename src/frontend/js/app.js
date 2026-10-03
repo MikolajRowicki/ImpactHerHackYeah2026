@@ -188,6 +188,12 @@ document.querySelector(".skip-link")?.addEventListener("click", (event) => {
 
 window.addEventListener("hashchange", show);
 
+// A link to the address already open fires no hashchange; it still means "show this afresh".
+document.addEventListener("click", (event) => {
+  const link = event.target.closest?.('a[href^="#/"]');
+  if (link && link.getAttribute("href") === location.hash) show();
+});
+
 async function boot() {
   try {
     const params = new URLSearchParams(location.search);

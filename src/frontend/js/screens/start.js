@@ -117,6 +117,35 @@ async function motherStart(ctx) {
 }
 
 async function lovedStart(ctx) {
-  const summary = await ctx.api.call("get_summary");
-  return h("div", { class: "stack-large" }, greeting(ctx), summaryCard(summary));
+  const [summary, tasks] = await Promise.all([
+    ctx.api.call("get_summary"),
+    ctx.api.call("list_tasks"),
+  ]);
+  const active = ctx.session.groupStatus === "active";
+  const node = h(
+    "div",
+    { class: "loved-start" },
+    greeting(ctx),
+    h(
+      "div",
+      { class: "start-grid" },
+      h(
+        "div",
+        { class: "start-grid__main stack-large" },
+        active &&
+          ctaCard("#/questions", "chat", t.observations.ctaTitle, t.observations.ctaLead),
+        summaryCard(summary),
+      ),
+      h(
+        "div",
+        { class: "start-grid__side" },
+        tasksPreview(tasks.items, {
+          title: t.observations.tasksTitle,
+          empty: t.observations.tasksEmpty,
+        }),
+      ),
+    ),
+  );
+  node.dataset.wide = "true";
+  return node;
 }

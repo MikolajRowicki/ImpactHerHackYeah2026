@@ -36,10 +36,10 @@ Groups 2, 3 and 4 may run in parallel after group 1; each touches only the files
 
 ## 4. The loved ones' space and shared tasks
 
-- [ ] 4.1 Build the loved ones' start screen: summary card from 1.9 with care reminder, call to action to the questions, open tasks preview; verify with the e2e test "Loved one's summary with care reminder"
-- [ ] 4.2 Build `#/questions` with radio choices, the privacy note, partial answers, the at-least-one check and the thank-you screen that never shows answers back; verify with e2e tests for every `frontend-observations` scenario
-- [ ] 4.3 Build `#/tasks` grouped as open, taken and done, add form with length limits, take and done controls by rule, conflict reload, no per-person counts; verify with e2e tests for every `frontend-tasks` scenario
-- [ ] 4.4 Add the worklog entry and commit `feat(frontend): observations and shared tasks`
+- [x] 4.1 Build the loved ones' start screen: summary card from 1.9 with care reminder, call to action to the questions, open tasks preview; verify with the e2e test "Loved one's summary with care reminder"
+- [x] 4.2 Build `#/questions` with radio choices, the privacy note, partial answers, the at-least-one check and the thank-you screen that never shows answers back; verify with e2e tests for every `frontend-observations` scenario
+- [x] 4.3 Build `#/tasks` grouped as open, taken and done, add form with length limits, take and done controls by rule, conflict reload, no per-person counts; verify with e2e tests for every `frontend-tasks` scenario
+- [x] 4.4 Add the worklog entry and commit `feat(frontend): observations and shared tasks`
 
 ## 5. Integration checks and hand-off
 
