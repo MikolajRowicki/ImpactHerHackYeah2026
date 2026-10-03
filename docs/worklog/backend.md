@@ -128,3 +128,23 @@ One entry per task group. Change: `full-backend`, branch `change/full-backend`.
   other merged groups). The agent broke three rules in a throwaway copy (crisis check off, fallback
   labelled `groq`, prompt in the log) and each failed tests.
 - **Commit:** see the git log, subject `feat(backend): AI assistance and the Groq provider`.
+
+## Group 3: Groups, members, invitations (built by a parallel agent, checked by the main session)
+
+- **Goal:** groups owned by the woman, invitations that work once, leaving, removal, account deletion.
+- **Built:** `core/api/groups.py` (11 operations), `core/services/{groups,invitations,cleanup}.py`,
+  113 tests including two real-thread races (create group, accept invitation).
+- **Deviations / assumptions:**
+  - Accepting an invitation starts with the conditional UPDATE that consumes it (it also excludes
+    closed groups); the checks that can be read first run before the transaction. Reading first
+    made two simultaneous accepts fail with "database is locked" on SQLite. Outcomes match the spec.
+  - `delete_account` deletes finished tasks claimed by the person and tasks they created (the
+    constraint needs a claimer); claimed tasks are reopened first. Leaving and removal keep both.
+  - An empty pending group is deleted when its last member goes.
+  - `role_taken` has no contract example; its message is "W tej grupie jest już właścicielka."
+  - `core/clock.py` now converts a frozen moment to UTC (the agent had to convert in its service).
+  - The spec scenario "data refused while pending" is covered across areas in group 8.
+- **Verification:** `ruff check .`, `ruff format --check .`, `pytest tests` (1250 passed with the
+  other merged groups). The agent made 15 breaking changes in a throwaway copy; 13 were caught, the
+  two that survived changed no behaviour (a redundant observation delete, a redundant pre-check).
+- **Commit:** see the git log, subject `feat(backend): groups, members, invitations and account deletion`.

@@ -22,7 +22,8 @@ def freeze(moment: datetime | None) -> None:
     global _frozen
     if moment is not None and moment.tzinfo is None:
         raise ValueError("The frozen moment needs a timezone.")
-    _frozen = moment
+    # Stored and shown times are UTC, so a frozen moment given with an offset is converted.
+    _frozen = moment.astimezone(UTC) if moment is not None else None
 
 
 def warsaw_date(moment: datetime) -> date:

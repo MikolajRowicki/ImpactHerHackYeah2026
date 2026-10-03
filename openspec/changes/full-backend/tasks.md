@@ -23,10 +23,10 @@ main session after it has checked their work. Agents never commit.
 
 ## 3. Groups, members, invitations (agent A)
 
-- [ ] 3.1 `create_group`, `get_group`, `close_group`, `list_members`, `remove_member`, `leave_group`; verify every group-membership scenario for them passes, including the concurrent creation
-- [ ] 3.2 `create_invitation` (with optional e-mail through the mail service), `get_invitation`, `accept_invitation`, `list_invitations`, `revoke_invitation`; verify the invitation scenarios pass, including two simultaneous accepts, `role_taken` and the closed group
-- [ ] 3.3 `delete_account` and the shared cleanup service (reopen claimed tasks, delete answers, delete the group when the woman goes); verify the account-deletion scenarios pass
-- [ ] 3.4 Verify privacy of invitation preview (exactly four fields, same 404 for every unusable token) and run `ruff` and the suite; main session commits
+- [x] 3.1 `create_group`, `get_group`, `close_group`, `list_members`, `remove_member`, `leave_group`; verify every group-membership scenario for them passes, including the concurrent creation
+- [x] 3.2 `create_invitation` (with optional e-mail through the mail service), `get_invitation`, `accept_invitation`, `list_invitations`, `revoke_invitation`; verify the invitation scenarios pass, including two simultaneous accepts, `role_taken` and the closed group
+- [x] 3.3 `delete_account` and the shared cleanup service (reopen claimed tasks, delete answers, delete the group when the woman goes); verify the account-deletion scenarios pass
+- [x] 3.4 Verify privacy of invitation preview (exactly four fields, same 404 for every unusable token) and run `ruff` and the suite; main session commits
 
 ## 4. Check-ins, observations, trend, summary (agent B)
 
