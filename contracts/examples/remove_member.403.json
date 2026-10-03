@@ -1,0 +1,6 @@
+{
+  "error": {
+    "code": "forbidden",
+    "message": "Tylko właścicielka może usuwać osoby z grupy."
+  }
+}

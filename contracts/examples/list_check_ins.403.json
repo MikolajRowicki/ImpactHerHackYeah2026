@@ -1,0 +1,6 @@
+{
+  "error": {
+    "code": "forbidden",
+    "message": "Te wpisy widzi tylko właścicielka grupy."
+  }
+}

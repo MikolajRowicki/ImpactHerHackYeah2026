@@ -1,0 +1,6 @@
+{
+  "error": {
+    "code": "task_not_open",
+    "message": "Ktoś już zajął się tym zadaniem."
+  }
+}

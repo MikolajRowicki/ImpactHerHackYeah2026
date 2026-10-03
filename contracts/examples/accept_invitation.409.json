@@ -1,0 +1,6 @@
+{
+  "error": {
+    "code": "already_in_group",
+    "message": "Należysz już do grupy."
+  }
+}

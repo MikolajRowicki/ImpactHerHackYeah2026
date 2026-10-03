@@ -85,8 +85,8 @@ No Co-Authored-By, no "generated with", no mention of AI, assistants or agents i
 ## Documentation
 
 - README.md must work on a clean clone; verify every command you put there.
-- docs/: architecture (data model and flows, Mermaid diagrams), domain knowledge and open questions, operations, testing, and docs/worklog.md.
-- docs/worklog.md gets one entry per task group: goal, what was built, deviations, verification, commit hashes - plus review results and manual checks.
+- docs/: architecture (data model and flows, Mermaid diagrams), domain knowledge and open questions, operations, testing, and docs/worklog/.
+- docs/worklog/ holds one file per session (main.md, backend.md, frontend.md), so parallel branches never edit the same file. Each file gets one entry per task group: goal, what was built, deviations, verification, commit hashes - plus review results and manual checks.
 
 ## Delegating to subagents
 

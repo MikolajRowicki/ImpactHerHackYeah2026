@@ -1,0 +1,993 @@
+openapi: 3.1.0
+info:
+  title: MaydayMama API
+  version: v0
+  description: |
+    The contract that backend and frontend build against. It is written by hand and is the
+    source of truth; the code follows it. It holds no business logic.
+
+    **Conventions**
+
+    - JSON in, JSON out. Timestamps are ISO 8601 in UTC, for example `2026-10-03T18:30:00Z`.
+    - Session cookie (`sessionid`) for authentication. Unsafe methods (POST, DELETE) also send the
+      `X-CSRFToken` header, with the value of the `csrftoken` cookie that the server sets when the
+      page is first loaded.
+    - Lists are returned as `{"items": [...]}`. There is no pagination in v0.
+    - Every error has the body `{"error": {"code", "message", "fields"?}}`. `code` is stable and
+      machine readable, `message` is Polish and meant for the person, `fields` maps a field name to
+      its message and appears on 422 only.
+    - Calling an operation that needs a group role without being a member of a group answers 403
+      with the code `not_a_member`.
+
+    **Roles.** A role belongs to a membership, not to an account: `woman`, `partner`, `supporter`.
+    The woman owns the group. Each operation lists the allowed roles in `x-roles`
+    (`anyone` needs no session, `signed_in` needs a session but no group).
+
+    **Groups.** A group is `pending` while a partner created it and the woman has not accepted her
+    invitation. A pending group holds no data: operations marked `x-requires-active-group` answer
+    409 with the code `group_pending`, and with `group_closed` once the woman closed the group.
+    A group created by the woman is `active` at once.
+
+    **Examples.** `contracts/examples/<operationId>.<status>.json` holds the response for each
+    declared status, `<operationId>.request.json` the request body. See `contracts/README.md`.
+
+    **Privacy.** Her check-ins are readable only by her. Observations are closed questions about
+    her life; their answers are never shown to anyone one by one, and never with their author.
+    The summary carries general statements and trend labels only.
+servers:
+  - url: /
+tags:
+  - name: health
+  - name: auth
+  - name: group
+  - name: members
+  - name: check-ins
+  - name: observations
+  - name: summary
+  - name: tasks
+  - name: self-care
+security:
+  - sessionCookie: []
+paths:
+  /api/v1/health:
+    get:
+      operationId: health
+      tags: [health]
+      summary: Is the service running
+      security: []
+      x-roles: [anyone]
+      responses:
+        "200":
+          description: The service is running.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Health" }
+
+  /api/v1/auth/register:
+    post:
+      operationId: register
+      tags: [auth]
+      summary: Create an account and sign in
+      security:
+        - csrfHeader: []
+      x-roles: [anyone]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/RegisterRequest" }
+      responses:
+        "201":
+          description: Account created, session started.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Me" }
+        "422": { $ref: "#/components/responses/ValidationFailed" }
+
+  /api/v1/auth/login:
+    post:
+      operationId: login
+      tags: [auth]
+      summary: Sign in
+      security:
+        - csrfHeader: []
+      x-roles: [anyone]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/LoginRequest" }
+      responses:
+        "200":
+          description: Session started.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Me" }
+        "401":
+          description: Wrong e-mail or password (code `invalid_credentials`).
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "422": { $ref: "#/components/responses/ValidationFailed" }
+
+  /api/v1/auth/logout:
+    post:
+      operationId: logout
+      tags: [auth]
+      summary: Sign out
+      security:
+        - sessionCookie: []
+          csrfHeader: []
+      x-roles: [signed_in]
+      responses:
+        "200":
+          description: Session ended.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Ok" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/v1/me:
+    get:
+      operationId: get_me
+      tags: [auth]
+      summary: The signed-in person and their membership, if any
+      x-roles: [signed_in]
+      responses:
+        "200":
+          description: The current person.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Me" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/v1/groups:
+    post:
+      operationId: create_group
+      tags: [group]
+      summary: Create a group
+      description: |
+        The woman creates an active group. A partner creates a pending group that stays empty until
+        the woman accepts her invitation. A supporter cannot create a group. A person can belong to
+        one group only.
+      security:
+        - sessionCookie: []
+          csrfHeader: []
+      x-roles: [signed_in]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CreateGroupRequest" }
+      responses:
+        "201":
+          description: Group created.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Group" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "409":
+          description: The person already belongs to a group (code `already_in_group`).
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "422": { $ref: "#/components/responses/ValidationFailed" }
+
+  /api/v1/groups/current:
+    get:
+      operationId: get_group
+      tags: [group]
+      summary: The group of the signed-in person
+      x-roles: [signed_in]
+      responses:
+        "200":
+          description: The group.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Group" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404":
+          description: The person belongs to no group (code `no_group`).
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+
+  /api/v1/groups/current/close:
+    post:
+      operationId: close_group
+      tags: [group]
+      summary: Close the group
+      description: |
+        Only the woman closes the group. A closed group accepts no new data (409 `group_closed`).
+        Closing a closed group returns it unchanged. A pending group has no woman in it yet, so it
+        cannot be closed by her (403).
+      security:
+        - sessionCookie: []
+          csrfHeader: []
+      x-roles: [woman]
+      responses:
+        "200":
+          description: The closed group.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Group" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+
+  /api/v1/members:
+    get:
+      operationId: list_members
+      tags: [members]
+      summary: People in the group
+      x-roles: [woman, partner, supporter]
+      responses:
+        "200":
+          description: The members.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/MemberList" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+
+  /api/v1/members/{member_id}:
+    delete:
+      operationId: remove_member
+      tags: [members]
+      summary: Remove a member from the group
+      description: Only the woman removes members. She cannot remove herself.
+      security:
+        - sessionCookie: []
+          csrfHeader: []
+      x-roles: [woman]
+      parameters:
+        - $ref: "#/components/parameters/MemberId"
+      responses:
+        "200":
+          description: The member is removed.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Ok" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404":
+          description: No such member in this group (code `not_found`).
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "409":
+          description: The woman cannot remove herself (code `cannot_remove_owner`).
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+
+  /api/v1/invitations:
+    post:
+      operationId: create_invitation
+      tags: [members]
+      summary: Invite a person to the group
+      description: |
+        The woman invites a partner or a supporter. While the group is pending, the partner may
+        invite only the woman. Supporters cannot invite anyone. The rules are listed in
+        `x-invite-rules`; a role outside them is answered with 403 (code `role_not_allowed`).
+      security:
+        - sessionCookie: []
+          csrfHeader: []
+      x-roles: [woman, partner]
+      x-invite-rules:
+        woman: [partner, supporter]
+        partner: [woman]
+      x-partner-invites-only-while: pending
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/InvitationRequest" }
+      responses:
+        "201":
+          description: The invitation. The token goes into the link `#/invite/<token>`.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Invitation" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "409":
+          description: The group is closed and issues no invitations (code `group_closed`).
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "422": { $ref: "#/components/responses/ValidationFailed" }
+
+  /api/v1/invitations/{token}:
+    get:
+      operationId: get_invitation
+      tags: [members]
+      summary: What an invitation offers, before accepting it
+      description: |
+        Needs no session: the token is the secret. The answer holds only the role offered, the
+        display name of the person who invited, the group status and the expiry. Nothing about the
+        group's members or data.
+      security: []
+      x-roles: [anyone]
+      parameters:
+        - $ref: "#/components/parameters/Token"
+      responses:
+        "200":
+          description: The invitation preview.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/InvitationPreview" }
+        "404":
+          description: Unknown, used or expired token (code `invitation_not_found`).
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+
+  /api/v1/invitations/{token}/accept:
+    post:
+      operationId: accept_invitation
+      tags: [members]
+      summary: Accept an invitation and join the group
+      description: When the woman accepts the invitation of a pending group, the group becomes active.
+      security:
+        - sessionCookie: []
+          csrfHeader: []
+      x-roles: [signed_in]
+      parameters:
+        - $ref: "#/components/parameters/Token"
+      responses:
+        "200":
+          description: The person with their new membership.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Me" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404":
+          description: Unknown, used or expired token (code `invitation_not_found`).
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "409":
+          description: |
+            The person already belongs to a group (code `already_in_group`), or the group was closed
+            after the invitation was issued (code `group_closed`).
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+
+  /api/v1/check-ins:
+    post:
+      operationId: create_check_in
+      tags: [check-ins]
+      summary: The woman records how she feels
+      description: Private. Nobody except the woman can read check-ins.
+      security:
+        - sessionCookie: []
+          csrfHeader: []
+      x-roles: [woman]
+      x-requires-active-group: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CheckInRequest" }
+      responses:
+        "201":
+          description: The saved check-in.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CheckIn" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "409": { $ref: "#/components/responses/GroupPending" }
+        "422": { $ref: "#/components/responses/ValidationFailed" }
+    get:
+      operationId: list_check_ins
+      tags: [check-ins]
+      summary: Her own check-ins, newest first
+      description: Private. Only the woman can read check-ins.
+      x-roles: [woman]
+      responses:
+        "200":
+          description: Her check-ins.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CheckInList" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+
+  /api/v1/observations/questions:
+    get:
+      operationId: list_observation_questions
+      tags: [observations]
+      summary: The closed questions a loved one answers about her life
+      x-roles: [partner, supporter]
+      responses:
+        "200":
+          description: The questions with their ready-made answers.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ObservationQuestionList" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+
+  /api/v1/observations:
+    post:
+      operationId: create_observation
+      tags: [observations]
+      summary: A loved one answers the questions
+      description: |
+        Answers are single values from a fixed set. There is no free text about the woman. The
+        answers are not shown to anyone one by one; only the trend engine reads them.
+      security:
+        - sessionCookie: []
+          csrfHeader: []
+      x-roles: [partner, supporter]
+      x-requires-active-group: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ObservationRequest" }
+      responses:
+        "201":
+          description: The observation is saved.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ObservationCreated" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "409": { $ref: "#/components/responses/GroupPending" }
+        "422": { $ref: "#/components/responses/ValidationFailed" }
+
+  /api/v1/summary:
+    get:
+      operationId: get_summary
+      tags: [summary]
+      summary: The general picture, worded for the role of the caller
+      description: |
+        General statements and a trend label. Never a single answer and never who gave it. The
+        text for loved ones carries a reminder to take special care of her. Help path and crisis
+        fields are added by a later change.
+      x-roles: [woman, partner, supporter]
+      responses:
+        "200":
+          description: The summary.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Summary" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+
+  /api/v1/tasks:
+    get:
+      operationId: list_tasks
+      tags: [tasks]
+      summary: Care tasks of the group
+      description: Tasks are visible to every member, the woman included. Nothing is hidden from her.
+      x-roles: [woman, partner, supporter]
+      responses:
+        "200":
+          description: The tasks, open first.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/TaskList" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+    post:
+      operationId: create_task
+      tags: [tasks]
+      summary: Add a care task
+      security:
+        - sessionCookie: []
+          csrfHeader: []
+      x-roles: [woman, partner, supporter]
+      x-requires-active-group: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/TaskRequest" }
+      responses:
+        "201":
+          description: The new task.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Task" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "409": { $ref: "#/components/responses/GroupPending" }
+        "422": { $ref: "#/components/responses/ValidationFailed" }
+
+  /api/v1/tasks/{task_id}/claim:
+    post:
+      operationId: claim_task
+      tags: [tasks]
+      summary: Take an open task
+      security:
+        - sessionCookie: []
+          csrfHeader: []
+      x-roles: [woman, partner, supporter]
+      x-requires-active-group: true
+      parameters:
+        - $ref: "#/components/parameters/TaskId"
+      responses:
+        "200":
+          description: The task, now claimed by the caller.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Task" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/TaskNotFound" }
+        "409":
+          description: |
+            The task is not open (code `task_not_open`), or the group is pending (code
+            `group_pending`) or closed (code `group_closed`). Two people claiming at once: one gets
+            200, the other this answer.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+
+  /api/v1/tasks/{task_id}/complete:
+    post:
+      operationId: complete_task
+      tags: [tasks]
+      summary: Mark a claimed task as done
+      description: Only the person who claimed the task completes it (403, code `not_task_claimer`).
+      security:
+        - sessionCookie: []
+          csrfHeader: []
+      x-roles: [woman, partner, supporter]
+      x-requires-active-group: true
+      parameters:
+        - $ref: "#/components/parameters/TaskId"
+      responses:
+        "200":
+          description: The completed task.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Task" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/TaskNotFound" }
+        "409":
+          description: |
+            The task is not claimed (code `task_not_claimed`), or the group is pending (code
+            `group_pending`) or closed (code `group_closed`).
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+
+  /api/v1/self-care:
+    get:
+      operationId: list_self_care
+      tags: [self-care]
+      summary: Gentle self-care suggestions for the woman
+      x-roles: [woman]
+      responses:
+        "200":
+          description: The suggestions.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SelfCareList" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+
+components:
+  securitySchemes:
+    sessionCookie:
+      type: apiKey
+      in: cookie
+      name: sessionid
+    csrfHeader:
+      type: apiKey
+      in: header
+      name: X-CSRFToken
+      description: Required on POST and DELETE. The value is the `csrftoken` cookie.
+
+  parameters:
+    Token:
+      name: token
+      in: path
+      required: true
+      schema: { type: string, minLength: 8, maxLength: 64 }
+    MemberId:
+      name: member_id
+      in: path
+      required: true
+      schema: { type: integer, minimum: 1 }
+    TaskId:
+      name: task_id
+      in: path
+      required: true
+      schema: { type: integer, minimum: 1 }
+
+  responses:
+    Unauthorized:
+      description: No session (code `unauthorized`).
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+    Forbidden:
+      description: |
+        The role of the caller may not use this operation (code `forbidden`), or the caller belongs
+        to no group (code `not_a_member`).
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+    ValidationFailed:
+      description: The body failed validation (code `validation_error`), with a message per field.
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+    GroupPending:
+      description: |
+        The group is not active, so it accepts no data: the woman has not accepted yet (code
+        `group_pending`), or she closed it (code `group_closed`).
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+    TaskNotFound:
+      description: No such task in this group (code `not_found`).
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+
+  schemas:
+    Error:
+      type: object
+      required: [error]
+      additionalProperties: false
+      properties:
+        error:
+          type: object
+          required: [code, message]
+          additionalProperties: false
+          properties:
+            code:
+              type: string
+              pattern: "^[a-z][a-z0-9_]*$"
+              description: Stable, machine readable.
+            message:
+              type: string
+              description: Polish, for the person.
+            fields:
+              type: object
+              description: Field name to message. On 422 only.
+              additionalProperties: { type: string }
+
+    Ok:
+      type: object
+      required: [status]
+      additionalProperties: false
+      properties:
+        status: { type: string, const: ok }
+
+    Health:
+      type: object
+      required: [status]
+      additionalProperties: false
+      properties:
+        status: { type: string, const: ok }
+
+    Role:
+      type: string
+      enum: [woman, partner, supporter]
+
+    GroupStatus:
+      type: string
+      enum: [pending, active, closed]
+
+    Membership:
+      type: object
+      required: [group_id, role, group_status]
+      additionalProperties: false
+      properties:
+        group_id: { type: integer }
+        role: { $ref: "#/components/schemas/Role" }
+        group_status: { $ref: "#/components/schemas/GroupStatus" }
+
+    Me:
+      type: object
+      required: [id, email, display_name, membership]
+      additionalProperties: false
+      properties:
+        id: { type: integer }
+        email: { type: string, format: email }
+        display_name: { type: string }
+        membership:
+          description: Null until the person joins or creates a group.
+          oneOf:
+            - $ref: "#/components/schemas/Membership"
+            - type: "null"
+
+    RegisterRequest:
+      type: object
+      required: [email, password, display_name]
+      additionalProperties: false
+      properties:
+        email: { type: string, format: email }
+        password: { type: string, minLength: 8, maxLength: 128 }
+        display_name: { type: string, minLength: 1, maxLength: 60 }
+
+    LoginRequest:
+      type: object
+      required: [email, password]
+      additionalProperties: false
+      properties:
+        email: { type: string, format: email }
+        password: { type: string, minLength: 1, maxLength: 128 }
+
+    CreateGroupRequest:
+      type: object
+      required: [role]
+      additionalProperties: false
+      properties:
+        role:
+          description: The role of the person who creates the group.
+          type: string
+          enum: [woman, partner]
+
+    Group:
+      type: object
+      required: [id, status, my_role, created_at]
+      additionalProperties: false
+      properties:
+        id: { type: integer }
+        status: { $ref: "#/components/schemas/GroupStatus" }
+        my_role: { $ref: "#/components/schemas/Role" }
+        created_at: { type: string, format: date-time, description: UTC }
+
+    Member:
+      type: object
+      required: [id, display_name, role, joined_at]
+      additionalProperties: false
+      properties:
+        id:
+          type: integer
+          description: Id of the membership. Used by `remove_member`.
+        display_name: { type: string }
+        role: { $ref: "#/components/schemas/Role" }
+        joined_at: { type: string, format: date-time, description: UTC }
+
+    MemberList:
+      type: object
+      required: [items]
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items: { $ref: "#/components/schemas/Member" }
+
+    InvitationRequest:
+      type: object
+      required: [role]
+      additionalProperties: false
+      properties:
+        role: { $ref: "#/components/schemas/Role" }
+        email:
+          description: Optional. When given, the invitation link is also sent there.
+          type: string
+          format: email
+
+    Invitation:
+      type: object
+      required: [token, role, created_at, expires_at]
+      additionalProperties: false
+      properties:
+        token: { type: string, minLength: 8, maxLength: 64 }
+        role: { $ref: "#/components/schemas/Role" }
+        created_at: { type: string, format: date-time, description: UTC }
+        expires_at: { type: string, format: date-time, description: UTC }
+
+    InvitationPreview:
+      type: object
+      required: [role, invited_by_name, group_status, expires_at]
+      additionalProperties: false
+      properties:
+        role: { $ref: "#/components/schemas/Role" }
+        invited_by_name: { type: string }
+        group_status: { $ref: "#/components/schemas/GroupStatus" }
+        expires_at: { type: string, format: date-time, description: UTC }
+
+    Mood:
+      type: string
+      enum: [good, okay, low, very_low]
+
+    Sleep:
+      type: string
+      enum: [enough, little, almost_none]
+
+    Anxiety:
+      type: string
+      enum: [none, some, strong]
+
+    CheckInRequest:
+      type: object
+      required: [mood, sleep, anxiety]
+      additionalProperties: false
+      properties:
+        mood: { $ref: "#/components/schemas/Mood" }
+        sleep: { $ref: "#/components/schemas/Sleep" }
+        anxiety: { $ref: "#/components/schemas/Anxiety" }
+
+    CheckIn:
+      type: object
+      required: [id, created_at, mood, sleep, anxiety]
+      additionalProperties: false
+      properties:
+        id: { type: integer }
+        created_at: { type: string, format: date-time, description: UTC }
+        mood: { $ref: "#/components/schemas/Mood" }
+        sleep: { $ref: "#/components/schemas/Sleep" }
+        anxiety: { $ref: "#/components/schemas/Anxiety" }
+
+    CheckInList:
+      type: object
+      required: [items]
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items: { $ref: "#/components/schemas/CheckIn" }
+
+    AnswerValue:
+      description: One value from a fixed set. Each question offers a subset of these.
+      type: string
+      enum: ["yes", "no", unsure, more_than_usual, as_usual, less_than_usual]
+
+    ObservationQuestion:
+      type: object
+      required: [id, text, answers]
+      additionalProperties: false
+      properties:
+        id: { type: string, pattern: "^[a-z][a-z0-9_]*$" }
+        text: { type: string, description: Polish, worded as care. }
+        answers:
+          type: array
+          minItems: 2
+          items:
+            type: object
+            required: [value, label]
+            additionalProperties: false
+            properties:
+              value: { $ref: "#/components/schemas/AnswerValue" }
+              label: { type: string, description: Polish. }
+
+    ObservationQuestionList:
+      type: object
+      required: [items]
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items: { $ref: "#/components/schemas/ObservationQuestion" }
+
+    ObservationRequest:
+      type: object
+      required: [answers]
+      additionalProperties: false
+      properties:
+        answers:
+          type: array
+          minItems: 1
+          items:
+            type: object
+            required: [question_id, value]
+            additionalProperties: false
+            properties:
+              question_id: { type: string, pattern: "^[a-z][a-z0-9_]*$" }
+              value: { $ref: "#/components/schemas/AnswerValue" }
+
+    ObservationCreated:
+      type: object
+      required: [id, created_at]
+      additionalProperties: false
+      properties:
+        id: { type: integer }
+        created_at: { type: string, format: date-time, description: UTC }
+
+    Trend:
+      type: string
+      enum: [stable, uncertain, needs_attention]
+
+    Summary:
+      type: object
+      required: [audience, trend, statements, narrative, generated_at]
+      additionalProperties: false
+      properties:
+        audience:
+          description: The role the text is written for.
+          $ref: "#/components/schemas/Role"
+        trend: { $ref: "#/components/schemas/Trend" }
+        statements:
+          type: array
+          description: General statements in gentle Polish. Never a single answer, never an author.
+          items: { type: string }
+        care_reminder:
+          description: Loved ones only. A reminder to take special care of her.
+          type: [string, "null"]
+        narrative:
+          type: object
+          required: [text, source]
+          additionalProperties: false
+          properties:
+            text: { type: string }
+            source:
+              description: "`mock` text is never shown as real model output."
+              type: string
+              enum: [mock, groq, rules]
+        generated_at: { type: string, format: date-time, description: UTC }
+
+    Person:
+      type: object
+      required: [id, display_name]
+      additionalProperties: false
+      properties:
+        id: { type: integer }
+        display_name: { type: string }
+
+    TaskStatus:
+      type: string
+      enum: [open, claimed, done]
+
+    TaskRequest:
+      type: object
+      required: [title]
+      additionalProperties: false
+      properties:
+        title: { type: string, minLength: 1, maxLength: 120 }
+        details: { type: string, maxLength: 500 }
+
+    Task:
+      type: object
+      required: [id, title, details, status, created_by, claimed_by, created_at, completed_at]
+      additionalProperties: false
+      properties:
+        id: { type: integer }
+        title: { type: string }
+        details: { type: [string, "null"] }
+        status: { $ref: "#/components/schemas/TaskStatus" }
+        created_by: { $ref: "#/components/schemas/Person" }
+        claimed_by:
+          oneOf:
+            - $ref: "#/components/schemas/Person"
+            - type: "null"
+        created_at: { type: string, format: date-time, description: UTC }
+        completed_at:
+          type: [string, "null"]
+          format: date-time
+          description: UTC
+
+    TaskList:
+      type: object
+      required: [items]
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items: { $ref: "#/components/schemas/Task" }
+
+    SelfCareKind:
+      type: string
+      enum: [breathing, relaxation, meditation, walk]
+
+    SelfCareItem:
+      type: object
+      required: [id, kind, title, description, duration_minutes]
+      additionalProperties: false
+      properties:
+        id: { type: string }
+        kind: { $ref: "#/components/schemas/SelfCareKind" }
+        title: { type: string }
+        description: { type: string }
+        duration_minutes: { type: integer, minimum: 1 }
+
+    SelfCareList:
+      type: object
+      required: [items]
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items: { $ref: "#/components/schemas/SelfCareItem" }

@@ -1,0 +1,6 @@
+{
+  "error": {
+    "code": "forbidden",
+    "message": "Tylko właścicielka może zamknąć grupę."
+  }
+}

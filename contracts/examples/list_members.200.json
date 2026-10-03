@@ -1,0 +1,22 @@
+{
+  "items": [
+    {
+      "id": 1,
+      "display_name": "Anna",
+      "role": "woman",
+      "joined_at": "2026-10-03T08:00:00Z"
+    },
+    {
+      "id": 2,
+      "display_name": "Piotr",
+      "role": "partner",
+      "joined_at": "2026-10-03T09:15:00Z"
+    },
+    {
+      "id": 3,
+      "display_name": "Marta",
+      "role": "supporter",
+      "joined_at": "2026-10-03T12:40:00Z"
+    }
+  ]
+}

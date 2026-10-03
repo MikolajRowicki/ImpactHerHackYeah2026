@@ -1,0 +1,6 @@
+{
+  "error": {
+    "code": "role_not_allowed",
+    "message": "Ta rola nie może zapraszać osób w tej roli."
+  }
+}

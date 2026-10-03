@@ -1,0 +1,16 @@
+{
+  "id": 5,
+  "title": "Ugotować obiad",
+  "details": "Najlepiej coś lekkiego.",
+  "status": "claimed",
+  "created_by": {
+    "id": 2,
+    "display_name": "Piotr"
+  },
+  "claimed_by": {
+    "id": 3,
+    "display_name": "Marta"
+  },
+  "created_at": "2026-10-03T10:00:00Z",
+  "completed_at": null
+}

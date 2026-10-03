@@ -1,0 +1,6 @@
+{
+  "error": {
+    "code": "forbidden",
+    "message": "Samopoczucie zapisuje tylko właścicielka grupy."
+  }
+}

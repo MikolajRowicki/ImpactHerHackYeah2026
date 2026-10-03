@@ -1,0 +1,41 @@
+[project]
+name = "maydaymama"
+version = "0.1.0"
+description = "MaydayMama: early notice of postpartum depression and shared load for new mothers"
+requires-python = ">=3.12,<4.0"
+dependencies = [
+    "django==6.1.1",
+    "django-ninja==1.7.1",
+]
+
+[tool.poetry]
+package-mode = false
+
+[tool.poetry.group.dev.dependencies]
+ruff = "0.16.10"
+pytest = "9.1.1"
+pytest-django = "4.14.0"
+pytest-playwright = "0.9.0"
+jsonschema = "4.26.0"
+openapi-spec-validator = "0.9.0"
+pyyaml = "6.0.3"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = [".", "src/backend"]
+extend-exclude = ["repo-ginekologia"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "DJ"]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "tests.settings"
+pythonpath = [".", "src/backend"]
+testpaths = ["tests"]
+# Browser artifacts go to test-results/, which git ignores.
+addopts = "--output=test-results --tracing=retain-on-failure --screenshot=only-on-failure --video=retain-on-failure"

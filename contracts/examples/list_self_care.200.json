@@ -1,0 +1,32 @@
+{
+  "items": [
+    {
+      "id": "breathing_4_6",
+      "kind": "breathing",
+      "title": "Spokojny oddech",
+      "description": "Wdech przez nos na cztery, wydech na sześć. Powtórz kilka razy.",
+      "duration_minutes": 3
+    },
+    {
+      "id": "relax_shoulders",
+      "kind": "relaxation",
+      "title": "Rozluźnij ramiona",
+      "description": "Usiądź wygodnie i po kolei rozluźniaj kark, ramiona i dłonie.",
+      "duration_minutes": 5
+    },
+    {
+      "id": "meditation_body_scan",
+      "kind": "meditation",
+      "title": "Krótka medytacja",
+      "description": "Skup uwagę na oddechu. Gdy myśli odpłyną, wróć do niego bez oceniania.",
+      "duration_minutes": 10
+    },
+    {
+      "id": "walk_around_block",
+      "kind": "walk",
+      "title": "Spacer wokół bloku",
+      "description": "Kilka minut na świeżym powietrzu, najlepiej w ciągu dnia.",
+      "duration_minutes": 15
+    }
+  ]
+}

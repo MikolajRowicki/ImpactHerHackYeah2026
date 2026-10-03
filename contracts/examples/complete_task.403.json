@@ -1,0 +1,6 @@
+{
+  "error": {
+    "code": "not_task_claimer",
+    "message": "Zadanie kończy osoba, która je wzięła."
+  }
+}

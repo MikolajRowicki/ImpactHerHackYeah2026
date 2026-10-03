@@ -1,0 +1,27 @@
+// Operations of contracts/openapi.yaml: operationId -> [method, path, success status].
+// tests/test_frontend_operations.py keeps this table in sync with the contract.
+export const OPERATIONS = {
+  health: ["GET", "/api/v1/health", 200],
+  register: ["POST", "/api/v1/auth/register", 201],
+  login: ["POST", "/api/v1/auth/login", 200],
+  logout: ["POST", "/api/v1/auth/logout", 200],
+  get_me: ["GET", "/api/v1/me", 200],
+  create_group: ["POST", "/api/v1/groups", 201],
+  get_group: ["GET", "/api/v1/groups/current", 200],
+  close_group: ["POST", "/api/v1/groups/current/close", 200],
+  list_members: ["GET", "/api/v1/members", 200],
+  remove_member: ["DELETE", "/api/v1/members/{member_id}", 200],
+  create_invitation: ["POST", "/api/v1/invitations", 201],
+  get_invitation: ["GET", "/api/v1/invitations/{token}", 200],
+  accept_invitation: ["POST", "/api/v1/invitations/{token}/accept", 200],
+  create_check_in: ["POST", "/api/v1/check-ins", 201],
+  list_check_ins: ["GET", "/api/v1/check-ins", 200],
+  list_observation_questions: ["GET", "/api/v1/observations/questions", 200],
+  create_observation: ["POST", "/api/v1/observations", 201],
+  get_summary: ["GET", "/api/v1/summary", 200],
+  list_tasks: ["GET", "/api/v1/tasks", 200],
+  create_task: ["POST", "/api/v1/tasks", 201],
+  claim_task: ["POST", "/api/v1/tasks/{task_id}/claim", 200],
+  complete_task: ["POST", "/api/v1/tasks/{task_id}/complete", 200],
+  list_self_care: ["GET", "/api/v1/self-care", 200],
+};

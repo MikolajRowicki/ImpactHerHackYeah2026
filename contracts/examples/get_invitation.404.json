@@ -1,0 +1,6 @@
+{
+  "error": {
+    "code": "invitation_not_found",
+    "message": "To zaproszenie nie istnieje albo wygasło."
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "audience": "supporter",
+  "trend": "needs_attention",
+  "statements": [
+    "Warto się odezwać do niej w tym tygodniu."
+  ],
+  "care_reminder": "Krótka wiadomość albo wspólny spacer mogą dużo znaczyć.",
+  "narrative": {
+    "text": "To przykładowy tekst. Prawdziwe podsumowanie powstanie z odpowiedzi bliskich.",
+    "source": "mock"
+  },
+  "generated_at": "2026-10-03T20:05:00Z"
+}

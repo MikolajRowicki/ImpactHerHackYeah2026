@@ -1,0 +1,13 @@
+{
+  "audience": "partner",
+  "trend": "needs_attention",
+  "statements": [
+    "Z odpowiedzi bliskich wynika, że ostatnio jest jej trudniej niż zwykle."
+  ],
+  "care_reminder": "Zadbaj dziś o nią szczególnie: zapytaj, jak się czuje, i zaproponuj, że przejmiesz jedno zadanie.",
+  "narrative": {
+    "text": "To przykładowy tekst. Prawdziwe podsumowanie powstanie z odpowiedzi bliskich.",
+    "source": "mock"
+  },
+  "generated_at": "2026-10-03T20:05:00Z"
+}
