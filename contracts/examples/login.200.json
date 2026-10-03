@@ -1,0 +1,10 @@
+{
+  "id": 1,
+  "email": "anna@example.com",
+  "display_name": "Anna",
+  "membership": {
+    "group_id": 1,
+    "role": "woman",
+    "group_status": "active"
+  }
+}

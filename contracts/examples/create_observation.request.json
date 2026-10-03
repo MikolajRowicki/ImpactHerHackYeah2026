@@ -1,0 +1,16 @@
+{
+  "answers": [
+    {
+      "question_id": "went_out",
+      "value": "no"
+    },
+    {
+      "question_id": "sad_or_crying",
+      "value": "yes"
+    },
+    {
+      "question_id": "enjoys_things",
+      "value": "less_than_usual"
+    }
+  ]
+}

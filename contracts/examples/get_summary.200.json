@@ -1,0 +1,14 @@
+{
+  "audience": "woman",
+  "trend": "uncertain",
+  "statements": [
+    "W ostatnich dniach było trochę trudniej niż zwykle.",
+    "Dobrze, że zaglądasz tu regularnie. To ważny krok."
+  ],
+  "care_reminder": null,
+  "narrative": {
+    "text": "To przykładowy tekst. Prawdziwe podsumowanie powstanie z Twoich wpisów.",
+    "source": "mock"
+  },
+  "generated_at": "2026-10-03T20:05:00Z"
+}

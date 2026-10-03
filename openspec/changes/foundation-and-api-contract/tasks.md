@@ -12,10 +12,10 @@ Branch: `change/foundation-and-api-contract`. One group is one commit. Run `ruff
 
 ## 2. API contract v0
 
-- [ ] 2.1 Write `contracts/openapi.yaml` with conventions, the common error shape, security, roles per operation and all v0 resources from design.md. Verify the document passes `openapi-spec-validator`.
-- [ ] 2.2 Write `contracts/examples/` with a success example and the relevant error examples (401, 403, 404, 422) for every operation. Verify a test validates every example against its schema and that every operation has examples (specs: Examples match their schemas, Every operation has an example).
-- [ ] 2.3 Add the guard tests: all resources present, error shape, privacy rules (no free text, no author in summary, check-ins only for the woman), permission rules (invitation, close, remove), implemented routes are declared. Verify the tests pass, and fail when a route is added without a contract entry (check once by hand).
-- [ ] 2.4 Write `contracts/README.md` (how to read the contract, example file naming, how to ask for a change with a file in `contracts/requests/`) and add `contracts/requests/.gitkeep`. Verify the example file names in the README match the folder.
+- [x] 2.1 Write `contracts/openapi.yaml` with conventions, the common error shape, security, roles per operation and all v0 resources from design.md. Verify the document passes `openapi-spec-validator`.
+- [x] 2.2 Write `contracts/examples/` with a success example and the relevant error examples (401, 403, 404, 422) for every operation. Verify a test validates every example against its schema and that every operation has examples (specs: Examples match their schemas, Every operation has an example).
+- [x] 2.3 Add the guard tests: all resources present, error shape, privacy rules (no free text, no author in summary, check-ins only for the woman), permission rules (invitation, close, remove), implemented routes are declared. Verify the tests pass, and fail when a route is added without a contract entry (check once by hand).
+- [x] 2.4 Write `contracts/README.md` (how to read the contract, example file naming, how to ask for a change with a file in `contracts/requests/`) and add `contracts/requests/.gitkeep`. Verify the example file names in the README match the folder.
 
 ## 3. Frontend shell with mock mode
 

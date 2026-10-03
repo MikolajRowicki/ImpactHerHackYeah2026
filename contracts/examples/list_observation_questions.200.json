@@ -1,0 +1,58 @@
+{
+  "items": [
+    {
+      "id": "went_out",
+      "text": "Czy w ostatnich dniach wyszła z domu na coś więcej niż zakupy?",
+      "answers": [
+        {
+          "value": "yes",
+          "label": "Tak"
+        },
+        {
+          "value": "no",
+          "label": "Nie"
+        },
+        {
+          "value": "unsure",
+          "label": "Nie wiem"
+        }
+      ]
+    },
+    {
+      "id": "sad_or_crying",
+      "text": "Czy była ostatnio smutna albo płakała?",
+      "answers": [
+        {
+          "value": "yes",
+          "label": "Tak"
+        },
+        {
+          "value": "no",
+          "label": "Nie"
+        },
+        {
+          "value": "unsure",
+          "label": "Nie wiem"
+        }
+      ]
+    },
+    {
+      "id": "enjoys_things",
+      "text": "Czy chętnie robi rzeczy, które zwykle lubi?",
+      "answers": [
+        {
+          "value": "more_than_usual",
+          "label": "Chętniej niż zwykle"
+        },
+        {
+          "value": "as_usual",
+          "label": "Tak jak zwykle"
+        },
+        {
+          "value": "less_than_usual",
+          "label": "Mniej chętnie niż zwykle"
+        }
+      ]
+    }
+  ]
+}

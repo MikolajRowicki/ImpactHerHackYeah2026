@@ -44,3 +44,6 @@ None.
 - Reminders reach people by e-mail (console backend in the demo) and in-app only. No push.
 - The Groq adapter and its client library arrive in the AI change; until then `AI_PROVIDER=groq` is rejected at startup.
 - Polish UI strings live in one frontend strings file, never inside logic.
+- "The woman invites any role" is read as: she invites a partner or a supporter. A group has exactly one woman, so `x-invite-rules` does not let her invite another woman.
+- Examples with a variant (`get_me.200.partner.json`) let the frontend show other roles in mock mode; the plain `<operationId>.<status>.json` is the default.
+- A person without a group who calls a group operation gets 403 `not_a_member`; only `get_group` answers 404 `no_group`.
