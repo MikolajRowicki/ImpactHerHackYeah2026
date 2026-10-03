@@ -65,7 +65,7 @@ main session after it has checked their work. Agents never commit.
 - [x] 8.3 Mutation checks in a throwaway copy for: observation answer leak, non-atomic claim, missing role check, baseline guard, crisis check order, different answers for known and unknown e-mails; verify each makes at least one test fail
 - [x] 8.4 Browser journey in live mode against the seeded database (`tests_e2e/`); verify `pytest tests_e2e` passes
 - [ ] 8.5 Real mailbox: guide the owner step by step through a Gmail app password and `.env`, send a real activation and a real reset to a mailbox they control, record the result; verify both links work through the API
-- [ ] 8.6 Docs: README (run, seed, reminders, mail setup, Groq switch, all commands verified on a clean clone), architecture (AI seam, trend flow, new operations), `docs/worklog/backend.md`; verify every documented command runs
+- [x] 8.6 Docs: README (run, seed, reminders, mail setup, Groq switch, all commands verified on a clean clone), architecture (AI seam, trend flow, new operations), `docs/worklog/backend.md`; verify every documented command runs
 
 ## 9. Review and archive
 
