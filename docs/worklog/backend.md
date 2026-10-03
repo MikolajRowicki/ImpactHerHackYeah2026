@@ -252,3 +252,25 @@ One entry per task group. Change: `full-backend`, branch `change/full-backend`.
   `pytest tests_e2e` (17 passed); the test fails in a throwaway copy when `delete_group` is
   replaced by `remove_membership`.
 - **Commits:** `44c2ef8`, `a3c684a`; this entry is in the next commit.
+
+## Group 9 (part 2): Fixes from the second pair of reviewers
+
+Two more reviewers (one per half of the specs) both said FAIL. Fixed:
+
+- SQLite transactions are now `IMMEDIATE`, so concurrent requests queue instead of failing with
+  "database is locked" (sign-up, reset mail, account deletion gave 500 or lost mail); test with two
+  threads.
+- Crisis phrase list extended with everyday forms ("nie chcę dłużej żyć", "mam dość życia",
+  "zabiciu się", "z balkonu", ...; 11 phrases that were missed). A human still has to review it.
+- The reminder day end uses the next Warsaw midnight (the 25-hour day was wrong).
+- She is spoken to in the second person in `reasons`, and the narrative prompt is addressed to her.
+- A fallback text lists no `sources`; a text of only spaces is a 422 for "say it for me".
+- The baseline now also fingerprints the security schemes; CSRF on DELETE and the 422 of the
+  reset request have tests.
+
+Not fixed, recorded for the owner: the Groq limit is per socket operation, not a total deadline;
+mail delivery in the request makes a known address slower than an unknown one when SMTP is slow
+(a timing difference, bodies are identical); `reasons` are one shared sentence by design (the
+spec scenario asks for the kind of signal; resolve at review); account deletion also deletes
+tasks the person created; the test settings do not pin `AI_PROVIDER` (tests fail if the
+environment sets `groq`).

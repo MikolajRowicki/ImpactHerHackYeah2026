@@ -14,10 +14,11 @@ def changed(doc, examples_dir, baseline):
         "operations": b.operation_fingerprints(doc, baseline["operations"]),
         "schemas": b.schema_fingerprints(doc, baseline["schemas"]),
         "examples": b.example_fingerprints(examples_dir, baseline["examples"]),
+        "security_schemes": b.scheme_fingerprints(doc, baseline["security_schemes"]),
     }
     return sorted(
         f"{kind}: {name}"
-        for kind in ("operations", "schemas", "examples")
+        for kind in ("operations", "schemas", "examples", "security_schemes")
         for name, expected in baseline[kind].items()
         if current[kind].get(name) != expected
     )
@@ -95,3 +96,9 @@ def test_a_new_method_on_an_old_path_is_allowed():
 
 def test_the_baseline_file_is_what_the_script_writes():
     assert b.build(c.DOC, c.EXAMPLES_DIR) == BASELINE
+
+
+def test_the_guard_names_a_changed_security_scheme():
+    doc = json.loads(json.dumps(c.DOC))
+    doc["components"]["securitySchemes"]["sessionCookie"]["name"] = "other"
+    assert changed(doc, c.EXAMPLES_DIR, BASELINE) == ["security_schemes: sessionCookie"]

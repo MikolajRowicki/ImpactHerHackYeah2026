@@ -254,5 +254,9 @@
     "TaskStatus": "e090e213c281a3ccf635f920365c816d51a3b5ece699778d75dfcc7e1f9d9c6e",
     "Trend": "5de69c21c1eb229ab805d7efb9821362b0898f672802b311d5aae5d53d83a1da"
   },
+  "security_schemes": {
+    "csrfHeader": "ddacc48e4b0ee4c96acb49ecab591aadfaedf57d0f73568ba49e09787ddb72d0",
+    "sessionCookie": "b472d6743ee3552de58416aa2fe63d5f89dbc09383b702a243849c930f043e22"
+  },
   "version": "v0"
 }

@@ -664,3 +664,9 @@ def test_the_clock_signer_follows_the_frozen_clock(clock_at):
     assert signer.unsign(token, max_age=101) == "7"
     with pytest.raises(signing.SignatureExpired):
         signer.unsign(token, max_age=99)
+
+
+def test_a_malformed_address_is_refused_when_asking_for_a_reset(api):
+    result = api.call("request_password_reset", body={"email": "not-an-address"})
+    assert result.status == 422
+    assert "email" in result.error["fields"]

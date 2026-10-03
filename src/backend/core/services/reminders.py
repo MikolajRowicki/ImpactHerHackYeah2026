@@ -31,8 +31,10 @@ def due_reminders(membership: Membership) -> list[dict]:
     group = membership.group
     if group.status != GROUP_ACTIVE:
         return []
-    start = clock.day_start(clock.today())
-    end = start + timedelta(days=1)
+    today = clock.today()
+    start = clock.day_start(today)
+    # The day after the clocks change is 23 or 25 hours long, so the end is not start + 24 h.
+    end = clock.day_start(today + timedelta(days=1))
     items = []
     if membership.role == ROLE_WOMAN:
         done = CheckIn.objects.filter(author=membership, created_at__gte=start, created_at__lt=end)

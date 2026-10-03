@@ -1,7 +1,7 @@
-from typing import Literal
+from typing import Annotated, Literal
 
 from ninja import Router, Schema
-from pydantic import Field
+from pydantic import StringConstraints
 
 from ..constants import ROLE_PARTNER, ROLE_SUPPORTER, ROLE_WOMAN
 from ..content.guide_topics import TOPICS
@@ -16,7 +16,7 @@ CLOSE_ONES_ONLY = "Ta funkcja jest dla bliskich właścicielki grupy."
 
 
 class SayItIn(In):
-    text: str = Field(min_length=1, max_length=500)
+    text: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=500)]
     recipient: Literal["partner", "supporters"]
     tone: Literal["gentle", "direct"]
 

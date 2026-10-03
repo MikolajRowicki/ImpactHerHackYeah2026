@@ -46,7 +46,7 @@ def build_summary(ctx: MemberContext) -> SummaryData:
         result = trend_service.group_trend(ctx.group)
         trend = result.trend
         statements = texts.statements_for(role, trend)
-        reasons = texts.reasons_for(result.reasons)
+        reasons = texts.reasons_for(result.reasons, role)
         reminder = texts.CARE_REMINDERS[trend] if loved_one else None
 
     return SummaryData(
@@ -54,7 +54,7 @@ def build_summary(ctx: MemberContext) -> SummaryData:
         trend=trend,
         statements=statements,
         care_reminder=reminder,
-        narrative=build_narrative(trend, statements),
+        narrative=build_narrative(trend, statements, to_the_woman=not loved_one),
         generated_at=clock.now().astimezone(UTC),
         reasons=reasons,
     )

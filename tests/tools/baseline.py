@@ -117,6 +117,13 @@ def schema_fingerprints(doc: dict, names=None) -> dict:
     }
 
 
+def scheme_fingerprints(doc: dict, names=None) -> dict:
+    """The security schemes (session cookie, CSRF header) that the v0 operations rely on."""
+    schemes = doc["components"]["securitySchemes"]
+    chosen = set(schemes) if names is None else set(names)
+    return {name: digest(schemes[name]) for name in sorted(chosen) if name in schemes}
+
+
 def example_fingerprints(examples_dir: Path, names=None) -> dict:
     files = sorted(examples_dir.glob("*.json"))
     if names is None:
@@ -132,6 +139,7 @@ def build(doc: dict, examples_dir: Path) -> dict:
         "version": "v0",
         "operations": operation_fingerprints(doc),
         "schemas": schema_fingerprints(doc),
+        "security_schemes": scheme_fingerprints(doc),
         "examples": example_fingerprints(examples_dir),
     }
 

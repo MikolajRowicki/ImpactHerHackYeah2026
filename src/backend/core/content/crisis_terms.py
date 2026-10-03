@@ -96,6 +96,23 @@ PHRASES = (
     "udusic dziecko",
     "potrzasnac dzieckiem",
     "rzucic dzieckiem",
+    # Added after review: forms that a new mother in distress commonly writes.
+    "dluzej zyc",
+    "nie mam po co zyc",
+    "nie mam sily zyc",
+    "dosc zycia",
+    "dosc mi zycia",
+    "mysle o smierci",
+    "sie nie obudzic",
+    "nie obudzic sie",
+    "lepiej beze mnie",
+    "beze mnie lepiej",
+    "zabiciu sie",
+    "z balkonu",
+    "wyskoczyc",
+    "zeby mnie nie bylo",
+    "gdyby mnie nie bylo",
+    "wyrzucic dziecko",
 )
 
 _NOT_A_LETTER = re.compile(r"[^a-z0-9]+")

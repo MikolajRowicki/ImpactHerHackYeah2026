@@ -47,6 +47,10 @@ DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": env.get("DATABASE_PATH") or str(BASE_DIR / "db.sqlite3"),
+        # A transaction that reads first and writes later cannot upgrade its lock while another
+        # writer is active; SQLite then fails at once instead of waiting. IMMEDIATE takes the
+        # write lock at the start, so concurrent requests queue up instead of getting a 500.
+        "OPTIONS": {"transaction_mode": "IMMEDIATE"},
     }
 }
 

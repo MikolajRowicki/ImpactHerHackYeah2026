@@ -376,7 +376,10 @@ def test_reasons_explain_the_kind_of_signal_without_a_source(browser, circle):
         body = browser(user).call("get_summary_extended").body
         assert body["trend"] == "needs_attention"
         assert len(body["reasons"]) >= 1
-        assert set(body["reasons"]) <= set(texts.REASONS.values()) | {texts.REASON_NOTE}
+        assert set(body["reasons"]) <= set(texts.REASONS.values()) | {
+            texts.SIGNAL_REASON_FOR_HER,
+            texts.REASON_NOTE,
+        }
         assert not re.search(r"Anna|Piotr|Marta|partner|bliscy|ona sama", all_text(body))
 
 

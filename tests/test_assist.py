@@ -125,11 +125,10 @@ def test_two_passages_fill_the_sources_and_the_prompt(monkeypatch):
     assert "Gdy trwa dłużej niż dwa tygodnie." in prompt
 
 
-def test_sources_are_kept_when_the_fallback_is_used(monkeypatch):
+def test_a_fallback_cites_no_sources_because_none_were_used(monkeypatch):
     use(monkeypatch, Failing(ProviderError("x")), Knowledge(TWO))
     result = assist.generate("test", PROMPT, FALLBACK)
-    assert result.source == "rules"
-    assert [s["title"] for s in result.sources] == ["Baby blues i depresja", "Kiedy szukać pomocy"]
+    assert (result.text, result.source, result.sources) == (FALLBACK, "rules", [])
 
 
 def test_a_broken_knowledge_source_costs_the_citations_not_the_answer(monkeypatch):

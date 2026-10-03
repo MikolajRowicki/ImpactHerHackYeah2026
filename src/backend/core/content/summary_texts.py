@@ -70,6 +70,7 @@ CARE_REMINDERS = {
 # One sentence for every signal code. Separate sentences per source would tell a reader whether
 # the woman or a loved one raised the alarm, and with one observer that points at a person.
 SIGNAL_REASON = "W ostatnich dniach pojawiły się sygnały, że jest jej trudniej niż zwykle."
+SIGNAL_REASON_FOR_HER = "W ostatnich dniach pojawiły się sygnały, że jest Ci trudniej niż zwykle."
 REASONS = {
     WOMAN_SIGNALS: SIGNAL_REASON,
     OBSERVATION_SIGNALS: SIGNAL_REASON,
@@ -103,12 +104,14 @@ def pending_statements(role: str) -> list[str]:
     return list(PENDING_STATEMENTS[audience_kind(role)])
 
 
-def reasons_for(codes) -> list[str]:
-    """Reason sentences for a set of codes, without repeats, in a fixed order."""
+def reasons_for(codes, role: str = "partner") -> list[str]:
+    """Reason sentences for a set of codes, without repeats, in a fixed order. She is spoken to
+    in the second person, her close ones in the third."""
     sentences = []
     for code in (WOMAN_SIGNALS, OBSERVATION_SIGNALS, BOTH_SOURCES, ACUTE):
-        if code in codes and REASONS[code] not in sentences:
-            sentences.append(REASONS[code])
+        sentence = SIGNAL_REASON_FOR_HER if role == ROLE_WOMAN else REASONS[code]
+        if code in codes and sentence not in sentences:
+            sentences.append(sentence)
     if sentences:
         sentences.append(REASON_NOTE)
     return sentences
@@ -123,6 +126,7 @@ ALL_TEXTS = frozenset(
     ALL_STATEMENTS
     | set(CARE_REMINDERS.values())
     | set(REASONS.values())
+    | {SIGNAL_REASON_FOR_HER}
     | {REASON_NOTE}
     | set(NARRATIVE_FALLBACKS.values())
 )

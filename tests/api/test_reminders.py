@@ -232,3 +232,27 @@ def test_the_answers_equal_the_contract_examples(browser, circle):
     mine.save()
     empty = json.loads((EXAMPLES / "list_reminders.200.empty.json").read_text())
     assert browser(circle.anna).call("list_reminders").body == empty
+
+
+def test_the_long_day_when_the_clocks_go_back_still_counts_her_check_in(api, clock_at):
+    # 2026-10-25 has 25 hours in Warsaw: it ends at 23:00 UTC, not at 22:00 UTC.
+    from datetime import UTC, datetime
+
+    from core.models import CheckIn
+
+    from ..factories import make_circle
+
+    circle = make_circle()
+    woman = circle.membership(circle.anna)
+    # 22:10 UTC is 23:10 in Warsaw, still the same Warsaw day as the clock below.
+    CheckIn.objects.create(
+        group=circle.group,
+        author=woman,
+        mood="good",
+        sleep="enough",
+        anxiety="none",
+        created_at=datetime(2026, 10, 25, 22, 10, tzinfo=UTC),
+    )
+    clock_at("2026-10-25T23:30:00+01:00")
+    kinds = [item["kind"] for item in api.sign_in(circle.anna).call("list_reminders")["items"]]
+    assert "check_in_due" not in kinds

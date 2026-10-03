@@ -589,3 +589,37 @@ def test_a_crisis_answer_has_no_sources_even_with_a_knowledge_source(api, monkey
     anna(api)
     result = api.call("ai_say_it_for_me", body={**BODY, "text": "nie chcę żyć"})
     assert result["sources"] == []
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "Nie chcę dłużej żyć",
+        "Dziecku będzie lepiej beze mnie",
+        "Mam dość życia",
+        "Chcę zasnąć i się nie obudzić",
+        "Myślę o śmierci",
+        "Nie mam po co żyć",
+        "Nie mam siły żyć",
+        "Myślę o zabiciu się",
+        "Wolałabym, żeby mnie nie było",
+        "Chcę skoczyć z balkonu",
+        "Chcę wyskoczyć przez okno",
+    ],
+)
+def test_more_everyday_crisis_phrases_are_found(api, text):
+    from core.content import crisis_terms
+
+    assert crisis_terms.matches(text), text
+
+
+@pytest.mark.parametrize("text", ["   ", "\n\t "])
+def test_a_text_of_only_spaces_is_refused_like_an_empty_one(api, text):
+    from tests.factories import make_circle
+
+    circle = make_circle()
+    result = api.sign_in(circle.anna).call(
+        "ai_say_it_for_me", body={"text": text, "recipient": "partner", "tone": "gentle"}
+    )
+    assert result.status == 422
+    assert "text" in result.error["fields"]

@@ -53,7 +53,7 @@ def test_the_set_lists_every_statement_reminder_reason_and_fallback():
         expected |= set(group)
     expected |= set(texts.CLOSED_STATEMENTS)
     expected |= set(texts.CARE_REMINDERS.values())
-    expected |= set(texts.REASONS.values()) | {texts.REASON_NOTE}
+    expected |= set(texts.REASONS.values()) | {texts.SIGNAL_REASON_FOR_HER, texts.REASON_NOTE}
     expected |= set(texts.NARRATIVE_FALLBACKS.values())
     assert texts.ALL_TEXTS == expected
     assert texts.ALL_STATEMENTS <= texts.ALL_TEXTS
@@ -156,3 +156,19 @@ def test_whatever_the_engine_produces_comes_from_the_fixed_set(state, role, monk
 _CODES = frozenset(
     {texts.WOMAN_SIGNALS, texts.OBSERVATION_SIGNALS, texts.BOTH_SOURCES, texts.ACUTE}
 )
+
+
+def test_she_is_spoken_to_in_the_second_person_in_her_reasons_too():
+    hers = texts.reasons_for({texts.WOMAN_SIGNALS}, "woman")
+    assert hers[0] == texts.SIGNAL_REASON_FOR_HER
+    assert "Ci" in hers[0] and "jej" not in hers[0]
+    assert texts.reasons_for({texts.WOMAN_SIGNALS}, "partner")[0] == texts.SIGNAL_REASON
+
+
+def test_the_narrative_prompt_is_addressed_to_the_reader():
+    from core.ai import narrative
+
+    to_her = narrative.build_prompt("stable", ["Zdanie."], to_the_woman=True)
+    to_close_ones = narrative.build_prompt("stable", ["Zdanie."])
+    assert "samej młodej mamy" in to_her
+    assert "bliskiej osoby" in to_close_ones and "samej młodej mamy" not in to_close_ones

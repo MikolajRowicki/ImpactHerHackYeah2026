@@ -10,10 +10,15 @@ from .assist import generate
 FEATURE = "summary_narrative"
 
 
-def build_prompt(trend: str, statements: list[str]) -> str:
+def build_prompt(trend: str, statements: list[str], to_the_woman: bool = False) -> str:
+    reader = (
+        "samej młodej mamy, zwracając się do niej na Ty"
+        if to_the_woman
+        else "bliskiej osoby młodej mamy"
+    )
     lines = [
-        "Napisz po polsku dwa krótkie, spokojne zdania podsumowania dla bliskiej osoby "
-        "młodej mamy. Nie stawiaj diagnozy i nie zgaduj szczegółów.",
+        f"Napisz po polsku dwa krótkie, spokojne zdania podsumowania dla {reader}. "
+        "Nie stawiaj diagnozy i nie zgaduj szczegółów.",
         f"Ocena: {trend}",
         "Ogólne zdania:",
         *[f"- {statement}" for statement in statements],
@@ -21,10 +26,10 @@ def build_prompt(trend: str, statements: list[str]) -> str:
     return "\n".join(lines)
 
 
-def build_narrative(trend: str, statements: list[str]) -> dict:
+def build_narrative(trend: str, statements: list[str], to_the_woman: bool = False) -> dict:
     fallback = NARRATIVE_FALLBACKS[trend]
     try:
-        result = generate(FEATURE, build_prompt(trend, statements), fallback)
+        result = generate(FEATURE, build_prompt(trend, statements, to_the_woman), fallback)
         return {"text": result.text, "source": result.source}
     except Exception:
         # The summary must answer even when the text generation breaks in a way it did not expect.

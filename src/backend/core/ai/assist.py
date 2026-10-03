@@ -49,8 +49,8 @@ def generate(feature: str, prompt: str, fallback: str) -> Result:
     except Exception as error:
         # Type only: neither the prompt, nor the text, nor a key belongs in a log line.
         logger.warning("Text generation failed: feature=%s error=%s", feature, type(error).__name__)
-        return Result(fallback, "rules", sources)
+        return Result(fallback, "rules", [])
     if not isinstance(generation.text, str) or not generation.text.strip():
         logger.warning("Text generation gave an empty text: feature=%s", feature)
-        return Result(fallback, "rules", sources)
+        return Result(fallback, "rules", [])
     return Result(generation.text, generation.source, sources)

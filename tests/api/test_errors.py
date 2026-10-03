@@ -115,3 +115,11 @@ def test_a_wrong_csrf_token_is_refused(api):
 
 def test_a_get_needs_no_csrf_header(api):
     assert api.call("health", csrf=False).status == 200
+
+
+def test_a_delete_without_the_csrf_header_is_refused_and_changes_nothing(api):
+    user = make_user()
+    api.sign_in(user)
+    result = api.call("delete_account", csrf=False, check=False)
+    assert (result.status, result.code) == (403, "csrf_failed")
+    assert api.call("get_me").status == 200
