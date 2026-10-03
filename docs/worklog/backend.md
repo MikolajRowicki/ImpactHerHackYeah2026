@@ -195,3 +195,20 @@ One entry per task group. Change: `full-backend`, branch `change/full-backend`.
   provider call, a different answer for an unknown e-mail on password reset. The baseline guard
   was checked in group 1.
 - **Commit:** see the git log, subject `feat(backend): demo data and regression journeys`.
+
+## Group 8 (part 2): Browser journey in live mode
+
+- **Goal:** one browser journey against the seeded demo data, through the frontend's API client.
+- **Built:** `tests_e2e/test_live_journey.py` (Anna signs in, her summary needs attention, the page
+  shows who is signed in, signing out; Marta takes a task, a second claim and a loved one's read of
+  check-ins show the refusal codes).
+- **Deviations / findings:**
+  - Browser tests used the configured `db.sqlite3` before: with no test that needs a database,
+    pytest-django left it in place and the live server opened it (nothing was written; the file
+    is still empty). `tests_e2e/conftest.py` now marks every browser test for the test database and
+    refuses to start the server on `db.sqlite3`.
+  - The journey uses only operations the frontend client knows (v0). The client's table does not
+    list the new operations yet.
+- **Verification:** `ruff check .`, `ruff format --check .`, `pytest tests` (1501 passed),
+  `pytest tests_e2e` (17 passed).
+- **Commit:** see the git log, subject `test(e2e): add a live-mode journey on the seeded data`.

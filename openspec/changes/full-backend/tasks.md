@@ -63,7 +63,7 @@ main session after it has checked their work. Agents never commit.
 - [x] 8.1 `seed_demo` through the services, idempotent, prints the database file, refuses with debug off without the flag; verify the demo-data scenarios pass and Anna's summary is `needs_attention`
 - [x] 8.2 `tests/regression/` core journey and partner-first journey using v0 operations only, plus the coverage test (every operation exercised with its success status); verify both pass and the journeys fail in a throwaway copy where a v0 behaviour is broken
 - [x] 8.3 Mutation checks in a throwaway copy for: observation answer leak, non-atomic claim, missing role check, baseline guard, crisis check order, different answers for known and unknown e-mails; verify each makes at least one test fail
-- [ ] 8.4 Browser journey in live mode against the seeded database (`tests_e2e/`); verify `pytest tests_e2e` passes
+- [x] 8.4 Browser journey in live mode against the seeded database (`tests_e2e/`); verify `pytest tests_e2e` passes
 - [ ] 8.5 Real mailbox: guide the owner step by step through a Gmail app password and `.env`, send a real activation and a real reset to a mailbox they control, record the result; verify both links work through the API
 - [ ] 8.6 Docs: README (run, seed, reminders, mail setup, Groq switch, all commands verified on a clean clone), architecture (AI seam, trend flow, new operations), `docs/worklog/backend.md`; verify every documented command runs
 
