@@ -43,7 +43,7 @@ Groups 2, 3 and 4 may run in parallel after group 1; each touches only the files
 
 ## 5. Integration checks and hand-off
 
-- [ ] 5.1 Add the contrast test (body text, secondary text, primary and accent buttons, both themes) and the 375 px layout sweep over every route; fix tokens or layout until both pass
-- [ ] 5.2 Run an independent review by a fresh agent against all spec deltas: every scenario mapped to a test, concrete defects listed, PASS or FAIL; fix and repeat until PASS
-- [ ] 5.3 Run the app (static mock and Django) and take screenshots of every main screen at 375 px and 1280 px in both themes into `test-results/`; check them by eye
-- [ ] 5.4 Write the final worklog entry (review result, screenshots checked, screens checked only in mock mode, contract requests waiting) and commit `test(frontend): contrast and layout checks`; push `change/frontend-app`
+- [x] 5.1 Add the contrast test (body text, secondary text, primary and accent buttons, both themes) and the 375 px layout sweep over every route; fix tokens or layout until both pass
+- [x] 5.2 Run an independent review by a fresh agent against all spec deltas: every scenario mapped to a test, concrete defects listed, PASS or FAIL; fix and repeat until PASS
+- [x] 5.3 Run the app (static mock and Django) and take screenshots of every main screen at 375 px and 1280 px in both themes into `test-results/`; check them by eye
+- [x] 5.4 Write the final worklog entry (review result, screenshots checked, screens checked only in mock mode, contract requests waiting) and commit `test(frontend): contrast and layout checks`; push `change/frontend-app`

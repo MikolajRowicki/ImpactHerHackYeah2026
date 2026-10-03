@@ -156,3 +156,16 @@ def test_closed_group_keeps_history_but_offers_no_form(mock_page):
     expect(mock_page.get_by_text("Grupa jest zamknięta, więc nie dodasz")).to_be_visible()
     expect(mock_page.get_by_role("button", name="Zapisz wpis")).to_have_count(0)
     expect(entries(mock_page)).to_have_count(3)
+
+
+def test_focus_goes_to_the_confirmation_after_saving(mock_page):
+    open_check_in(mock_page)
+    choose(mock_page, MOOD, "Dobrze")
+    choose(mock_page, SLEEP, "Mało")
+    choose(mock_page, ANXIETY, "Raczej nie")
+
+    mock_page.get_by_role("button", name="Zapisz wpis").click()
+
+    expect(
+        mock_page.get_by_text("Dziękujemy, że się zatrzymałaś.").locator("..").locator("..")
+    ).to_be_focused()

@@ -54,6 +54,7 @@ function navigate(path) {
 }
 
 function render(node, { wide = false } = {}) {
+  outlet.removeAttribute("aria-busy");
   outlet.classList.toggle("screen--wide", wide);
   outlet.replaceChildren(node);
   window.scrollTo(0, 0);
@@ -64,12 +65,25 @@ function render(node, { wide = false } = {}) {
   }
 }
 
+// Answers that mean the person's membership changed elsewhere (removed, group started or
+// closed by someone else), so the session must be read again.
+const MEMBERSHIP_CODES = new Set(["not_a_member", "no_group", "group_pending", "group_closed"]);
+
+// "Try again" reads the session again too, in case that is what changed.
+function retry() {
+  session.forget();
+  show();
+}
+
 async function show() {
   const ticket = ++shown;
   const stale = () => ticket !== shown;
   const path = currentPath();
   const found = match(path);
-  if (!outlet.firstChild || !session.loaded) outlet.replaceChildren(loading());
+  // Start depends most on the membership, so it always reads the session afresh.
+  if (path === "/") session.forget();
+  outlet.setAttribute("aria-busy", "true");
+  outlet.replaceChildren(loading());
 
   if (!session.loaded) {
     try {
@@ -78,8 +92,9 @@ async function show() {
       if (stale()) return;
       // Help and invitation previews still work when the session cannot be read.
       if (!found || found.route.access !== "anyone") {
-        frame.update(null, path);
-        render(errorState(error, show));
+        // A failed read is not a sign-out: keep the frame of the person known so far.
+        frame.update(session.me, path);
+        render(errorState(error, retry));
         return;
       }
     }
@@ -134,7 +149,8 @@ async function show() {
       navigate("/login");
       return;
     }
-    render(errorState(error, show));
+    if (error instanceof ApiError && MEMBERSHIP_CODES.has(error.code)) session.forget();
+    render(errorState(error, retry));
   }
 }
 

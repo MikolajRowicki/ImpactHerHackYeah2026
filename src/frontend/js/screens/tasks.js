@@ -96,6 +96,8 @@ export async function tasks(ctx) {
       }
       // Reload either way: after a conflict the list shows who took the task first.
       await reload();
+      // The pressed button is gone; keep keyboard focus on the task where it now stands.
+      listBox.querySelector(`[data-task-id="${task.id}"]`)?.focus();
     });
   }
 
@@ -110,7 +112,7 @@ export async function tasks(ctx) {
     }
     return h(
       "li",
-      { class: `card task task--${task.status}` },
+      { class: `card task task--${task.status}`, "data-task-id": task.id, tabindex: "-1" },
       h(
         "div",
         { class: "task-row" },

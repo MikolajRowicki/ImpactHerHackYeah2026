@@ -50,7 +50,8 @@ export function createSession(api, storage) {
       }
     },
 
-    takeRememberedPath() {
+    // A new account has no group yet, so only an invitation is worth returning to.
+    takeRememberedPath({ invitationsOnly = false } = {}) {
       let path = null;
       try {
         path = storage?.getItem(RETURN_KEY);
@@ -59,7 +60,8 @@ export function createSession(api, storage) {
         path = null;
       }
       const safe = path && path.startsWith("/") && !/^\/(login|register)\b/.test(path);
-      return safe ? path : "/";
+      if (!safe || (invitationsOnly && !path.startsWith("/invite/"))) return "/";
+      return path;
     },
   };
   return session;

@@ -14,8 +14,7 @@ function isMe(ctx, member) {
   return member.role === "woman" || member.display_name === ctx.session.me.display_name;
 }
 
-function memberRow(ctx, member, { canRemove, onRemove }) {
-  const mine = isMe(ctx, member);
+function memberRow(member, { canRemove, onRemove, mine }) {
   return h(
     "li",
     { class: "card member" },
@@ -83,6 +82,8 @@ export async function group(ctx) {
   }
 
   const canRemove = isMother && status !== "closed";
+  // Two loved ones with the same name and role cannot be told apart, so neither gets the chip.
+  const mine = items.filter((member) => isMe(ctx, member));
   const parts = [
     pageHead({
       title: isMother ? t.group.title : t.group.lovedTitle,
@@ -99,7 +100,9 @@ export async function group(ctx) {
       h(
         "ul",
         { class: "card-list member-list" },
-        ...items.map((member) => memberRow(ctx, member, { canRemove, onRemove })),
+        ...items.map((member) =>
+          memberRow(member, { canRemove, onRemove, mine: mine.length === 1 && mine[0] === member }),
+        ),
       ),
     ),
   ];

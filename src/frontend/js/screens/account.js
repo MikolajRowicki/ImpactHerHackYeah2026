@@ -21,9 +21,9 @@ function accountScreen({ title, lead, form, footer, extra }) {
 }
 
 // Signs the person in on the screen and goes where they wanted to go.
-async function signedIn(ctx, me) {
+async function signedIn(ctx, me, options) {
   await ctx.setMe(me);
-  ctx.navigate(ctx.session.takeRememberedPath());
+  ctx.navigate(ctx.session.takeRememberedPath(options));
 }
 
 export async function login(ctx) {
@@ -121,7 +121,7 @@ export async function register(ctx) {
             password: password.value,
           },
         });
-        await signedIn(ctx, me);
+        await signedIn(ctx, me, { invitationsOnly: true });
       } catch (error) {
         if (error instanceof ApiError && error.status === 422 && showFieldErrors(error, fields)) {
           message.error(messageOf(error));

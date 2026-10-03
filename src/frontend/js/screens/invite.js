@@ -49,7 +49,8 @@ export async function invite(ctx) {
   if (preview.group_status === "closed") {
     action = notice({ tone: "accent", iconName: "lock" }, t.group.invitationClosed);
   } else if (!ctx.session.me) {
-    const remember = () => ctx.session.rememberPath(`/invite/${token}`);
+    // Remembered now, so any way of signing in (also the navigation link) comes back here.
+    ctx.session.rememberPath(`/invite/${token}`);
     action = h(
       "div",
       { class: "stack" },
@@ -57,8 +58,8 @@ export async function invite(ctx) {
       h(
         "div",
         { class: "actions" },
-        h("a", { class: "button button--accent", href: "#/login", onclick: remember }, t.group.signIn),
-        h("a", { class: "button button--ghost", href: "#/register", onclick: remember }, t.group.signUp),
+        h("a", { class: "button button--accent", href: "#/login" }, t.group.signIn),
+        h("a", { class: "button button--ghost", href: "#/register" }, t.group.signUp),
       ),
     );
   } else {

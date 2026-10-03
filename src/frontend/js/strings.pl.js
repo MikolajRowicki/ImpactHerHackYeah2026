@@ -290,7 +290,7 @@ export const t = {
     doneBy: (name) => `Zrobione przez: ${name}`,
     you: "Ty",
     take: "Biorę to",
-    finish: "Zrobione",
+    finish: "Oznacz jako zrobione",
     closed: "Grupa jest zamknięta, więc nie można dodawać ani brać zadań. Lista zostaje do wglądu.",
   },
 };

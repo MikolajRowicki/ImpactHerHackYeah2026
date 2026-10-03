@@ -86,10 +86,11 @@ export async function checkIn(ctx) {
   async function onSaved() {
     const fresh = await ctx.api.call("list_check_ins");
     historyBox.replaceChildren(history(fresh.items));
-    formBox.replaceChildren(
-      notice({ tone: "success", iconName: "heart", role: "status" }, t.wellbeing.saved),
-      checkInForm(ctx, onSaved),
-    );
+    const saved = notice({ tone: "success", iconName: "heart", role: "status" }, t.wellbeing.saved);
+    formBox.replaceChildren(saved, checkInForm(ctx, onSaved));
+    // The pressed button is gone, so focus goes to the confirmation instead of the page start.
+    saved.setAttribute("tabindex", "-1");
+    saved.focus();
   }
 
   if (closed) formBox.replaceChildren(notice({ tone: "accent", iconName: "lock" }, t.wellbeing.closed));

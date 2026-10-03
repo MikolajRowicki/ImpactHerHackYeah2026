@@ -85,7 +85,9 @@ def test_taking_moves_the_task_under_taken_with_the_name(mock_page):
 def test_finishing_moves_the_task_under_done(mock_page):
     open_tasks(mock_page, "supporter")
 
-    task(mock_page, "W toku", "Zrobić zakupy").get_by_role("button", name="Zrobione").click()
+    task(mock_page, "W toku", "Zrobić zakupy").get_by_role(
+        "button", name="Oznacz jako zrobione"
+    ).click()
 
     expect(task(mock_page, "Zrobione", "Zrobić zakupy")).to_contain_text("Zrobione przez: Ty")
     expect(column(mock_page, "W toku").get_by_role("listitem")).to_have_count(0)
@@ -174,3 +176,11 @@ def test_reset_brings_back_the_example_tasks(mock_page):
     mock_page.goto(f"{mock_page.base}#/tasks")
 
     expect(task(mock_page, "Do wzięcia", "Ugotować obiad")).to_be_visible()
+
+
+def test_focus_stays_on_the_task_after_taking_it(mock_page):
+    open_tasks(mock_page, "partner")
+
+    task(mock_page, "Do wzięcia", "Ugotować obiad").get_by_role("button", name="Biorę to").click()
+
+    expect(task(mock_page, "W toku", "Ugotować obiad")).to_be_focused()

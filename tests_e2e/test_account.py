@@ -184,9 +184,17 @@ def test_live_sign_in_sends_the_form_and_shows_the_start(mock_page):
         sent.append(route.request.post_data_json)
         route.fulfill(status=200, json=me)
 
+    def current(route):
+        # Like a real backend: signed in once the login was accepted.
+        if sent:
+            route.fulfill(status=200, json=me)
+        else:
+            route.fulfill(status=401, json=UNAUTHORIZED)
+
     calls = []
     live_signed_out(mock_page, calls)
     mock_page.route("**/api/v1/auth/login", login)
+    mock_page.route("**/api/v1/me", current)
     mock_page.get_by_role("link", name="Zaloguj się").last.click()
     sign_in(mock_page, "anna@example.com")
 

@@ -128,4 +128,45 @@ One entry per task group. Change: `frontend-app`, branch `change/frontend-app`.
 - **Verification:** `ruff check .`, `ruff format --check .`, `pytest` (356 passed),
   `pytest tests_e2e` (110 passed). Screenshots checked: loved ones' start and tasks at 1280 px,
   questions at 375 px, tasks at 375 px dark.
-- **Commit:** see the next entry.
+- **Commit:** `8001c98`
+
+## Group 5: Integration checks and hand-off
+
+- **Goal:** contrast and phone layout checked by tests, an independent review against every spec
+  scenario, the real app looked at, and the branch handed back.
+- **Built:**
+  - `tests_e2e/test_contrast_layout.py`: WCAG ratios from computed colours in both themes (body,
+    secondary text, hints, primary, accent and danger buttons, navigation, summary parts, chips,
+    field and choice borders, error text); every route at 375 px in both themes, signed in and
+    out, has no horizontal scroll; text width at 1280 px stays within the reading width.
+  - Contrast fix: choice cards had a 1.3:1 border; they now use `--color-line-strong` (3:1).
+  - Review fixes (see below) and `tests_e2e/test_live_flows.py` with a routed live helper.
+  - `contracts/requests/20261004-person-id-is-account-id.md`.
+- **Review, pass 1: FAIL.** No scenario missing; three marked weak; defects found and fixed:
+  - (medium) The session was read once per page load, so a changed membership was never noticed
+    and "Spróbuj ponownie" looped. Now Start always reads the session, retry forgets it first,
+    and membership error codes forget it.
+  - (medium) Tasks assume `Person.id` is the account id; the contract does not say so. Contract
+    request filed; a live test pins the assumption with differing membership ids.
+  - (medium) Signing in through the navigation lost the invitation. The invitation screen now
+    remembers its address when shown to a signed-out person.
+  - (low) Registration returned to any remembered address; now only to an invitation.
+  - (low) No loading state between screens; now shown on every route change, with `aria-busy`.
+  - (low) "to Ty" chip could show twice; now only when exactly one member matches.
+  - (low) Focus fell to the page after saving a check-in or taking a task; it now goes to the
+    confirmation or the moved task.
+  - (low) The done button read "Zrobione" like the section heading; now "Oznacz jako zrobione".
+  - (low, tests) Two "nothing is sent" tests did not prove it; they now count live requests.
+  - Two of these tests were checked by removing their fix: both failed, then passed again.
+- **Review, pass 2: PASS.** Two low notes fixed afterwards: a failed session read no longer makes
+  the frame look signed out; the request file names the right test file. "Field labels" stays
+  weak (no sweep test, but every field is used by its label somewhere).
+- **Manual check:** 78 screenshots in `test-results/screens/` (git-ignored): 13 screens at 375
+  and 1280 px in light and dark from the static server, and the same screens from Django at
+  1280 px light and 375 px dark. No page errors. Checked by eye.
+- **Checked only in mock mode or against routed answers:** every screen. The backend on this
+  branch serves only `/api/v1/health`, so no screen was run against a real API.
+- **Contract requests waiting:** `20261004-person-id-is-account-id.md`.
+- **Verification:** `ruff check .`, `ruff format --check .`, `pytest` (356 passed),
+  `pytest tests_e2e` (126 passed).
+- **Commit:** this entry's commit, `test(frontend): contrast and layout checks`.

@@ -272,6 +272,11 @@
   margin-top: var(--space-4);
 }
 
+/* An empty message slot at the top of a form takes no room. */
+.form > .message-slot:empty + * {
+  margin-top: 0;
+}
+
 .field {
   display: grid;
   gap: var(--space-1);
@@ -356,7 +361,8 @@ textarea.field__input {
   gap: var(--space-2);
   min-height: 3.25rem;
   padding: 0.625rem 0.875rem;
-  border: 1.5px solid var(--color-line);
+  /* A control border: 3:1 against the card, unlike the decorative --color-line. */
+  border: 1.5px solid var(--color-line-strong);
   border-radius: var(--radius-small);
   background: var(--color-surface);
   cursor: pointer;
@@ -365,7 +371,7 @@ textarea.field__input {
 }
 
 .choice:hover {
-  border-color: var(--color-line-strong);
+  border-color: var(--color-primary);
 }
 
 .choice input {
