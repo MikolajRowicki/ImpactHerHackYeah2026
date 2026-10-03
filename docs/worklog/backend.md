@@ -274,3 +274,9 @@ mail delivery in the request makes a known address slower than an unknown one wh
 spec scenario asks for the kind of signal; resolve at review); account deletion also deletes
 tasks the person created; the test settings do not pin `AI_PROVIDER` (tests fail if the
 environment sets `groq`).
+
+## Group 8 (part 3): Real mailbox
+
+A real activation and a real reset mail were sent through Gmail SMTP (`EMAIL_MODE=smtp`) to a
+mailbox the owner controls; the owner confirmed both arrived. The activation link works through
+the service. Nothing was sent to the console path or logged with an address.
