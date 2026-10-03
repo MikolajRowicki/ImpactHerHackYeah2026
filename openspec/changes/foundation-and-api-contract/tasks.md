@@ -4,11 +4,11 @@ Branch: `change/foundation-and-api-contract`. One group is one commit. Run `ruff
 
 ## 1. Backend skeleton and tooling
 
-- [ ] 1.1 Create `pyproject.toml` (Python 3.12+, package-mode off) with pinned django and django-ninja, dev group with ruff, pytest, pytest-django, pytest-playwright, jsonschema, openapi-spec-validator; commit `poetry.lock`. Verify `poetry install` succeeds in a clean environment.
-- [ ] 1.2 Configure ruff and pytest in `pyproject.toml`. Verify `ruff check .` and `ruff format --check .` pass.
-- [ ] 1.3 Create the Django project `src/backend/config` and app `src/backend/core`, with settings read from the environment (secret key, debug, allowed hosts, database path), static files served from `src/frontend`, and a startup failure when the secret key is missing and debug is off. Verify tests start the settings in both modes (spec: Missing secret key in production mode).
-- [ ] 1.4 Add `GET /api/v1/health` with django-ninja. Verify a test gets 200 and the documented body (spec: Service is up).
-- [ ] 1.5 Add `.env.example` listing every variable. Verify a test compares settings variables with `.env.example` (spec: Example file is complete).
+- [x] 1.1 Create `pyproject.toml` (Python 3.12+, package-mode off) with pinned django and django-ninja, dev group with ruff, pytest, pytest-django, pytest-playwright, jsonschema, openapi-spec-validator; commit `poetry.lock`. Verify `poetry install` succeeds in a clean environment.
+- [x] 1.2 Configure ruff and pytest in `pyproject.toml`. Verify `ruff check .` and `ruff format --check .` pass.
+- [x] 1.3 Create the Django project `src/backend/config` and app `src/backend/core`, with settings read from the environment (secret key, debug, allowed hosts, database path), static files served from `src/frontend`, and a startup failure when the secret key is missing and debug is off. Verify tests start the settings in both modes (spec: Missing secret key in production mode).
+- [x] 1.4 Add `GET /api/v1/health` with django-ninja. Verify a test gets 200 and the documented body (spec: Service is up).
+- [x] 1.5 Add `.env.example` listing every variable. Verify a test compares settings variables with `.env.example` (spec: Example file is complete).
 
 ## 2. API contract v0
 
