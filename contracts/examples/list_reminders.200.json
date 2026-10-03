@@ -1,0 +1,14 @@
+{
+  "items": [
+    {
+      "kind": "check_in_due",
+      "text": "Zajrzyj dziś do dziennika i zapisz, jak się czujesz.",
+      "task_id": null
+    },
+    {
+      "kind": "task_in_progress",
+      "text": "Masz zadanie w toku. Dokończ je albo oddaj komuś innemu.",
+      "task_id": 4
+    }
+  ]
+}

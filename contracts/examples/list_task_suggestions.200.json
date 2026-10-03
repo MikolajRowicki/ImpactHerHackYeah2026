@@ -1,0 +1,24 @@
+{
+  "items": [
+    {
+      "id": "cook_a_meal",
+      "title": "Ugotować obiad",
+      "details": "Coś prostego, co da się zjeść jedną ręką."
+    },
+    {
+      "id": "walk_with_the_baby",
+      "title": "Wyjść z dzieckiem na spacer",
+      "details": "Godzina dla niej na sen, prysznic albo ciszę."
+    },
+    {
+      "id": "do_the_shopping",
+      "title": "Zrobić zakupy",
+      "details": "Zapytaj ją, czego brakuje w domu."
+    },
+    {
+      "id": "take_the_night_shift",
+      "title": "Przejąć nocną zmianę",
+      "details": "Jedna przespana noc robi dużą różnicę."
+    }
+  ]
+}

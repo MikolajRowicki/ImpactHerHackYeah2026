@@ -1,0 +1,6 @@
+{
+  "error": {
+    "code": "task_not_claimed",
+    "message": "To zadanie nie jest teraz przez nikogo wzięte."
+  }
+}

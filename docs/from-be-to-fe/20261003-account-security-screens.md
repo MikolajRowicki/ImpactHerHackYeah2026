@@ -1,8 +1,9 @@
 # Account security: new screens and operations
 
-Status: planned. The operations below arrive in the contract in the first commit group of the
-change `full-backend` (branch `change/full-backend`). This file is updated to `ready` with the
-commit when they are in.
+Status: ready. The operations below are in `contracts/openapi.yaml` on the branch
+`change/full-backend`, commit `HASH`. Merge that branch (or `main` after it is merged) to get
+them, with their examples in `contracts/examples/`. The backend that answers them arrives in later
+commits of the same branch; until then use mock mode.
 
 ## What changes for you
 
@@ -36,3 +37,7 @@ production (`ALLOW_LEGACY_REGISTER` off), so do not build the real flow on it.
 - Too many requests for the same address are silently ignored by the server and look like success.
   Do not promise "e-mail sent"; say "if the address is right, you will get a message".
 - Passwords are 8 to 128 characters, as in `register`.
+- The links in the e-mails are `<APP_BASE_URL>#/activate/<token>` and `<APP_BASE_URL>#/reset/<token>`.
+- Examples: `signup.202`, `activate_account.404` (code `token_invalid`, the same for a used, an
+  expired and a forged token), `confirm_password_reset.422` (a weak password keeps the token
+  valid), `change_password.422` (wrong current password, under `fields.current_password`).

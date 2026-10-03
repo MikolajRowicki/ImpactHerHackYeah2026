@@ -1,0 +1,66 @@
+{
+  "audience": "partner",
+  "trend": "needs_attention",
+  "statements": [
+    "Z odpowiedzi bliskich wynika, że ostatnio jest jej trudniej niż zwykle."
+  ],
+  "care_reminder": "Zadbaj dziś o nią szczególnie: zapytaj, jak się czuje, i zaproponuj, że przejmiesz jedno zadanie.",
+  "narrative": {
+    "text": "To przykładowy tekst. Prawdziwe podsumowanie powstanie z zapisanych odpowiedzi.",
+    "source": "mock"
+  },
+  "generated_at": "2026-10-03T20:05:00Z",
+  "reasons": [
+    "Kilka dni z ostatniego tygodnia przyniosło sygnały, że jest trudniej niż zwykle.",
+    "To obraz ogólny, nie ocena. Pomoc jest blisko, a jej poszukiwanie to dobry krok."
+  ],
+  "help": {
+    "crisis_lines": [
+      {
+        "name": "Numer alarmowy",
+        "number": "112",
+        "hours": "całą dobę",
+        "description": "Gdy ktoś jest w bezpośrednim niebezpieczeństwie. Zadzwoń od razu.",
+        "source_url": "https://www.gov.pl/web/numer-alarmowy-112"
+      },
+      {
+        "name": "Telefon zaufania dla dorosłych w kryzysie emocjonalnym",
+        "number": "116 123",
+        "hours": "codziennie, 14:00-22:00",
+        "description": "Rozmowa z doradcą, gdy jest Ci trudno i chcesz z kimś porozmawiać.",
+        "source_url": "https://116123.pl/"
+      },
+      {
+        "name": "Centrum Wsparcia dla osób dorosłych w kryzysie psychicznym",
+        "number": "800 70 2222",
+        "hours": "całą dobę",
+        "description": "Bezpłatne wsparcie psychologiczne, także w nocy.",
+        "source_url": "https://centrumwsparcia.pl/"
+      }
+    ],
+    "voivodeship": null,
+    "path": [
+      {
+        "order": 1,
+        "title": "Porozmawiaj z kimś zaufanym",
+        "description": "Powiedz bliskiej osobie, jak się czujesz. Nie musisz radzić sobie sama."
+      },
+      {
+        "order": 2,
+        "title": "Umów rozmowę z lekarzem rodzinnym albo położną",
+        "description": "Opisz, jak mijają Ci ostatnie dni. Oni wiedzą, dokąd pokierować dalej."
+      },
+      {
+        "order": 3,
+        "title": "Skorzystaj z pomocy psychologa lub psychiatry",
+        "description": "Poradnie zdrowia psychicznego działają w ramach NFZ, część bez skierowania."
+      },
+      {
+        "order": 4,
+        "title": "W nagłej sytuacji zadzwoń pod 112",
+        "description": "Gdy myślisz o zrobieniu sobie krzywdy, nie czekaj. Zadzwoń lub zgłoś się na SOR."
+      }
+    ],
+    "regional_contact": null
+  }
+}

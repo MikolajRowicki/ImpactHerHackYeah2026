@@ -46,6 +46,10 @@ tags:
   - name: summary
   - name: tasks
   - name: self-care
+  - name: preferences
+  - name: help
+  - name: reminders
+  - name: ai
 security:
   - sessionCookie: []
 paths:
@@ -126,6 +130,155 @@ paths:
             application/json:
               schema: { $ref: "#/components/schemas/Ok" }
         "401": { $ref: "#/components/responses/Unauthorized" }
+  /api/v1/auth/signup:
+    post:
+      operationId: signup
+      tags: [auth]
+      summary: Create an inactive account and send an activation link
+      description: |
+        No session is started. The answer is the same for a new address and for an address that
+        already has an account, so it never reveals who has an account. The link in the e-mail has
+        the form `<APP_BASE_URL>#/activate/<token>` and works once, for 3 days.
+      security:
+        - csrfHeader: []
+      x-roles: [anyone]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/RegisterRequest" }
+      responses:
+        "202":
+          description: Accepted. If the address is right, a message is on its way.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Ok" }
+        "422": { $ref: "#/components/responses/ValidationFailed" }
+
+  /api/v1/auth/activate:
+    post:
+      operationId: activate_account
+      tags: [auth]
+      summary: Activate an account from the token in the e-mail link
+      security:
+        - csrfHeader: []
+      x-roles: [anyone]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/TokenRequest" }
+      responses:
+        "200":
+          description: The account is active. The person can sign in.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Ok" }
+        "404":
+          description: The token was used, has expired or was altered (code `token_invalid`), the same for each reason.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "422": { $ref: "#/components/responses/ValidationFailed" }
+
+  /api/v1/auth/resend-activation:
+    post:
+      operationId: resend_activation
+      tags: [auth]
+      summary: Send a new activation link
+      description: |
+        The answer is identical for an inactive, an unknown, an active and a throttled address.
+        Only an inactive address gets an e-mail.
+      security:
+        - csrfHeader: []
+      x-roles: [anyone]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/EmailRequest" }
+      responses:
+        "202":
+          description: Accepted. If the address is right, a message is on its way.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Ok" }
+        "422": { $ref: "#/components/responses/ValidationFailed" }
+
+  /api/v1/auth/password-reset:
+    post:
+      operationId: request_password_reset
+      tags: [auth]
+      summary: Send a password reset link
+      description: |
+        The answer is identical for every address. The link has the form
+        `<APP_BASE_URL>#/reset/<token>` and works once, for 1 hour.
+      security:
+        - csrfHeader: []
+      x-roles: [anyone]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/EmailRequest" }
+      responses:
+        "202":
+          description: Accepted. If the address is right, a message is on its way.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Ok" }
+        "422": { $ref: "#/components/responses/ValidationFailed" }
+
+  /api/v1/auth/password-reset/confirm:
+    post:
+      operationId: confirm_password_reset
+      tags: [auth]
+      summary: Set a new password from the token in the e-mail link
+      description: The person's other sessions end.
+      security:
+        - csrfHeader: []
+      x-roles: [anyone]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/PasswordResetConfirmRequest" }
+      responses:
+        "200":
+          description: The new password is set.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Ok" }
+        "404":
+          description: The token was used, has expired or was altered (code `token_invalid`).
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "422": { $ref: "#/components/responses/ValidationFailed" }
+
+  /api/v1/auth/change-password:
+    post:
+      operationId: change_password
+      tags: [auth]
+      summary: Change the password of the signed-in person
+      description: The person's other sessions end; the current one continues.
+      security:
+        - sessionCookie: []
+          csrfHeader: []
+      x-roles: [signed_in]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ChangePasswordRequest" }
+      responses:
+        "200":
+          description: The password is changed.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Ok" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "422": { $ref: "#/components/responses/ValidationFailed" }
 
   /api/v1/me:
     get:
@@ -140,6 +293,61 @@ paths:
             application/json:
               schema: { $ref: "#/components/schemas/Me" }
         "401": { $ref: "#/components/responses/Unauthorized" }
+    delete:
+      operationId: delete_account
+      tags: [auth]
+      summary: Delete the account and what the person wrote
+      description: |
+        Deletes the person, their membership, their observation answers and, for the woman, the
+        whole group with its data. Tasks the person claimed become open again. The session ends.
+      security:
+        - sessionCookie: []
+          csrfHeader: []
+      x-roles: [signed_in]
+      responses:
+        "200":
+          description: The account is deleted.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Ok" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/v1/me/preferences:
+    get:
+      operationId: get_preferences
+      tags: [preferences]
+      summary: Personal preferences
+      x-roles: [signed_in]
+      responses:
+        "200":
+          description: The preferences. Before anything is saved, the voivodeship is null and e-mail reminders are on.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Preferences" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+    put:
+      operationId: update_preferences
+      tags: [preferences]
+      summary: Save personal preferences
+      description: |
+        Fields that are left out keep their value. `voivodeship: null` clears the saved voivodeship.
+      security:
+        - sessionCookie: []
+          csrfHeader: []
+      x-roles: [signed_in]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/PreferencesRequest" }
+      responses:
+        "200":
+          description: The saved preferences.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Preferences" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "422": { $ref: "#/components/responses/ValidationFailed" }
 
   /api/v1/groups:
     post:
@@ -213,6 +421,32 @@ paths:
               schema: { $ref: "#/components/schemas/Group" }
         "401": { $ref: "#/components/responses/Unauthorized" }
         "403": { $ref: "#/components/responses/Forbidden" }
+  /api/v1/groups/current/leave:
+    post:
+      operationId: leave_group
+      tags: [group]
+      summary: Leave the group
+      description: |
+        A partner or a supporter leaves. Their observation answers are deleted and tasks they
+        claimed become open again. The woman cannot leave; she closes the group instead (409, code
+        `cannot_remove_owner`).
+      security:
+        - sessionCookie: []
+          csrfHeader: []
+      x-roles: [partner, supporter]
+      responses:
+        "200":
+          description: The person has left the group.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Ok" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "409":
+          description: The woman cannot leave her group (code `cannot_remove_owner`).
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
 
   /api/v1/members:
     get:
@@ -296,6 +530,22 @@ paths:
             application/json:
               schema: { $ref: "#/components/schemas/Error" }
         "422": { $ref: "#/components/responses/ValidationFailed" }
+    get:
+      operationId: list_invitations
+      tags: [members]
+      summary: Unused invitations of the group
+      description: |
+        For the woman, and for the partner of a pending group. Used, revoked and expired
+        invitations are not listed.
+      x-roles: [woman, partner]
+      responses:
+        "200":
+          description: The unused invitations.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/InvitationList" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
 
   /api/v1/invitations/{token}:
     get:
@@ -318,6 +568,29 @@ paths:
               schema: { $ref: "#/components/schemas/InvitationPreview" }
         "404":
           description: Unknown, used or expired token (code `invitation_not_found`).
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+    delete:
+      operationId: revoke_invitation
+      tags: [members]
+      summary: Revoke an unused invitation
+      security:
+        - sessionCookie: []
+          csrfHeader: []
+      x-roles: [woman, partner]
+      parameters:
+        - $ref: "#/components/parameters/Token"
+      responses:
+        "200":
+          description: The invitation is revoked.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Ok" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404":
+          description: Unknown, used, revoked or expired token of this group (code `invitation_not_found`).
           content:
             application/json:
               schema: { $ref: "#/components/schemas/Error" }
@@ -457,6 +730,45 @@ paths:
               schema: { $ref: "#/components/schemas/Summary" }
         "401": { $ref: "#/components/responses/Unauthorized" }
         "403": { $ref: "#/components/responses/Forbidden" }
+  /api/v1/summary/extended:
+    get:
+      operationId: get_summary_extended
+      tags: [summary]
+      summary: The summary plus the reasons behind the trend and help
+      description: |
+        Everything `get_summary` returns, plus `reasons` (general sentences that say which kind of
+        signal led to the trend, never who gave it) and `help`, which is null unless the trend is
+        `needs_attention`. Never a single answer and never an author.
+      x-roles: [woman, partner, supporter]
+      responses:
+        "200":
+          description: The extended summary.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SummaryExtended" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+
+  /api/v1/help:
+    get:
+      operationId: get_help
+      tags: [help]
+      summary: Crisis lines and a care path
+      description: |
+        The voivodeship comes from the query or, when it is left out, from the saved preference.
+        With neither, `voivodeship` is null, the path is general and `regional_contact` is null.
+        The app points to help; it never diagnoses.
+      x-roles: [signed_in]
+      parameters:
+        - $ref: "#/components/parameters/VoivodeshipQuery"
+      responses:
+        "200":
+          description: The help.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Help" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "422": { $ref: "#/components/responses/ValidationFailed" }
 
   /api/v1/tasks:
     get:
@@ -497,6 +809,21 @@ paths:
         "403": { $ref: "#/components/responses/Forbidden" }
         "409": { $ref: "#/components/responses/GroupPending" }
         "422": { $ref: "#/components/responses/ValidationFailed" }
+  /api/v1/tasks/suggestions:
+    get:
+      operationId: list_task_suggestions
+      tags: [tasks]
+      summary: Ready-made care tasks
+      description: Add one with `create_task`, using its title and details.
+      x-roles: [woman, partner, supporter]
+      responses:
+        "200":
+          description: The suggestions.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/TaskSuggestionList" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
 
   /api/v1/tasks/{task_id}/claim:
     post:
@@ -557,6 +884,104 @@ paths:
           content:
             application/json:
               schema: { $ref: "#/components/schemas/Error" }
+  /api/v1/tasks/{task_id}/release:
+    post:
+      operationId: release_task
+      tags: [tasks]
+      summary: Hand a claimed task back
+      description: Only the person who claimed the task releases it (403, code `not_task_claimer`).
+      security:
+        - sessionCookie: []
+          csrfHeader: []
+      x-roles: [woman, partner, supporter]
+      x-requires-active-group: true
+      parameters:
+        - $ref: "#/components/parameters/TaskId"
+      responses:
+        "200":
+          description: The task, open again.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Task" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/TaskNotFound" }
+        "409":
+          description: The task is not claimed (code `task_not_claimed`), or the group is pending (code `group_pending`) or closed (code `group_closed`).
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+
+  /api/v1/reminders:
+    get:
+      operationId: list_reminders
+      tags: [reminders]
+      summary: What is due for the caller today
+      description: |
+        A day is a calendar day in Europe/Warsaw. The list is empty while the group is not active.
+        Reminders hold no health data and no names.
+      x-roles: [woman, partner, supporter]
+      responses:
+        "200":
+          description: The reminders.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ReminderList" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+
+  /api/v1/ai/say-it-for-me:
+    post:
+      operationId: ai_say_it_for_me
+      tags: [ai]
+      summary: A suggested message for something hard to say
+      description: |
+        The text is neither stored nor logged. A text that looks like a crisis is checked by fixed
+        rules before any model is called: the answer then has `crisis: true`, no message and the
+        help block. `source` names what produced the message (`mock`, `groq`, or `rules` for a
+        fixed text). `sources` lists cited passages; it is empty until retrieval exists.
+      security:
+        - sessionCookie: []
+          csrfHeader: []
+      x-roles: [woman]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/SayItRequest" }
+      responses:
+        "200":
+          description: The suggestion, or the crisis help.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SayItResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "422": { $ref: "#/components/responses/ValidationFailed" }
+
+  /api/v1/ai/conversation-guide:
+    get:
+      operationId: ai_conversation_guide
+      tags: [ai]
+      summary: How to start a caring conversation
+      description: |
+        Opening lines, things to avoid and follow-up questions for a topic. It uses no answer and no
+        check-in as input. `source` and `sources` work as in `ai_say_it_for_me`.
+      x-roles: [partner, supporter]
+      parameters:
+        - name: topic
+          in: query
+          required: true
+          schema: { $ref: "#/components/schemas/GuideTopic" }
+      responses:
+        "200":
+          description: The guide.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ConversationGuide" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "422": { $ref: "#/components/responses/ValidationFailed" }
 
   /api/v1/self-care:
     get:
@@ -601,6 +1026,11 @@ components:
       in: path
       required: true
       schema: { type: integer, minimum: 1 }
+    VoivodeshipQuery:
+      name: voivodeship
+      in: query
+      required: false
+      schema: { $ref: "#/components/schemas/Voivodeship" }
 
   responses:
     Unauthorized:
@@ -991,3 +1421,298 @@ components:
         items:
           type: array
           items: { $ref: "#/components/schemas/SelfCareItem" }
+
+    # Added after v0. Everything above this line is frozen (contracts/baseline/v0.json).
+
+    Voivodeship:
+      description: The 16 voivodeships, written without Polish letters.
+      type: string
+      enum:
+        - dolnoslaskie
+        - kujawsko_pomorskie
+        - lodzkie
+        - lubelskie
+        - lubuskie
+        - malopolskie
+        - mazowieckie
+        - opolskie
+        - podkarpackie
+        - podlaskie
+        - pomorskie
+        - slaskie
+        - swietokrzyskie
+        - warminsko_mazurskie
+        - wielkopolskie
+        - zachodniopomorskie
+
+    Preferences:
+      type: object
+      required: [voivodeship, email_reminders]
+      additionalProperties: false
+      properties:
+        voivodeship:
+          description: Used for the care path in `get_help`. Null until the person chooses one.
+          oneOf:
+            - $ref: "#/components/schemas/Voivodeship"
+            - type: "null"
+        email_reminders: { type: boolean, description: On by default. }
+
+    PreferencesRequest:
+      type: object
+      additionalProperties: false
+      minProperties: 1
+      properties:
+        voivodeship:
+          oneOf:
+            - $ref: "#/components/schemas/Voivodeship"
+            - type: "null"
+        email_reminders: { type: boolean }
+
+    EmailRequest:
+      type: object
+      required: [email]
+      additionalProperties: false
+      properties:
+        email: { type: string, format: email }
+
+    TokenRequest:
+      type: object
+      required: [token]
+      additionalProperties: false
+      properties:
+        token: { type: string, minLength: 1, maxLength: 200 }
+
+    PasswordResetConfirmRequest:
+      type: object
+      required: [token, password]
+      additionalProperties: false
+      properties:
+        token: { type: string, minLength: 1, maxLength: 200 }
+        password: { type: string, minLength: 8, maxLength: 128 }
+
+    ChangePasswordRequest:
+      type: object
+      required: [current_password, new_password]
+      additionalProperties: false
+      properties:
+        current_password: { type: string, minLength: 1, maxLength: 128 }
+        new_password: { type: string, minLength: 8, maxLength: 128 }
+
+    InvitationList:
+      type: object
+      required: [items]
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items: { $ref: "#/components/schemas/Invitation" }
+
+    AiSource:
+      description: |
+        What produced a text. `mock` is demonstration text, `groq` comes from the model, `rules`
+        is a fixed text used when no model answered.
+      type: string
+      enum: [mock, groq, rules]
+
+    KnowledgeSource:
+      description: A cited passage behind an AI text. Empty lists are normal until retrieval exists.
+      type: object
+      required: [title, url]
+      additionalProperties: false
+      properties:
+        title: { type: string }
+        url: { type: string, format: uri }
+
+    Narrative:
+      type: object
+      required: [text, source]
+      additionalProperties: false
+      properties:
+        text: { type: string }
+        source: { $ref: "#/components/schemas/AiSource" }
+
+    CrisisLine:
+      type: object
+      required: [name, number, hours, description, source_url]
+      additionalProperties: false
+      properties:
+        name: { type: string }
+        number: { type: string, description: As it is dialled, for example `116 123`. }
+        hours: { type: string, description: Polish. }
+        description: { type: string, description: Polish. }
+        source_url: { type: string, format: uri }
+
+    CareStep:
+      type: object
+      required: [order, title, description]
+      additionalProperties: false
+      properties:
+        order: { type: integer, minimum: 1 }
+        title: { type: string }
+        description: { type: string }
+
+    RegionalContact:
+      type: object
+      required: [name, description, url]
+      additionalProperties: false
+      properties:
+        name: { type: string }
+        description: { type: string }
+        url: { type: string, format: uri }
+
+    Help:
+      type: object
+      required: [crisis_lines, voivodeship, path, regional_contact]
+      additionalProperties: false
+      properties:
+        crisis_lines:
+          type: array
+          minItems: 1
+          description: Always includes the emergency number 112.
+          items: { $ref: "#/components/schemas/CrisisLine" }
+        voivodeship:
+          oneOf:
+            - $ref: "#/components/schemas/Voivodeship"
+            - type: "null"
+        path:
+          type: array
+          description: Steps from the first one to urgent help.
+          items: { $ref: "#/components/schemas/CareStep" }
+        regional_contact:
+          description: The regional branch of the national health fund. Null without a voivodeship.
+          oneOf:
+            - $ref: "#/components/schemas/RegionalContact"
+            - type: "null"
+
+    SummaryExtended:
+      type: object
+      required: [audience, trend, statements, care_reminder, narrative, generated_at, reasons, help]
+      additionalProperties: false
+      properties:
+        audience:
+          description: The role the text is written for.
+          $ref: "#/components/schemas/Role"
+        trend: { $ref: "#/components/schemas/Trend" }
+        statements:
+          type: array
+          description: General statements in gentle Polish. Never a single answer, never an author.
+          items: { type: string }
+        care_reminder:
+          description: Loved ones only. A reminder to take special care of her.
+          type: [string, "null"]
+        narrative: { $ref: "#/components/schemas/Narrative" }
+        generated_at: { type: string, format: date-time, description: UTC }
+        reasons:
+          type: array
+          description: |
+            General explanations of the trend, such as "several days of signals from daily life".
+            They never name a person or a source.
+          items: { type: string }
+        help:
+          description: Null unless the trend is `needs_attention`.
+          oneOf:
+            - $ref: "#/components/schemas/Help"
+            - type: "null"
+
+    TaskSuggestion:
+      type: object
+      required: [id, title, details]
+      additionalProperties: false
+      properties:
+        id: { type: string, pattern: "^[a-z][a-z0-9_]*$" }
+        title: { type: string, minLength: 1, maxLength: 120 }
+        details: { type: string, maxLength: 500 }
+
+    TaskSuggestionList:
+      type: object
+      required: [items]
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items: { $ref: "#/components/schemas/TaskSuggestion" }
+
+    ReminderKind:
+      type: string
+      enum: [check_in_due, observation_due, task_in_progress]
+
+    Reminder:
+      type: object
+      required: [kind, text, task_id]
+      additionalProperties: false
+      properties:
+        kind: { $ref: "#/components/schemas/ReminderKind" }
+        text: { type: string, description: Polish, general. }
+        task_id:
+          description: The task, for `task_in_progress`. Null for the other kinds.
+          type: [integer, "null"]
+
+    ReminderList:
+      type: object
+      required: [items]
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items: { $ref: "#/components/schemas/Reminder" }
+
+    SayItRequest:
+      type: object
+      required: [text, recipient, tone]
+      additionalProperties: false
+      properties:
+        text: { type: string, minLength: 1, maxLength: 500 }
+        recipient:
+          type: string
+          enum: [partner, supporters]
+        tone:
+          type: string
+          enum: [gentle, direct]
+
+    SayItResponse:
+      type: object
+      required: [crisis, message, help, source, sources]
+      additionalProperties: false
+      properties:
+        crisis:
+          type: boolean
+          description: True when the text matched the crisis rules. Then `message` is null.
+        message:
+          type: [string, "null"]
+          description: A suggested message she can copy. Polish.
+        help:
+          description: The crisis lines and care path. Null unless `crisis` is true.
+          oneOf:
+            - $ref: "#/components/schemas/Help"
+            - type: "null"
+        source: { $ref: "#/components/schemas/AiSource" }
+        sources:
+          type: array
+          items: { $ref: "#/components/schemas/KnowledgeSource" }
+
+    GuideTopic:
+      type: string
+      enum: [how_are_you, offer_help, listen_without_fixing, hard_day, suggest_professional_help]
+
+    ConversationGuide:
+      type: object
+      required: [topic, opening_lines, avoid, questions, source, sources]
+      additionalProperties: false
+      properties:
+        topic: { $ref: "#/components/schemas/GuideTopic" }
+        opening_lines:
+          type: array
+          minItems: 1
+          items: { type: string }
+        avoid:
+          type: array
+          minItems: 1
+          items: { type: string }
+        questions:
+          type: array
+          minItems: 1
+          items: { type: string }
+        source: { $ref: "#/components/schemas/AiSource" }
+        sources:
+          type: array
+          items: { $ref: "#/components/schemas/KnowledgeSource" }

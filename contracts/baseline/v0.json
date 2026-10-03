@@ -1,0 +1,258 @@
+{
+  "examples": {
+    "accept_invitation.200.json": "2cba043e7216f22f11a33d45e61a57de3a7e3ef581a63df66cea30d730f630ca",
+    "accept_invitation.401.json": "87731632e687a84c83bc27fa706f9d515912c55f0b81cbb0a4bdbaf60c233f84",
+    "accept_invitation.404.json": "c0d930beb84c7a921f90ec38bca7d16ed49903023af49cda6356320f1c73ce65",
+    "accept_invitation.409.closed.json": "c1d625020218e3ad69b0394851b5af1356cb76dc1abe2229687e349ca752a80e",
+    "accept_invitation.409.json": "d4364882e52e77470436dcc1e73c784a83f6691a4600c84aa880d6e654f756e4",
+    "claim_task.200.json": "51dfcb64203af3d93ad8c4569a02dbf1312ba42c907e204707d5aa30d1d52a2f",
+    "claim_task.401.json": "87731632e687a84c83bc27fa706f9d515912c55f0b81cbb0a4bdbaf60c233f84",
+    "claim_task.403.json": "93773d36c3734f2ffe17e11e7c416d65e9fd0d4d56571c929883b71847e27882",
+    "claim_task.404.json": "42fda6db701160a1f811b07fc6c0037459331114c9fbae2ee635ffee8e391c19",
+    "claim_task.409.closed.json": "c1d625020218e3ad69b0394851b5af1356cb76dc1abe2229687e349ca752a80e",
+    "claim_task.409.json": "cf2e4491ff51fcf06bfdb26d75450630124ddfcf4e251c5537c47a34411c8700",
+    "close_group.200.json": "79946262834f143165f677b6c1132c7ffc22476b71efee9f9463a13afbbc6313",
+    "close_group.401.json": "87731632e687a84c83bc27fa706f9d515912c55f0b81cbb0a4bdbaf60c233f84",
+    "close_group.403.json": "f9367ffa95ed7e5c6d699a68551a3733f1c1cf478de637cdf8255b2727e2dd80",
+    "complete_task.200.json": "804f9f7b44723b15d95be2c02293ecb607fb698cde3005a4c58d3a293e8e8e78",
+    "complete_task.401.json": "87731632e687a84c83bc27fa706f9d515912c55f0b81cbb0a4bdbaf60c233f84",
+    "complete_task.403.json": "7d4c257c6edd14ed8de2af4aac6ed17922b79c3729945df14efe27addc44d3f2",
+    "complete_task.404.json": "42fda6db701160a1f811b07fc6c0037459331114c9fbae2ee635ffee8e391c19",
+    "complete_task.409.closed.json": "c1d625020218e3ad69b0394851b5af1356cb76dc1abe2229687e349ca752a80e",
+    "complete_task.409.json": "5a533a421f121d57ddce4c28541cd3698a3b1d99a1ee258c12b11066bd955408",
+    "create_check_in.201.json": "24078cff40078d149c6a25ff678fa4fa53c9e2afc5779e0fac30e78e92032edd",
+    "create_check_in.401.json": "87731632e687a84c83bc27fa706f9d515912c55f0b81cbb0a4bdbaf60c233f84",
+    "create_check_in.403.json": "9b79b3c7d66b8e13703c750c57f9f8333d5e055ef6a5c7506e8fc5ee735df36f",
+    "create_check_in.409.json": "d23ee484f4777910623bdf16422449ad48eaf7cc0238831a0863306e04aad62a",
+    "create_check_in.422.json": "22eeccae7adab7767b69ae3c3e6b94b23e1f79250a03ff3556c5714993b4222c",
+    "create_check_in.request.json": "d47b23cae86ff56667ce179f1ac439ad34771579e831357f2561926f9ce770b8",
+    "create_group.201.json": "8a6a26f0eb75bed8e38da14b6037af7dd89308ce06078a0010f6f127e2a29369",
+    "create_group.201.partner.json": "d8d71aa26a9068916417c8541921e360c8ad413f4b418d6c5f49e8a29e006d25",
+    "create_group.401.json": "87731632e687a84c83bc27fa706f9d515912c55f0b81cbb0a4bdbaf60c233f84",
+    "create_group.409.json": "d4364882e52e77470436dcc1e73c784a83f6691a4600c84aa880d6e654f756e4",
+    "create_group.422.json": "e6fe0073d5af2eadfbc75c0d186f889b4ee0b9fdcf0e5f0224ff49dda686eaa8",
+    "create_group.request.json": "9b3b98e69250276b2dd95e42202601f442fb2f1790c9de0a090ac6f36ed93a59",
+    "create_invitation.201.json": "aca4a0d310a77ec2ca50fb03179650f370bd6c402ec9b7b1d8a7174d4a2ad1a9",
+    "create_invitation.401.json": "87731632e687a84c83bc27fa706f9d515912c55f0b81cbb0a4bdbaf60c233f84",
+    "create_invitation.403.json": "c272559e80c02ca37ca64ebbc8a71883816cd52f34b8c2b5022be71172b21bf8",
+    "create_invitation.409.json": "c1d625020218e3ad69b0394851b5af1356cb76dc1abe2229687e349ca752a80e",
+    "create_invitation.422.json": "ee0958b49dfabadeda8a30427d16e02146b01c9f2cce8bc496b2f091e84d7819",
+    "create_invitation.request.json": "75fc3a3cf87550027e90cf67a168380538dab55b6e9eca914b9149d555fbb918",
+    "create_observation.201.json": "8d3a3cd8d7c7e1c0a855b472a74cb08594d23472ebe32aa0c676ca8db878d728",
+    "create_observation.401.json": "87731632e687a84c83bc27fa706f9d515912c55f0b81cbb0a4bdbaf60c233f84",
+    "create_observation.403.json": "dd8142dcc1ded01114ef5cef4ebe9c0c3d772c9b25cf873e4231a8fbf284b2f7",
+    "create_observation.409.json": "d23ee484f4777910623bdf16422449ad48eaf7cc0238831a0863306e04aad62a",
+    "create_observation.422.json": "9ab12236b6afceae50460a875906ca03c2af2efe421e1bc8b0b9cf74d90cb1b4",
+    "create_observation.request.json": "5884674705f59cbf8348307b1cea950cfdc5556a9a843a12f2bbbb8f5f283622",
+    "create_task.201.json": "59d36ca738812adfd245ba3c08f57999e0453a65b1c21defbaf4438b7315d7b4",
+    "create_task.401.json": "87731632e687a84c83bc27fa706f9d515912c55f0b81cbb0a4bdbaf60c233f84",
+    "create_task.403.json": "93773d36c3734f2ffe17e11e7c416d65e9fd0d4d56571c929883b71847e27882",
+    "create_task.409.closed.json": "2c4e60bf048cd95db77eefc63693ab298768f25b720ece9975a343007833985b",
+    "create_task.409.json": "d23ee484f4777910623bdf16422449ad48eaf7cc0238831a0863306e04aad62a",
+    "create_task.422.json": "7a9fe6bab60ff4424a189766f0cc2a2cb59880d97bf0c6fff867ed6b0c4c9b7d",
+    "create_task.request.json": "9e5afafb590ff9569364effc6e79a6a428c6eed003e9f90aa2307cb7373a4c69",
+    "get_group.200.json": "8a6a26f0eb75bed8e38da14b6037af7dd89308ce06078a0010f6f127e2a29369",
+    "get_group.401.json": "87731632e687a84c83bc27fa706f9d515912c55f0b81cbb0a4bdbaf60c233f84",
+    "get_group.404.json": "8184a8ac414039751366d84292771b56101c14134b16ec523819cf8b9f4a811b",
+    "get_invitation.200.json": "2f726f1762d1f7ef4b2d0e5054d6775a5061dac995905b16cff3c377b74619aa",
+    "get_invitation.404.json": "c0d930beb84c7a921f90ec38bca7d16ed49903023af49cda6356320f1c73ce65",
+    "get_me.200.json": "2e55c241aecdd0a855be5879db9d90352fbb5e18e3f648c11d0a32150b5a0c07",
+    "get_me.200.no_group.json": "bb01c709e3270080b510047c935c742d268095e18f9fe09bbd49d80bc0728aea",
+    "get_me.200.partner.json": "2cba043e7216f22f11a33d45e61a57de3a7e3ef581a63df66cea30d730f630ca",
+    "get_me.200.pending.json": "7bd5a6a2898d5a0652416b3a1127bfeaa2532028c6db68dcb4feefbd2e5a4c95",
+    "get_me.200.supporter.json": "ea3776854856c21713c87f024fa6114ef568572c8406d77bbc521372f5333ab8",
+    "get_me.401.json": "87731632e687a84c83bc27fa706f9d515912c55f0b81cbb0a4bdbaf60c233f84",
+    "get_summary.200.json": "cca2e46f9b4997f441a6d8a22b503a5569157f0e74e24edcc9e91e6ff4d0eb71",
+    "get_summary.200.partner.json": "f5aeb7b300cfab2b24d00ee482dcbcb0eac3146c49ac997e86963c865d86f9c4",
+    "get_summary.200.supporter.json": "3a9fe83d4d1ec25d64e26a0069db13c920ae3750810577351e08ac9938b1e94a",
+    "get_summary.401.json": "87731632e687a84c83bc27fa706f9d515912c55f0b81cbb0a4bdbaf60c233f84",
+    "get_summary.403.json": "93773d36c3734f2ffe17e11e7c416d65e9fd0d4d56571c929883b71847e27882",
+    "health.200.json": "a29ee2b15c494311c52521766e44af56a3ad2248e7a8ab465e5206463c13d288",
+    "list_check_ins.200.json": "0b352aeb9cc3e41e73bafa60afbf20a461021bb596f02c57631c1450c584e439",
+    "list_check_ins.401.json": "87731632e687a84c83bc27fa706f9d515912c55f0b81cbb0a4bdbaf60c233f84",
+    "list_check_ins.403.json": "ed02e577b3d245c6116df8daa77dfb19a48ca33fe7a2420a70e188540e6aff97",
+    "list_members.200.json": "034c51eaa59a1b89d3e526e158c4f436a7d2313993fd7e5aba1eac19ee8de1a4",
+    "list_members.401.json": "87731632e687a84c83bc27fa706f9d515912c55f0b81cbb0a4bdbaf60c233f84",
+    "list_members.403.json": "93773d36c3734f2ffe17e11e7c416d65e9fd0d4d56571c929883b71847e27882",
+    "list_observation_questions.200.json": "b358920577b29b64c8218e8c67cc245fe5b784c5eaf2df0715db2b0fa5a234b8",
+    "list_observation_questions.401.json": "87731632e687a84c83bc27fa706f9d515912c55f0b81cbb0a4bdbaf60c233f84",
+    "list_observation_questions.403.json": "dd8142dcc1ded01114ef5cef4ebe9c0c3d772c9b25cf873e4231a8fbf284b2f7",
+    "list_self_care.200.json": "dc78c88d94a741cf88df8eb80d538d63af1ddd9f5d7e1d957add46008ebd6192",
+    "list_self_care.401.json": "87731632e687a84c83bc27fa706f9d515912c55f0b81cbb0a4bdbaf60c233f84",
+    "list_self_care.403.json": "f6dca9117f822e27be0d0de860fae2aa38c66e7ff6eedfa4e421f572bbfeb584",
+    "list_tasks.200.json": "de8829695c6548d6287da2ea961adeb82fdb55673d1b982a0691e03173f6d60a",
+    "list_tasks.401.json": "87731632e687a84c83bc27fa706f9d515912c55f0b81cbb0a4bdbaf60c233f84",
+    "list_tasks.403.json": "93773d36c3734f2ffe17e11e7c416d65e9fd0d4d56571c929883b71847e27882",
+    "login.200.json": "2e55c241aecdd0a855be5879db9d90352fbb5e18e3f648c11d0a32150b5a0c07",
+    "login.401.json": "8ac83882760ad344c19c64c2bff515364345f6dd66a41ab005618b5676e94076",
+    "login.422.json": "ee0958b49dfabadeda8a30427d16e02146b01c9f2cce8bc496b2f091e84d7819",
+    "login.request.json": "256ea5ad1a4239cb341c2e8723b9859fd065dc16801f6b1ccac7e937d3df0a52",
+    "logout.200.json": "a29ee2b15c494311c52521766e44af56a3ad2248e7a8ab465e5206463c13d288",
+    "logout.401.json": "87731632e687a84c83bc27fa706f9d515912c55f0b81cbb0a4bdbaf60c233f84",
+    "register.201.json": "bb01c709e3270080b510047c935c742d268095e18f9fe09bbd49d80bc0728aea",
+    "register.422.json": "02b3f13b5f87a72fd790c0e9be0af9c78ee0bd711f2dd71922f97224f0f48b75",
+    "register.request.json": "5e3e22556b2b72bf71d081a5c2911197aa6b3ce3c5ba800a92e0a1d94d989fc7",
+    "remove_member.200.json": "a29ee2b15c494311c52521766e44af56a3ad2248e7a8ab465e5206463c13d288",
+    "remove_member.401.json": "87731632e687a84c83bc27fa706f9d515912c55f0b81cbb0a4bdbaf60c233f84",
+    "remove_member.403.json": "648e064946b5ba0fbafddfc4f00193bb7e86ff8a94674f4cc03fa1a3b58c9773",
+    "remove_member.404.json": "4f716646573c9fe0d04fe5d09bf0df21dfd1307731121f78ed92d04580948f3c",
+    "remove_member.409.json": "08900cd215059d63cf736224231f1c4bea1205da98ee04b1fb36aabdf7ac6729"
+  },
+  "operations": {
+    "accept_invitation": {
+      "method": "post",
+      "path": "/api/v1/invitations/{token}/accept",
+      "sha256": "4b60b366d70bb477ffe2cd1e24289bf669bac95de89af203b526ffaacc386b12"
+    },
+    "claim_task": {
+      "method": "post",
+      "path": "/api/v1/tasks/{task_id}/claim",
+      "sha256": "90354c2f5088b69b5ecd374f600b36cb1900aad0147a2df6d422bec1a4d343ec"
+    },
+    "close_group": {
+      "method": "post",
+      "path": "/api/v1/groups/current/close",
+      "sha256": "3ac47fed3871f0f70221dfd1452478e7ce1901beb77b43e691bb7f76a7fa5b0d"
+    },
+    "complete_task": {
+      "method": "post",
+      "path": "/api/v1/tasks/{task_id}/complete",
+      "sha256": "ce556e9b785b5ddc425249db1b2c6e0a92ccf4a9108a0a08c58365afd113108b"
+    },
+    "create_check_in": {
+      "method": "post",
+      "path": "/api/v1/check-ins",
+      "sha256": "05eec32ea23821d7a910eb66a7fc64bdd4042b0f93ae35fcc1428a450925d08d"
+    },
+    "create_group": {
+      "method": "post",
+      "path": "/api/v1/groups",
+      "sha256": "5916e0dad8a3d6711353ab97554226089e725f31c4fa9183b92ccb5d3d595009"
+    },
+    "create_invitation": {
+      "method": "post",
+      "path": "/api/v1/invitations",
+      "sha256": "8f3764894136d98bf3775ce60f663335a93ee1ac60616e44d8d2fd7884689ee1"
+    },
+    "create_observation": {
+      "method": "post",
+      "path": "/api/v1/observations",
+      "sha256": "edeb9fdefad5b08ad65623c4dab2a5aef69b0482e59e577b2346597af4f73f93"
+    },
+    "create_task": {
+      "method": "post",
+      "path": "/api/v1/tasks",
+      "sha256": "4af8569bcd3514338dba08a8d03fff68223109c58ff842fb51aaccdf471dcadc"
+    },
+    "get_group": {
+      "method": "get",
+      "path": "/api/v1/groups/current",
+      "sha256": "d32845e9add58de0da66445f9cea068df386fa8330fd2336ce2cf9a12750629f"
+    },
+    "get_invitation": {
+      "method": "get",
+      "path": "/api/v1/invitations/{token}",
+      "sha256": "f210947d0010fcee32a7116cf4405d07672e12d9b56e3a950be6416b5b26ecf1"
+    },
+    "get_me": {
+      "method": "get",
+      "path": "/api/v1/me",
+      "sha256": "8fb4c5835cc00100a952796cb8cfa5e8e942e2e7de6ae6ced4f331356f763398"
+    },
+    "get_summary": {
+      "method": "get",
+      "path": "/api/v1/summary",
+      "sha256": "ac630b330d76131159b478763f961d4461d82c618b196d9ff6c44ba4fd902064"
+    },
+    "health": {
+      "method": "get",
+      "path": "/api/v1/health",
+      "sha256": "85d002299d00369167c3c4cd39c762a676dae02c9a6c56e6db783831c96da10a"
+    },
+    "list_check_ins": {
+      "method": "get",
+      "path": "/api/v1/check-ins",
+      "sha256": "4b178eaf45d33469cdfaae4a7ff64d5f828e0c865c933ee13956397138705144"
+    },
+    "list_members": {
+      "method": "get",
+      "path": "/api/v1/members",
+      "sha256": "313945372bcb93f7bde4cc2d23f81993e574c664284a052c574571d9a57fca9c"
+    },
+    "list_observation_questions": {
+      "method": "get",
+      "path": "/api/v1/observations/questions",
+      "sha256": "869dc04c85ec063335676d139febc4d43401aaf69c670f6e062bb414e5c42155"
+    },
+    "list_self_care": {
+      "method": "get",
+      "path": "/api/v1/self-care",
+      "sha256": "98c7ca636e47ec88005343e5ac72c8d99e2a8f8737a5c335c8597ab41d2c4c79"
+    },
+    "list_tasks": {
+      "method": "get",
+      "path": "/api/v1/tasks",
+      "sha256": "a38c576c67f827dae85ed98767a339a0118c3f881955b05b3b98e57ebbb82816"
+    },
+    "login": {
+      "method": "post",
+      "path": "/api/v1/auth/login",
+      "sha256": "1d136ef525084ee178849b6e0ca68b7b7326288a74d395980473190e13f248fd"
+    },
+    "logout": {
+      "method": "post",
+      "path": "/api/v1/auth/logout",
+      "sha256": "1aee26f19ab36ed772be61046308e2cebbd75bc18926161853f2e47f2bcfa4ff"
+    },
+    "register": {
+      "method": "post",
+      "path": "/api/v1/auth/register",
+      "sha256": "d12921c16cdc03d09c845a170c53b0f5b1390042b81e38e3cc369f1e1f0c432c"
+    },
+    "remove_member": {
+      "method": "delete",
+      "path": "/api/v1/members/{member_id}",
+      "sha256": "aee263d7f190665b3c304a28947d7cc6d3c053102b31389f252a0513c7cdec70"
+    }
+  },
+  "schemas": {
+    "AnswerValue": "0236d76b8b6b4a6e03511fc6b25fa860db257e06cb9f2417030b3a9ffe1e5e35",
+    "Anxiety": "6d312d80aa2fec1d13bafa76c41ee102ad49e1947286bf9c2bc8c26805d849fc",
+    "CheckIn": "1846fcd02ee215642b62430c8767c463119f4b78d4cbfd84b3874605f2368ab7",
+    "CheckInList": "bff4692bd84aad51e891197c0531152a14d7b797dd39560341eb827270207123",
+    "CheckInRequest": "c6fb0ef031918fcfc1b5b34d2588b864104b9dd432d691491815d3a0b51a7017",
+    "CreateGroupRequest": "06cc88513a1e4a033593505a91b3654a823d94ebe8d219c2aea2a03fa3ef4963",
+    "Error": "00b84809f6e63a2ac9620748631243095f72d99f7f790dca56d950a30ee35aab",
+    "Group": "3402897a17fde6f108b5f2ad72ebfaa49a0c3e6013903ddc30e3cd56b06bea17",
+    "GroupStatus": "7a9a034239d83ba91a743fd7eae265a8dfdb2720fd66e58c6818796d22ffc8d0",
+    "Health": "6f60e42d292a7296b98fb687ce3418324ea6e947914818d2653f888fb18ae5b8",
+    "Invitation": "e1e4f4c1cba9bbfa3b80a1db13856e9ea55b641bfc340c9d6da01bd088fe64fa",
+    "InvitationPreview": "7d85f43f1cdd3a108b56c031ff42b4c1a26fdceaf9c70659f014d107d480ebc0",
+    "InvitationRequest": "ebf4a3d529a03b85ca86ef78e0e54e0b0110cceae8f30a1cab6b90e96bb855f1",
+    "LoginRequest": "1ab912188846f940879a57d277004a34fde4e806344a924583422687e3b035d9",
+    "Me": "e2614c36773a618be2ef00dcf070acbfbcd33bed7b8ebf04e1b9dc15ad9f68a9",
+    "Member": "adfe44444fb7f598341197e166269d537cd6cb92b41d125ab81c2ea1245938c3",
+    "MemberList": "f20a18214e9433627f45e74cb8e6b35210f7d55e6d7cf81cdd1be901d149c527",
+    "Membership": "fbc365eea8b3eb32c19bcb77b770d7fd105d033c6b857c767005d409ad5b9e7b",
+    "Mood": "462a49df721ef528bea724c9e60fb2e0ae6ce617105669e6a97b4fe0b5f692d3",
+    "ObservationCreated": "02a39a050ea03fe52b85321d15841479236a04c16e8afb21d13f54c538eb2061",
+    "ObservationQuestion": "2c34bbcd7e670cf29a28a711768a3f8e607f6d86d82d413fce96762bfe820ee9",
+    "ObservationQuestionList": "d4979b75606683df354a0e74f3b2a6e53342af01359f72c9adc75dcaa9229a94",
+    "ObservationRequest": "8b3d41280c75aa5811085d4a71c318541c532dfcab18a96e487fbcfddee582d3",
+    "Ok": "6f60e42d292a7296b98fb687ce3418324ea6e947914818d2653f888fb18ae5b8",
+    "Person": "b5d76444fe063148de585aadd6cd1918e023f048ce143a7be1c8d53b39b409bd",
+    "RegisterRequest": "9f7085165377cdf7990ddb814bdb16044ad8004ac0e0c219c2c2f4130bc524dc",
+    "Role": "2d827d9bb3342f5901fd3cff807fedfd5c9d935fe2cd7895163c7bc930f505ca",
+    "SelfCareItem": "adbf4c3dca56fcfd72e79af466f6cdfdab1f1d40bb5f65477280261020aeab31",
+    "SelfCareKind": "02481877764f2eab9f8e416e0ec9025bfc0890f8a11ff84e94ada71380655824",
+    "SelfCareList": "deb5f8a1e5bd85e47470414d94f4ac022a5fd69a365044c4515c6825dfc5704d",
+    "Sleep": "be728fa3404e1d77e7e01dc2b92da2bf83d710bca97f3261092a12e01081fa50",
+    "Summary": "7c60f74e981657d51cdfef8f79ed03e7b8deea74e13e8d2c1fbea5dd1adabbf6",
+    "Task": "494654515457a787ed5cab57ca7a27238176e14eb0f0b3949975afe26e208c20",
+    "TaskList": "513609a49c548ce45b48186afa231800efbffa79ef42f9d60ec31c5fd11b74a9",
+    "TaskRequest": "c770d0dbeb57bf0265f3aaab1fa9966bef88dcbc3a013aad4a6d9876c868b9fd",
+    "TaskStatus": "e090e213c281a3ccf635f920365c816d51a3b5ece699778d75dfcc7e1f9d9c6e",
+    "Trend": "5de69c21c1eb229ab805d7efb9821362b0898f672802b311d5aae5d53d83a1da"
+  },
+  "version": "v0"
+}

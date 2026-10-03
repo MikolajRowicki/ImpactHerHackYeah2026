@@ -1,0 +1,13 @@
+{
+  "id": 4,
+  "title": "Zrobić zakupy",
+  "details": null,
+  "status": "open",
+  "created_by": {
+    "id": 2,
+    "display_name": "Piotr"
+  },
+  "claimed_by": null,
+  "created_at": "2026-10-03T10:00:00Z",
+  "completed_at": null
+}

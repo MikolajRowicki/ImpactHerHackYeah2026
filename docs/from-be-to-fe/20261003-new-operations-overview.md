@@ -1,7 +1,9 @@
 # New operations coming with the full backend
 
-Status: planned. They land in the contract in the first commit group of the change `full-backend`
-(branch `change/full-backend`). This file is updated to `ready` with the commit when they are in.
+Status: ready. They are in `contracts/openapi.yaml` on the branch `change/full-backend`, commit
+`HASH`, with examples in `contracts/examples/`. Merge that branch (or `main` after it is merged).
+The backend that answers them arrives in later commits of the same branch; until then use mock mode.
+`contracts/README.md` lists them by area.
 
 ## The rule
 
@@ -25,6 +27,17 @@ new operation carries more, and you may move to it. Everything in v0 keeps worki
 | `ai_say_it_for_me` | woman | a suggested message from what she wants to say; may answer `crisis: true` with help and no message |
 | `ai_conversation_guide` | partner, supporter | opening lines, things to avoid and questions for a topic |
 | the six account security operations | anyone / signed in | see `20261003-account-security-screens.md` |
+
+## Example variants to look at
+
+`get_summary_extended.200` (woman, with help), `.200.partner` (with a care reminder and the general
+help), `.200.stable` (no help); `get_help.200` and `.200.general`; `list_reminders.200` and
+`.200.empty`; `ai_say_it_for_me.200` and `.200.crisis`; `release_task.409.closed`.
+
+## One more code
+
+`accept_invitation` can answer 409 with the code `role_taken` (the group already has a woman). The
+v0 text cannot list it because v0 is frozen. Show the `message` of any unknown 409 code.
 
 ## Rules for AI answers
 
