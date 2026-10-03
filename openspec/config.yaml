@@ -4,8 +4,8 @@ context: |
   Language: English
   All artifacts must be written in English.
   Keep OpenSpec structural headings and SHALL/MUST keywords in English.
-  Project: hackathon entry for HackYeah 2026 "ImpactHer: Technology for Real Change"
-  (deadline 2026-10-04 23:00). A Polish-language app that helps new mothers and
+  Project MaydayMama: hackathon entry for HackYeah 2026 "ImpactHer: Technology for Real Change"
+  (deadline 2026-10-04 11:00 AM). A Polish-language app that helps new mothers and
   their close ones notice postpartum depression early and share the load.
   It never diagnoses and never replaces a doctor or crisis help.
   Stack: Python 3.12+, Poetry, ruff, pytest, pytest-django, Playwright.
