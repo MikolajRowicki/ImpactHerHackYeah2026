@@ -2,7 +2,7 @@
 
 ## Context
 
-Greenfield repo: only `CLAUDE.md`, `README.md` and `docs/input/` exist. Two Claude sessions will work in parallel: one on the backend, one on the frontend in its own git worktree. See proposal.md for motivation.
+Greenfield repo: only `CLAUDE.md`, `README.md` and `docs/input/` exist. Two Claude sessions will work in parallel: the backend session on this laptop, the frontend session on another laptop under another Claude account. They cannot message each other; the GitHub repository and the user are the only channels. See proposal.md for motivation.
 
 ```mermaid
 flowchart LR
@@ -38,9 +38,16 @@ flowchart LR
 |---|---|---|
 | `src/backend/`, `pyproject.toml`, `poetry.lock` | backend session | read only |
 | `src/frontend/` | frontend session | read only |
-| `contracts/`, `openspec/`, `docs/`, `CLAUDE.md` | main session | read only; ask for a contract change |
+| `contracts/openapi.yaml`, `contracts/examples/`, `CLAUDE.md` | main session | read only |
+| `contracts/requests/` | frontend session adds files; main session reads and removes them | no edits to existing files |
+| `openspec/changes/<own change>/`, `docs/worklog/<session>.md` | the session that owns the change | not touched |
+| `docs/` (other files), `openspec/specs/` | main session | read only |
 
-A needed contract change goes to the main session as a short request (what, why). The main session edits the contract on `main`; both sessions then merge `main` into their branch.
+**Contract changes without a channel.** The frontend session writes `contracts/requests/<yyyymmdd>-<slug>.md` (what is needed, why, proposed shape) and keeps going with its own mock data, marked in the request. The main session applies the request to `openapi.yaml` and the examples on `main`, deletes the request file in the same commit, and the frontend session merges `main`. File names are unique, so two branches never edit the same file. Alternative: let the frontend edit `openapi.yaml` directly. Rejected, concurrent edits of one YAML file conflict.
+
+**Worklog per session.** `docs/worklog/main.md`, `backend.md`, `frontend.md` replace the single `docs/worklog.md` from `CLAUDE.md`, so parallel branches never touch the same file.
+
+**Frontend session start.** The brief is written so a session on a fresh clone can begin without questions: clone, check out the foundation branch, `poetry install`, install the OpenSpec CLI and the `frontend-design` plugin, serve the repo root, open `?mock=1`. It is pasted as the first prompt on the other laptop. Merging back: the frontend pushes its branch; the main session fetches and merges it (archive before merge, as in `CLAUDE.md`).
 
 **Contract first, hand-written.** `contracts/openapi.yaml` is the source of truth. Alternative: generate it from django-ninja code. Rejected, because then the frontend would wait for backend code to know the shape. Drift is prevented by tests: the document is valid, examples validate against schemas, and every backend route under `/api/v1` is declared in the contract (implemented ⊆ declared). Dev dependencies `openapi-spec-validator` and `jsonschema`, pinned.
 
@@ -76,8 +83,9 @@ Help path, crisis handling and the AI summary text are part of `summary` and lat
 
 ## Risks / Trade-offs
 
-- [Contract changes mid-way break one side] → one owner, changes announced in the worklog, both sides merge `main` after each change.
+- [Contract changes mid-way break one side] → one owner, request files instead of live edits, changes announced in the worklog, both sides merge `main` after each change.
+- [Frontend waits for a contract answer] → it keeps working on marked mock data and the user can relay urgent items; requests are small because v0 already lists every resource.
 - [Mock data hides a real mismatch] → the guard tests validate examples against schemas; a live check happens when the sides connect.
-- [Two sessions in one checkout switch each other's branch] → the frontend session uses `git worktree`.
+- [Frontend laptop has no OpenSpec or plugins] → the brief lists the install commands; the skills are committed under `.claude/`.
 - [Hand-written contract is slower than generating it] → accepted, the contract is small at v0.
 - [14 hours left] → this change stays tiny: skeleton, contract, one endpoint, one mock page.

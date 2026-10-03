@@ -11,7 +11,8 @@ MaydayMama has about 14 hours until the 2026-10-04 11:00 deadline and two builde
 - Backend serves one live endpoint, `GET /api/v1/health`, and tests that guard the contract (valid document, valid examples, no undeclared routes).
 - AI provider switch driven by `.env` (`AI_PROVIDER=mock|groq`), with the mock provider only. All keys live in `.env`.
 - Frontend shell with a mock mode that serves the contract examples, so the frontend session works without any backend. Mock mode is clearly marked on screen.
-- Docs: architecture with Mermaid (components, planned data model), a self-contained brief for the frontend session (git worktree, ownership, rules), worklog.
+- Docs: architecture with Mermaid (components, planned data model), worklog kept per session, and a self-contained brief for the frontend session. That session runs on another laptop and another Claude account, so the git repository is the only channel: the brief covers setup from a clean clone, ownership, rules, and how to request a contract change by adding a file.
+- `CLAUDE.md`: the worklog rule changes from one `docs/worklog.md` to one file per session in `docs/worklog/`, so parallel sessions never edit the same file.
 
 **Non-goals** (each is its own later change): groups and roles logic, check-ins and observations, trend engine and summaries, tasks and self-care, the real Groq adapter, help path and crisis handling, the visual design of real screens, the pitch slides.
 
@@ -37,6 +38,8 @@ None.
 - `contracts/` sits at the repo root, outside `src/` (confirmed by the user).
 - The contract is hand-written and is the source of truth; the code follows it. django-ninja is the implementation, not the author of the contract.
 - One origin: Django serves `src/frontend` as static files, so session cookies work and CORS is not needed.
+- The frontend session cannot talk to the backend session. Contract changes travel as files in `contracts/requests/` (unique file names, so no merge conflicts), pushed on the frontend branch and applied by the main session when it merges. The user relays anything urgent.
+- The frontend session starts from the foundation branch as soon as its contract, shell and brief are pushed (before this change is archived), then merges `main` once the foundation is merged. Its files do not overlap with the foundation's remaining work.
 - Roles are per group membership (`woman`, `partner`, `supporter`), not per account.
 - Reminders reach people by e-mail (console backend in the demo) and in-app only. No push.
 - The Groq adapter and its client library arrive in the AI change; until then `AI_PROVIDER=groq` is rejected at startup.
