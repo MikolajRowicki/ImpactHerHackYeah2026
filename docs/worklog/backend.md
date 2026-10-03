@@ -108,3 +108,23 @@ One entry per task group. Change: `full-backend`, branch `change/full-backend`.
   filter, complete without the claimer filter, no opt-out filter, log row not written first, a
   diagnosis in a help text) and each failed a test.
 - **Commit:** see the git log, subject `feat(backend): care tasks, help paths and reminders`.
+
+## Group 6: AI assistance and Groq (built by a parallel agent, checked by the main session)
+
+- **Goal:** a Groq provider behind `AI_PROVIDER`, safe fallbacks, "say it for me" and the guide.
+- **Built:** `core/ai/{groq,knowledge,assist}.py` (injected HTTP, 8 second limit, `ProviderError`,
+  key-safe errors, knowledge-source seam with a null default), `core/api/ai.py`,
+  `core/services/assist_{say_it,guide}.py`, crisis terms, fallbacks and guide topics, 150 tests.
+- **Deviations / assumptions:**
+  - The crisis phrase list is a first version; a person who knows the topic must review it before
+    the demo (comment in `crisis_terms.py`). Matching is on folded text, phrases start at a word
+    start; false alarms only show the help block.
+  - `assist.generate` passes the whole prompt (for "say it" it holds her text) to the knowledge
+    source. Revisit if retrieval ever uses an external service.
+  - The woman may use "say it for me" in a pending or closed group (the contract declares no 409).
+  - The Groq request sends a `User-Agent` header; this is from experience, not from the docs.
+  - The Polish guide text is gender-neutral, unlike the example in `contracts/examples`.
+- **Verification:** `ruff check .`, `ruff format --check .`, `pytest tests` (1127 passed with the
+  other merged groups). The agent broke three rules in a throwaway copy (crisis check off, fallback
+  labelled `groq`, prompt in the log) and each failed tests.
+- **Commit:** see the git log, subject `feat(backend): AI assistance and the Groq provider`.

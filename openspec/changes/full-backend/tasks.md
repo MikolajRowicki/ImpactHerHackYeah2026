@@ -45,11 +45,11 @@ main session after it has checked their work. Agents never commit.
 
 ## 6. AI assistance and Groq (agent D)
 
-- [ ] 6.1 Groq adapter with injected HTTP, 8 second limit, `ProviderError`, key-safe errors, startup check for the key; verify the ai-provider-config additions pass with a fake HTTP function and no real network call
-- [ ] 6.2 `assist.generate` with fallbacks, the knowledge-source seam with `NullKnowledge`; verify provider errors, timeouts and empty answers give the fallback with source `rules`, and a fake knowledge source fills `sources`
-- [ ] 6.3 `ai_say_it_for_me` with the crisis check first, no storing or logging of the text; verify the crisis, ordinary, invalid and role scenarios and that no row or log line holds the text
-- [ ] 6.4 `ai_conversation_guide` with its topics; verify the guide scenarios, including the topic about professional help
-- [ ] 6.5 Run `ruff` and the suite; main session commits
+- [x] 6.1 Groq adapter with injected HTTP, 8 second limit, `ProviderError`, key-safe errors, startup check for the key; verify the ai-provider-config additions pass with a fake HTTP function and no real network call
+- [x] 6.2 `assist.generate` with fallbacks, the knowledge-source seam with `NullKnowledge`; verify provider errors, timeouts and empty answers give the fallback with source `rules`, and a fake knowledge source fills `sources`
+- [x] 6.3 `ai_say_it_for_me` with the crisis check first, no storing or logging of the text; verify the crisis, ordinary, invalid and role scenarios and that no row or log line holds the text
+- [x] 6.4 `ai_conversation_guide` with its topics; verify the guide scenarios, including the topic about professional help
+- [x] 6.5 Run `ruff` and the suite; main session commits
 
 ## 7. Account security (agent E)
 
