@@ -60,3 +60,21 @@ def test_mock_mode_works_when_django_serves_the_page(page, django_url):
     expect(page.get_by_text("Zalogowano jako Anna.")).to_be_visible()
     expect(page.get_by_role("status")).to_contain_text("Tryb demonstracyjny")
     assert requests == []
+
+
+def test_csrf_header_is_sent_when_the_page_is_opened_directly(page, django_url):
+    page.goto(f"{django_url}/static/index.html?mock=0")
+    expect(page.get_by_role("link", name="MaydayMama")).to_be_visible()
+
+    with page.expect_request("**/api/v1/auth/login") as request_info:
+        page.evaluate(
+            """async () => {
+                const { createApi } = await import("/static/js/api.js");
+                await createApi({ mock: false })
+                    .call("login", { body: { email: "a@example.com", password: "x" } })
+                    .catch(() => null);
+            }"""
+        )
+
+    token = next(c["value"] for c in page.context.cookies() if c["name"] == "csrftoken")
+    assert request_info.value.headers["x-csrftoken"] == token

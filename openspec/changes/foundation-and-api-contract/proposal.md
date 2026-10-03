@@ -11,7 +11,7 @@ MaydayMama has about 14 hours until the 2026-10-04 11:00 deadline and two builde
 - Backend serves one live endpoint, `GET /api/v1/health`, and tests that guard the contract (valid document, valid examples, no undeclared routes).
 - AI provider switch driven by `.env` (`AI_PROVIDER=mock|groq`), with the mock provider only. All keys live in `.env`.
 - Frontend shell with a mock mode that serves the contract examples, so the frontend session works without any backend. Mock mode is clearly marked on screen.
-- Docs: architecture with Mermaid (components, planned data model), worklog kept per session, and a self-contained brief for the frontend session. That session runs on another laptop and another Claude account, so the git repository is the only channel: the brief covers setup from a clean clone, ownership, rules, and how to request a contract change by adding a file.
+- Docs: architecture with Mermaid (components, planned data model), worklog kept per session, and a self-contained brief for the frontend session. That session runs on another laptop and another account, so the git repository is the only channel: the brief covers setup from a clean clone, ownership, rules, and how to request a contract change by adding a file.
 - `CLAUDE.md`: the worklog rule changes from one `docs/worklog.md` to one file per session in `docs/worklog/`, so parallel sessions never edit the same file.
 
 **Non-goals** (each is its own later change): groups and roles logic, check-ins and observations, trend engine and summaries, tasks and self-care, the real Groq adapter, help path and crisis handling, the visual design of real screens, the pitch slides.
@@ -44,6 +44,6 @@ None.
 - Reminders reach people by e-mail (console backend in the demo) and in-app only. No push.
 - The Groq adapter and its client library arrive in the AI change; until then `AI_PROVIDER=groq` is rejected at startup.
 - Polish UI strings live in one frontend strings file, never inside logic.
-- "The woman invites any role" is read as: she invites a partner or a supporter. A group has exactly one woman, so `x-invite-rules` does not let her invite another woman.
+- "The woman invites any role" is read as: she invites a partner or a supporter. A group has exactly one woman, so `x-invite-rules` does not let her invite another woman. The spec scenario "Only the woman invites outsiders" says so too.
 - Examples with a variant (`get_me.200.partner.json`) let the frontend show other roles in mock mode; the plain `<operationId>.<status>.json` is the default.
 - A person without a group who calls a group operation gets 403 `not_a_member`; only `get_group` answers 404 `no_group`.

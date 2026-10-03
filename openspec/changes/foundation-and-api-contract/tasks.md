@@ -28,7 +28,7 @@ Branch: `change/foundation-and-api-contract`. One group is one commit. Run `ruff
 
 - [x] 4.1 Rewrite `README.md` for a clean clone: install, `.env`, run, tests, mock mode. Verify each command by running it from a fresh clone.
 - [x] 4.2 Write `docs/architecture.md`: component diagram, request flow, planned data model as a Mermaid ER diagram, role and permission table. Keep it short. Verify the Mermaid blocks render in a Mermaid viewer or with `mmdc`.
-- [x] 4.3 Write `docs/frontend-brief.md`, self-contained for a session on another laptop and Claude account: setup from a clean clone (git, poetry, OpenSpec CLI 1.14.0, the `frontend-design` plugin), branch to start from, owned and forbidden paths, rules from `CLAUDE.md` that apply, mock mode, contract requests, product rules (nothing behind her back, no "krąg" or "wioska" in the UI, Polish UI strings, no diagnoses), how to hand back (push the branch, own worklog). Verify by following it step by step in a fresh clone in a temporary directory.
+- [x] 4.3 Write `docs/frontend-brief.md`, self-contained for a session on another laptop and account: setup from a clean clone (git, poetry, OpenSpec CLI 1.14.0, the `frontend-design` plugin), branch to start from, owned and forbidden paths, rules from `CLAUDE.md` that apply, mock mode, contract requests, product rules (nothing behind her back, no "krąg" or "wioska" in the UI, Polish UI strings, no diagnoses), how to hand back (push the branch, own worklog). Verify by following it step by step in a fresh clone in a temporary directory.
 - [x] 4.4 Change the worklog rule in `CLAUDE.md` to one file per session in `docs/worklog/` and start `docs/worklog/main.md` with entries for groups 1 to 4 and their commit hashes. Verify every group has goal, result, deviations and verification.
 - [x] 4.5 Push the branch and tell the user that the frontend session can start (the brief and branch name go into the final message).
 
@@ -40,5 +40,5 @@ Branch: `change/foundation-and-api-contract`. One group is one commit. Run `ruff
 
 ## 6. Integration check
 
-- [ ] 6.1 Run the full check on a fresh clone of the branch: poetry install, ruff, fast tests, browser tests, `openspec validate foundation-and-api-contract`. Verify all pass.
+- [x] 6.1 Run the full check on a fresh clone of the branch: poetry install, ruff, fast tests, browser tests, `openspec validate foundation-and-api-contract`. Verify all pass.
 - [ ] 6.2 Independent review by a fresh reviewer against the specs: every scenario mapped to a test, defects hunted with concrete failing cases, ending in PASS or FAIL. Fix findings and review again until PASS.

@@ -267,3 +267,80 @@ def test_example_names_in_the_readme_exist():
     existing = {p.name for p in c.example_files()}
     for name in names:
         assert name in existing, f"README mentions {name}, which is not in contracts/examples"
+
+
+def test_a_group_created_by_a_partner_is_pending():
+    created = c.load_example(c.EXAMPLES_DIR / "create_group.201.partner.json")
+    assert (created["my_role"], created["status"]) == ("partner", "pending")
+    me = c.load_example(c.EXAMPLES_DIR / "get_me.200.pending.json")
+    assert me["membership"]["group_status"] == "pending"
+    created_by_woman = c.load_example(c.EXAMPLES_DIR / "create_group.201.json")
+    assert created_by_woman["status"] == "active"
+
+
+def test_a_closed_group_has_a_declared_answer():
+    description = c.DOC["components"]["responses"]["GroupPending"]["description"]
+    assert "group_pending" in description
+    assert "group_closed" in description
+    closed = c.load_example(c.EXAMPLES_DIR / "create_task.409.closed.json")
+    assert closed["error"]["code"] == "group_closed"
+
+
+def test_validation_errors_carry_a_message_per_field():
+    for path in c.example_files():
+        if path.name.endswith(".422.json"):
+            fields = c.load_example(path)["error"].get("fields")
+            assert fields, f"{path.name} has no per-field messages"
+            assert all(isinstance(m, str) and m for m in fields.values())
+
+
+SUMMARY_PROPERTIES = {
+    "audience",
+    "trend",
+    "statements",
+    "care_reminder",
+    "narrative",
+    "text",
+    "source",
+    "generated_at",
+}
+
+
+def test_summary_holds_only_general_fields():
+    schema = c.response_schema(c.operation_by_id()["get_summary"][2], "200")
+    found = set()
+    for node in c.walk(schema):
+        found |= set(node.get("properties", {}))
+    assert found <= SUMMARY_PROPERTIES, (
+        f"unexpected summary fields: {sorted(found - SUMMARY_PROPERTIES)}"
+    )
+
+
+def test_every_date_time_is_marked_utc():
+    for name, schema in c.DOC["components"]["schemas"].items():
+        for node in c.walk(schema):
+            for prop, definition in node.get("properties", {}).items():
+                if isinstance(definition, dict) and definition.get("format") == "date-time":
+                    assert "UTC" in definition.get("description", ""), f"{name}.{prop}"
+
+
+def leaf_routes(patterns, prefix=""):
+    for pattern in patterns:
+        route = prefix + str(pattern.pattern)
+        if hasattr(pattern, "url_patterns"):
+            yield from leaf_routes(pattern.url_patterns, route)
+        else:
+            yield route
+
+
+def test_no_url_pattern_under_the_api_prefix_is_undeclared():
+    from django.urls import get_resolver
+
+    declared = {normalise(path) for _, path, _ in c.operations()}
+    api_routes = [r for r in leaf_routes(get_resolver().url_patterns) if r.startswith("api/v1/")]
+    # django-ninja adds one empty pattern at its root; it has no operation behind it.
+    api_routes = [r for r in api_routes if r != "api/v1/"]
+    undeclared = [
+        r for r in api_routes if normalise("/" + re.sub(r"<[^>]+>", "{}", r)) not in declared
+    ]
+    assert not undeclared, f"URL patterns under /api/v1 missing from the contract: {undeclared}"

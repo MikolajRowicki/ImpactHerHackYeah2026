@@ -21,3 +21,14 @@ def test_static_server_serves_the_page_with_sample_data(mock_page):
 
     expect(mock_page.get_by_role("link", name="MaydayMama")).to_be_visible()
     expect(mock_page.get_by_text("Zalogowano jako Anna.")).to_be_visible()
+
+
+def test_mock_notice_stays_in_view_when_the_page_scrolls(mock_page):
+    mock_page.set_viewport_size({"width": 375, "height": 300})
+    mock_page.goto(f"{mock_page.base}?mock=1")
+    expect(mock_page.get_by_text("Zalogowano jako Anna.")).to_be_visible()
+    mock_page.evaluate("document.body.style.minHeight = '3000px'")
+
+    mock_page.mouse.wheel(0, 1500)
+
+    expect(mock_page.get_by_role("status")).to_be_in_viewport()

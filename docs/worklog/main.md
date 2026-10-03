@@ -65,8 +65,8 @@ One entry per task group. Change: `foundation-and-api-contract`, branch
 - **Built:** `README.md`, `docs/architecture.md` (component, sequence and ER diagrams, role
   table), `docs/frontend-brief.md`, this worklog, the per-session worklog rule in `CLAUDE.md`.
 - **Deviations:**
-  - The brief does not use the words "AI" or "assistant", because `CLAUDE.md` forbids mentioning
-    them in files.
+  - The brief follows the `CLAUDE.md` rule about never showing how the code was produced, so it
+    names only the repository's own files and plugins.
   - The frontend session also owns `tests_e2e/`, because the shell tests check the placeholder
     screen it will replace.
   - The hash of this group is added in a follow-up commit, because a commit cannot contain its own hash.
@@ -88,4 +88,26 @@ One entry per task group. Change: `foundation-and-api-contract`, branch
   - The mock picks one of three fixed Polish sentences by the hash of the prompt.
 - **Verification:** `pytest` (339 passed), `ruff check .`, `ruff format --check .`;
   `AI_PROVIDER=nope manage.py check` stops with "Available values: mock", the default passes.
-- **Commit:** see the git log (`feat(ai): add provider switch`).
+- **Commit:** `caba71d`
+
+## Review round 1 (independent reviewer): FAIL, fixed
+
+Findings and what changed:
+
+- CSRF header missing when the page is opened as `/static/index.html` (the cookie was set only on
+  `/`): the page itself now sets the cookie; a browser test and a unit test cover it.
+- Planning files named the tool behind the sessions: wording in `design.md`, `proposal.md`,
+  `tasks.md` and this worklog was changed. Repository file names stay. The body of the older
+  commit `adce459` still names the tool; history is not rewritten.
+- Spec said the woman may invite "any role", the contract says partner or supporter: the spec
+  scenario now says "a partner or a supporter" (listed as an assumption in the proposal).
+- Closed group had no declared answer: operations that need an active group now document 409
+  `group_closed` next to `group_pending`; example `create_task.409.closed.json`; closing a closed
+  group returns it unchanged.
+- `get_invitation` description did not match its schema: description fixed.
+- Mock notice scrolled away: the notice slot is now sticky; browser test added.
+- Weak guards strengthened (each checked by a mutation in a throwaway copy): partner-created group
+  is `pending`, every 422 example has `fields`, summary may only hold an allowlist of general
+  fields, every `date-time` says UTC, URL patterns under `/api/v1` must be declared (not only
+  django-ninja routes), settings code reads the environment only through the helper.
+- Group 5 hash recorded (above).

@@ -24,3 +24,12 @@ def test_every_setting_variable_is_in_env_example():
 def test_env_example_has_no_real_secret():
     text = (ROOT / ".env.example").read_text(encoding="utf-8")
     assert re.search(r"^DJANGO_SECRET_KEY=$", text, flags=re.MULTILINE)
+
+
+def test_settings_code_reads_the_environment_only_through_the_helper():
+    allowed = {"env.py", "manage.py", "wsgi.py", "asgi.py"}
+    for path in (ROOT / "src" / "backend").rglob("*.py"):
+        if path.name in allowed:
+            continue
+        text = path.read_text(encoding="utf-8")
+        assert "os.environ" not in text and "os.getenv" not in text, str(path)

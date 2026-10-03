@@ -2,7 +2,7 @@
 
 ## Context
 
-Greenfield repo: only `CLAUDE.md`, `README.md` and `docs/input/` exist. Two Claude sessions will work in parallel: the backend session on this laptop, the frontend session on another laptop under another Claude account. They cannot message each other; the GitHub repository and the user are the only channels. See proposal.md for motivation.
+Greenfield repo: only `CLAUDE.md`, `README.md` and `docs/input/` exist. Two sessions will work in parallel: the backend session on this laptop, the frontend session on another laptop under another account. They cannot message each other; the GitHub repository and the user are the only channels. See proposal.md for motivation.
 
 ```mermaid
 flowchart LR

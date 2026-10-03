@@ -25,7 +25,8 @@ info:
 
     **Groups.** A group is `pending` while a partner created it and the woman has not accepted her
     invitation. A pending group holds no data: operations marked `x-requires-active-group` answer
-    409 with the code `group_pending`. A group created by the woman is `active` at once.
+    409 with the code `group_pending`, and with `group_closed` once the woman closed the group.
+    A group created by the woman is `active` at once.
 
     **Examples.** `contracts/examples/<operationId>.<status>.json` holds the response for each
     declared status, `<operationId>.request.json` the request body. See `contracts/README.md`.
@@ -196,7 +197,10 @@ paths:
       operationId: close_group
       tags: [group]
       summary: Close the group
-      description: Only the woman closes the group. A closed group accepts no new data.
+      description: |
+        Only the woman closes the group. A closed group accepts no new data (409 `group_closed`).
+        Closing a closed group returns it unchanged. A pending group has no woman in it yet, so it
+        cannot be closed by her (403).
       security:
         - sessionCookie: []
           csrfHeader: []
@@ -294,8 +298,9 @@ paths:
       tags: [members]
       summary: What an invitation offers, before accepting it
       description: |
-        Needs no session: the token is the secret, and the answer holds only the role offered and
-        the first name of the person who invited.
+        Needs no session: the token is the secret. The answer holds only the role offered, the
+        display name of the person who invited, the group status and the expiry. Nothing about the
+        group's members or data.
       security: []
       x-roles: [anyone]
       parameters:
@@ -606,7 +611,9 @@ components:
         application/json:
           schema: { $ref: "#/components/schemas/Error" }
     GroupPending:
-      description: The woman has not accepted yet, so the group holds no data (code `group_pending`).
+      description: |
+        The group is not active, so it accepts no data: the woman has not accepted yet (code
+        `group_pending`), or she closed it (code `group_closed`).
       content:
         application/json:
           schema: { $ref: "#/components/schemas/Error" }

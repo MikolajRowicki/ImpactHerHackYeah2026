@@ -55,7 +55,7 @@ The contract SHALL state, per operation, which group roles may call it. The woma
 
 #### Scenario: Only the woman invites outsiders
 - **WHEN** the invitation operation is read
-- **THEN** it allows the woman to invite any role, allows the partner to invite only the woman while the group is pending, and declares 403 for supporters
+- **THEN** it allows the woman to invite a partner or a supporter, allows the partner to invite only the woman while the group is pending, and declares 403 for supporters
 
 #### Scenario: Group is empty until she agrees
 - **WHEN** a partner creates a group

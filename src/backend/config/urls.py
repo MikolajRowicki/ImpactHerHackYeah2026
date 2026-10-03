@@ -16,6 +16,12 @@ def home(request):
 urlpatterns = [
     path("api/v1/", api.urls),
     path("", home),
+    # The page sets the CSRF cookie itself, so it works when opened directly, not only through "/".
+    re_path(
+        r"^static/(?P<path>index\.html)$",
+        ensure_csrf_cookie(serve),
+        {"document_root": settings.FRONTEND_DIR},
+    ),
     # Mock mode in the browser reads the same example files the tests validate.
     re_path(
         r"^static/contracts/(?P<path>.*)$",

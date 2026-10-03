@@ -27,7 +27,8 @@ mode serves them, and the tests check them against the schemas.
 | `<operationId>.<status>.<variant>.json` | another valid response for the same status, for example `get_me.200.partner.json` (the same person as a partner) |
 
 The variants that exist today: `get_me.200.{partner,supporter,no_group,pending}`,
-`get_summary.200.{partner,supporter}` and `create_group.201.partner`.
+`get_summary.200.{partner,supporter}`, `create_group.201.partner` and `create_task.409.closed`
+(the group is closed, code `group_closed`).
 
 Example people: Anna (the woman, id 1), Piotr (partner, id 2), Marta (supporter, id 3).
 
