@@ -124,3 +124,11 @@ Findings and what changed:
   object; the lookup uses `Object.hasOwn`, with a browser test (checked with a mutation).
 - Left as is: the unreachable 409 `group_pending` on `create_check_in` (harmless over-declaration)
   and inline `#` comments in `.env` lines, which the small loader does not strip.
+
+## Review round 3 (independent reviewer): PASS
+
+All round-2 fixes verified by mutation in a throwaway copy; no new defects. One observation was
+acted on: `/?mock=1` redirected without its query string and so switched mock mode off; the
+redirect now keeps the query (unit test). Left as is: closed-group examples for `create_check_in`
+and `create_observation` do not exist (not a spec scenario), `[::1]` is not in the default
+`DJANGO_ALLOWED_HOSTS`.

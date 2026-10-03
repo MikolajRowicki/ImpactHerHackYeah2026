@@ -9,3 +9,8 @@ def test_the_home_redirect_sets_the_csrf_cookie(client):
     assert response.status_code == 302
     assert response["Location"] == "/static/index.html"
     assert "csrftoken" in response.cookies
+
+
+def test_the_home_redirect_keeps_the_query_string(client):
+    response = client.get("/?mock=1&variant=partner")
+    assert response["Location"] == "/static/index.html?mock=1&variant=partner"

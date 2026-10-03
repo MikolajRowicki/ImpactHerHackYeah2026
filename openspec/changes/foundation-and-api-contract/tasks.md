@@ -41,4 +41,4 @@ Branch: `change/foundation-and-api-contract`. One group is one commit. Run `ruff
 ## 6. Integration check
 
 - [x] 6.1 Run the full check on a fresh clone of the branch: poetry install, ruff, fast tests, browser tests, `openspec validate foundation-and-api-contract`. Verify all pass.
-- [ ] 6.2 Independent review by a fresh reviewer against the specs: every scenario mapped to a test, defects hunted with concrete failing cases, ending in PASS or FAIL. Fix findings and review again until PASS.
+- [x] 6.2 Independent review by a fresh reviewer against the specs: every scenario mapped to a test, defects hunted with concrete failing cases, ending in PASS or FAIL. Fix findings and review again until PASS.

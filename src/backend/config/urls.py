@@ -10,7 +10,8 @@ from core.api import api
 @ensure_csrf_cookie
 def home(request):
     # The cookie lets the frontend send the CSRF header on its first unsafe call.
-    return HttpResponseRedirect("/static/index.html")
+    query = request.META.get("QUERY_STRING", "")
+    return HttpResponseRedirect("/static/index.html" + (f"?{query}" if query else ""))
 
 
 urlpatterns = [
