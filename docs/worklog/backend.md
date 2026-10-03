@@ -236,3 +236,19 @@ One entry per task group. Change: `full-backend`, branch `change/full-backend`.
 - **Verification:** `ruff check .`, `ruff format --check .`, `pytest tests` (1501 passed),
   `pytest tests_e2e` (17 passed).
 - **Commits:** the fix is `3bfe0d9`; this entry is in the next commit.
+
+## Group 9 (part 2): The woman leaves a closed group
+
+- **Goal:** fix review finding 2 (a woman stuck in a closed group); findings 3 to 5 stay as known
+  (assumptions 13 to 15 in `proposal.md`).
+- **Built:** `leave_group` lets the woman leave a closed group; the group is deleted with all its
+  data (shared `cleanup.delete_group`, also used by account deletion), every member is free and she
+  can create a new group. An active group still answers 409 `cannot_remove_owner` (message now says
+  "aktywnej grupy"). Spec, contract text, `x-roles`, the 409 example, architecture, the frontend
+  overview, proposal and design were updated.
+- **Review 1: FAIL** (stale 409 example, `x-roles`, old text in docs, thin test; no integrity or
+  concurrency defect). **Review 2: PASS.**
+- **Verification:** `ruff check .`, `ruff format --check .`, `pytest tests` (1502 passed),
+  `pytest tests_e2e` (17 passed); the test fails in a throwaway copy when `delete_group` is
+  replaced by `remove_membership`.
+- **Commits:** `44c2ef8`, `a3c684a`; this entry is in the next commit.
