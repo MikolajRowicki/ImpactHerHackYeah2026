@@ -70,4 +70,4 @@ One entry per task group. Change: `full-backend`, branch `change/full-backend`.
   `pytest tests_e2e` (15 passed), `migrate`, `migrate core zero` and `migrate core` on a temporary
   database. `db.sqlite3` is empty; it was copied to `db.sqlite3.bak` (git-ignored) before any
   migrate, and no migrate ran on it.
-- **Commit:** see the git log, subject `feat(backend): foundation ...`.
+- **Commit:** `dd8682e`
