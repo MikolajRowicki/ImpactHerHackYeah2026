@@ -48,4 +48,36 @@ One entry per task group. Change: `frontend-app`, branch `change/frontend-app`.
   `pytest tests_e2e` (48 passed). Screenshots of start (375 px light and dark, 1280 px) and help
   (1280 px dark) checked by eye; fixed the h1 focus ring, mid-word breaks in the phone header and
   the three-row demo bar on phones.
+- **Commit:** `3933908`
+
+## Group 2: Account, onboarding, invitations and group screens
+
+- **Goal:** people can sign in, register, start or join a group, invite others, and the mother
+  stays in charge of who is in the group and whether it stays open.
+- **Built:**
+  - `screens/account.js`: sign-in and registration with labelled fields, client checks (e-mail,
+    password, name, password length 8), server field errors next to their fields, the error
+    message above the form, a demo login hint in mock mode, return to the wanted address.
+  - `screens/onboarding.js`: start as the mother or as a partner, how to join by link; the
+    waiting screen of a pending group with the partner's invitation step.
+  - `screens/invitation-form.js`: role choice (mother: partner or supporter; partner of a pending
+    group: the mother), optional e-mail, full link, copy button with a visible confirmation,
+    expiry date.
+  - `screens/invite.js`: preview with inviter, role in words and expiry; accept; sign in or
+    register first when signed out; calm message for an unknown or used link; error message for
+    `already_in_group` while staying on the screen.
+  - `screens/group.js`: members with role in words, the mother's remove with a dialog, close
+    group with a dialog, closed and pending notes.
+  - The mother's start offers inviting a partner while she is alone in an active group.
+  - Tests: `test_account.py` (11), `test_group.py` (21).
+- **Deviations:**
+  - The invitation link drops `?variant=` so a shared demo link does not switch the person.
+  - `remove_member` takes a membership id; the screen recognises "me" by role and name because
+    the contract's `Member` has no person id. Safe for the mother (one per group); a loved one
+    with the same name and role as another member would see the "to Ty" chip twice.
+  - The e2e static server now speaks HTTP/1.1 with a larger backlog. With HTTP/1.0 every module
+    opened a new connection and a full run on Windows hit `ERR_ADDRESS_IN_USE`.
+- **Verification:** `ruff check .`, `ruff format --check .`, `pytest` (356 passed),
+  `pytest tests_e2e` (80 passed, twice in a row). Screenshots checked: onboarding, waiting and
+  sign-in at 375 px, group at 1280 px, invitation at 375 px dark.
 - **Commit:** see the next entry.

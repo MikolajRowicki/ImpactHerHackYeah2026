@@ -21,12 +21,12 @@ Groups 2, 3 and 4 may run in parallel after group 1; each touches only the files
 
 ## 2. Account and group screens
 
-- [ ] 2.1 Build `#/login` and `#/register` with field labels, client checks (password length 8) and server field errors; verify with e2e tests for every `frontend-account` scenario
-- [ ] 2.2 Build onboarding (start as mother or partner, how to join by link) and the pending waiting screen with the mother's invitation step; verify with e2e tests for "Mother starts a group", "Partner starts a group" and "Pending group"
-- [ ] 2.3 Build invitation creation with role choice, optional e-mail, full link, copy button with confirmation and expiry date; verify with e2e tests for "Mother invites a supporter", "Copy the link" and "Closed group"
-- [ ] 2.4 Build `#/invite/:token` with preview, accept, signed-out path and error states; verify with e2e tests for every "Open an invitation" scenario
-- [ ] 2.5 Build `#/group` with members and roles in words, the mother's remove with dialog confirmation, and close group with confirmation and closed state; verify with e2e tests for the "Members" and "Close the group" scenarios
-- [ ] 2.6 Add the worklog entry and commit `feat(frontend): account, onboarding, invitations and group screens`
+- [x] 2.1 Build `#/login` and `#/register` with field labels, client checks (password length 8) and server field errors; verify with e2e tests for every `frontend-account` scenario
+- [x] 2.2 Build onboarding (start as mother or partner, how to join by link) and the pending waiting screen with the mother's invitation step; verify with e2e tests for "Mother starts a group", "Partner starts a group" and "Pending group"
+- [x] 2.3 Build invitation creation with role choice, optional e-mail, full link, copy button with confirmation and expiry date; verify with e2e tests for "Mother invites a supporter", "Copy the link" and "Closed group"
+- [x] 2.4 Build `#/invite/:token` with preview, accept, signed-out path and error states; verify with e2e tests for every "Open an invitation" scenario
+- [x] 2.5 Build `#/group` with members and roles in words, the mother's remove with dialog confirmation, and close group with confirmation and closed state; verify with e2e tests for the "Members" and "Close the group" scenarios
+- [x] 2.6 Add the worklog entry and commit `feat(frontend): account, onboarding, invitations and group screens`
 
 ## 3. The mother's space
 

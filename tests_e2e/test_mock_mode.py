@@ -83,7 +83,7 @@ def test_every_perspective_can_be_picked(mock_page):
     for label, heading in (
         ("Bliska osoba (Marta)", "Cześć, Marta"),
         ("Osoba bez grupy", "Cześć, Anna"),
-        ("Grupa czeka na mamę", "Cześć, Piotr"),
+        ("Grupa czeka na mamę", "Czekamy na mamę"),
         ("Mama (Anna)", "Cześć, Anna"),
     ):
         picker.select_option(label=label)
