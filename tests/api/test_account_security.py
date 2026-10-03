@@ -115,13 +115,13 @@ def test_the_account_exists_mail_is_counted_by_its_own_kind(api, outbox):
     assert list(MailLog.objects.values_list("kind", flat=True)) == ["account_exists"]
 
 
-def test_a_known_inactive_address_gets_the_latest_password_and_name(api, outbox):
+def test_a_second_sign_up_cannot_change_an_inactive_account(api, outbox):
     signup(api)
     signup(api, password="drugie-haslo-12", display_name="Ola K.")
     user = User.objects.get()
-    assert user.display_name == "Ola K."
-    assert user.check_password("drugie-haslo-12")
-    assert not user.check_password(GOOD["password"])
+    assert user.display_name == GOOD["display_name"]
+    assert user.check_password(GOOD["password"])
+    assert not user.check_password("drugie-haslo-12")
     assert not user.is_active
 
 
@@ -132,8 +132,8 @@ def test_a_known_inactive_address_gets_a_new_activation_mail_that_works(api, out
     signup(api, password="drugie-haslo-12")
     assert len(outbox) == 2
     assert api.call("activate_account", body={"token": activation_token_of(outbox)}).status == 200
-    assert sign_in(api, "ola@example.com", "drugie-haslo-12").status == 200
-    assert sign_in(api, "ola@example.com", GOOD["password"]).status == 401
+    assert sign_in(api, "ola@example.com", GOOD["password"]).status == 200
+    assert sign_in(api, "ola@example.com", "drugie-haslo-12").status == 401
 
 
 @pytest.mark.parametrize(

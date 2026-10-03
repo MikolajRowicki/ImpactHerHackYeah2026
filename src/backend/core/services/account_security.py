@@ -106,19 +106,13 @@ def sign_up(email: str, password: str, display_name: str) -> None:
                 send_activation(user)
                 return
         # A known address costs one hash too, so the time does not tell it from a new one.
-        hashed = make_password(password)
+        make_password(password)
         if user.is_active:
             send_account_exists(user)
             return
-        # The latest submission wins: activating proves the person owns the mailbox, so whoever
-        # opens the link has chosen this password. Only a still inactive account is changed.
-        changed = User.objects.filter(pk=user.pk, is_active=False).update(
-            password=hashed, display_name=display_name
-        )
-        if changed:
-            send_activation(user)
-        else:
-            send_account_exists(user)
+        # Never change the password or name of an existing account here: whoever signed up first
+        # keeps it, so a later submission cannot take over an address its owner has not activated.
+        send_activation(user)
 
 
 def activate(token: str) -> None:

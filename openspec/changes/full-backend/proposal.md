@@ -104,3 +104,11 @@ agents on separate modules, without breaking anything the frontend already relie
     mailbox. These numbers are a guess based on the Gmail daily limit.
 11. The frontend learns about backend changes from files in `docs/from-be-to-fe/`, which the
     frontend session deletes after it has handled them.
+12. A woman whose group is closed cannot leave it or start another; only deleting the account gets
+    her out. Review finding, not decided.
+13. Deleting a supporter's account deletes the tasks that person created, also those already
+    claimed or done by others. Review finding, not decided.
+14. The 200 per day mailbox cap can be used up by anonymous sign-up or reset requests, which
+    blocks later mails that day. Known risk of the guessed limits.
+15. `accept_invitation` answers `group_closed` before `invitation_not_found` when the token is
+    unusable and the group is closed.

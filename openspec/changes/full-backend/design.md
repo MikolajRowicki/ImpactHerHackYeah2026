@@ -203,7 +203,8 @@ sequenceDiagram
 - Identical answers: the route never branches its response on the account or on the limit; only the
   work done after the commit differs.
 - A person known only by an inactive account that signs up again gets a new activation link
-  (counts against the limits); an active account that signs up again gets a short "you already
+  (counts against the limits) and the stored password and name stay as the first sign-up set
+  them, so nobody can take over an address before its owner activates it; an active account that signs up again gets a short "you already
   have an account" mail with a reset link.
 
 ### 7. Trend engine
