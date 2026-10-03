@@ -1,7 +1,7 @@
 # New operations coming with the full backend
 
 Status: ready. They are in `contracts/openapi.yaml` on the branch `change/full-backend`, commit
-`HASH`, with examples in `contracts/examples/`. Merge that branch (or `main` after it is merged).
+`d4f26df`, with examples in `contracts/examples/`. Merge that branch (or `main` after it is merged).
 The backend that answers them arrives in later commits of the same branch; until then use mock mode.
 `contracts/README.md` lists them by area.
 

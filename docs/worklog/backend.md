@@ -29,4 +29,4 @@ One entry per task group. Change: `full-backend`, branch `change/full-backend`.
   - `leave_group` has `x-roles: [partner, supporter]`, and the woman gets 409 `cannot_remove_owner`
     from the application, as the spec says.
 - **Verification:** `ruff check .`, `ruff format --check .`, `pytest tests` (618 passed).
-- **Commit:** see the git log, subject `feat(contract): add the 19 operations after v0 and freeze v0`.
+- **Commit:** `d4f26df`

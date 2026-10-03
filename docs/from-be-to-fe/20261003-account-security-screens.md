@@ -1,7 +1,7 @@
 # Account security: new screens and operations
 
 Status: ready. The operations below are in `contracts/openapi.yaml` on the branch
-`change/full-backend`, commit `HASH`. Merge that branch (or `main` after it is merged) to get
+`change/full-backend`, commit `d4f26df`. Merge that branch (or `main` after it is merged) to get
 them, with their examples in `contracts/examples/`. The backend that answers them arrives in later
 commits of the same branch; until then use mock mode.
 

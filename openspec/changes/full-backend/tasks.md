@@ -9,7 +9,7 @@ main session after it has checked their work. Agents never commit.
 - [x] 1.2 Add `tests/test_contract_baseline.py`; verify it passes now and fails (checked in a throwaway copy) when an old schema field, an old response status and an old example file are each changed
 - [x] 1.3 Append the 19 new operations and their schemas to `contracts/openapi.yaml` (account security, AI envelope with `source` and `sources`, `Help`, `Reminder`, `Preferences`, `SummaryExtended`, guide and suggestion schemas); verify `pytest tests/test_contract_guards.py` passes
 - [x] 1.4 Add examples for every new operation and status (`contracts/examples/`), including `ai_say_it_for_me.200.crisis.json`; verify `pytest tests/test_contract_examples.py` passes and the baseline guard still passes
-- [ ] 1.5 Update `contracts/README.md` (new variants, the additive rule), turn the planned messages in `docs/from-be-to-fe/` into final ones (commit hash, the new operation names, the two links `#/activate/<token>` and `#/reset/<token>`), and write `docs/worklog/backend.md`; verify the documented example names exist; commit, then tell the user the frontend session can merge
+- [x] 1.5 Update `contracts/README.md` (new variants, the additive rule), turn the planned messages in `docs/from-be-to-fe/` into final ones (commit hash, the new operation names, the two links `#/activate/<token>` and `#/reset/<token>`), and write `docs/worklog/backend.md`; verify the documented example names exist; commit, then tell the user the frontend session can merge
 
 ## 2. Foundation (main session)
 
