@@ -69,6 +69,6 @@ main session after it has checked their work. Agents never commit.
 
 ## 9. Review and archive
 
-- [ ] 9.1 Independent review against all specs of this change by a fresh reviewer: every scenario mapped to a test, concrete failing cases hunted, ends in PASS or FAIL; fix findings and review again until PASS
-- [ ] 9.2 Run the real app with the seeded database, call each area with `curl`, check the responses and record the result in the worklog; verify the frontend live-mode e2e still passes
+- [x] 9.1 Independent review against all specs of this change by a fresh reviewer: every scenario mapped to a test, concrete failing cases hunted, ends in PASS or FAIL; fix findings and review again until PASS
+- [x] 9.2 Run the real app with the seeded database, call each area with `curl`, check the responses and record the result in the worklog; verify the frontend live-mode e2e still passes
 - [ ] 9.3 `openspec validate full-backend --strict`, archive the change so the main specs sync, then merge; verify `openspec validate --specs` passes

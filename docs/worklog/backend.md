@@ -212,3 +212,27 @@ One entry per task group. Change: `full-backend`, branch `change/full-backend`.
 - **Verification:** `ruff check .`, `ruff format --check .`, `pytest tests` (1501 passed),
   `pytest tests_e2e` (17 passed).
 - **Commit:** see the git log, subject `test(e2e): add a live-mode journey on the seeded data`.
+
+## Group 9 (part 1): Review and live check
+
+- **Goal:** independent review against the specs, and a look at the running app.
+- **Review 1 (fresh reviewer): FAIL.** Every scenario of the 13 specs maps to a test. One real
+  defect: a second sign-up for an inactive address replaced its password and name, so a stranger
+  could take over the address before its owner used the activation link (reproduced on a
+  throwaway database). Four more findings are not code slips and are recorded as assumptions 12 to
+  15 in `proposal.md`: a woman stuck in a closed group, a deleted supporter's tasks going with the
+  account, the daily mail cap used up by anonymous requests, `group_closed` answered before
+  `invitation_not_found`.
+- **Fix:** sign-up for a known inactive address only sends the link again; the stored password and
+  name stay (test `a_second_sign_up_cannot_change_an_inactive_account`, design note updated).
+- **Review 2 (fresh reviewer): PASS.** The attack was replayed, answers and hashing work stayed the
+  same for new, inactive and active addresses, no other path changes an inactive account.
+- **Live check:** seeded throwaway database, `runserver`, `curl` with a session and CSRF token.
+  Anna's summary is `needs_attention`; Marta gets the supporter summary; `me`, `me/preferences`,
+  `groups/current`, `members`, `check-ins`, `tasks`, `tasks/suggestions`, `reminders`, `help`,
+  `self-care`, `invitations` answer 200; the observation questions refuse Anna with 403; an unknown
+  invitation is 404 and no session is 401; `say-it-for-me` gives the crisis help for a crisis text
+  and the text is not in the server log; no traceback in the log.
+- **Verification:** `ruff check .`, `ruff format --check .`, `pytest tests` (1501 passed),
+  `pytest tests_e2e` (17 passed).
+- **Commits:** the fix is `3bfe0d9`; this entry is in the next commit.
