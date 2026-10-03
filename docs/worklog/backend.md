@@ -148,3 +148,27 @@ One entry per task group. Change: `full-backend`, branch `change/full-backend`.
   other merged groups). The agent made 15 breaking changes in a throwaway copy; 13 were caught, the
   two that survived changed no behaviour (a redundant observation delete, a redundant pre-check).
 - **Commit:** see the git log, subject `feat(backend): groups, members, invitations and account deletion`.
+
+## Group 4: Check-ins, observations, trend, summary (built by a parallel agent, checked by the main session)
+
+- **Goal:** the woman's private check-ins, closed observation questions, an explainable trend, and
+  summaries that never expose an answer or an author.
+- **Built:** `core/api/tracking.py` (7 operations), `core/services/{checkins,observations,trend,
+  summary}.py`, content (8 observation questions, self-care, summary texts with one exported set),
+  `core/ai/narrative.py`, 185 tests. The trend is a pure function over daily facts for the last 7
+  Warsaw days; the loader reads them from the database.
+- **Deviations / assumptions:**
+  - "At most 1 signal day" for `stable` counts the union of days from either source.
+  - `reasons` holds one shared general sentence (plus "this is not a diagnosis") for every reason
+    code, and statements depend only on trend and on woman versus loved one. Kind-specific
+    sentences would show which source fired, which points at a person when there is one observer.
+    This is weaker than the spec wording "saying which kind of signal"; confirm at review.
+  - The observation questions use the ids `sadness` and `crying` (the contract example holds a
+    combined `sad_or_crying`; examples are only checked against the schema).
+  - Observation answers are capped at 50 and `question_id` at 100 characters (not in the contract).
+  - Known gap: a membership deleted between the permission check and the insert would show as an
+    unhandled foreign key error in a race.
+- **Verification:** `ruff check .`, `ruff format --check .`, `pytest tests` (1489 passed with all
+  merged groups). The agent made five breaking changes in a throwaway copy and each failed a test;
+  one harmless change (a wider query window) was not caught.
+- **Commit:** see the git log, subject `feat(backend): check-ins, observations, trend and summary`.

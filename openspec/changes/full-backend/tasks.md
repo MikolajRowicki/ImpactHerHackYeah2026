@@ -30,11 +30,11 @@ main session after it has checked their work. Agents never commit.
 
 ## 4. Check-ins, observations, trend, summary (agent B)
 
-- [ ] 4.1 `create_check_in`, `list_check_ins`, `list_self_care` with the self-care content; verify the check-in and self-care scenarios pass, including "not leaked elsewhere"
-- [ ] 4.2 Observation questions content, `list_observation_questions`, `create_observation`; verify the observation scenarios pass and no response carries an answer or author
-- [ ] 4.3 Pure trend function, daily-facts loader, summary texts and allowlist; verify one test per trend scenario, the Warsaw midnight boundary and the removed-observer case
-- [ ] 4.4 `get_summary`, `get_summary_extended`, narrative through the provider with `rules` fallback; verify the summary scenarios, the single-observer privacy case and that the provider input holds no answer or name
-- [ ] 4.5 Run `ruff` and the suite; main session commits
+- [x] 4.1 `create_check_in`, `list_check_ins`, `list_self_care` with the self-care content; verify the check-in and self-care scenarios pass, including "not leaked elsewhere"
+- [x] 4.2 Observation questions content, `list_observation_questions`, `create_observation`; verify the observation scenarios pass and no response carries an answer or author
+- [x] 4.3 Pure trend function, daily-facts loader, summary texts and allowlist; verify one test per trend scenario, the Warsaw midnight boundary and the removed-observer case
+- [x] 4.4 `get_summary`, `get_summary_extended`, narrative through the provider with `rules` fallback; verify the summary scenarios, the single-observer privacy case and that the provider input holds no answer or name
+- [x] 4.5 Run `ruff` and the suite; main session commits
 
 ## 5. Tasks, help, reminders (agent C)
 
