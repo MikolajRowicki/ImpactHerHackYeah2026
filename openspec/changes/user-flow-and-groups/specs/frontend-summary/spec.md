@@ -33,3 +33,14 @@ The frontend SHALL NOT show a narrative whose source is `mock`, and SHALL show n
 #### Scenario: Real narrative
 - **WHEN** the summary narrative has source `rules` or `ai`
 - **THEN** its text is shown
+
+### Requirement: Reasons and help with the summary
+The start screens SHALL read the extended summary. When it carries reasons, they SHALL be shown under the trend as a general explanation. When it carries help, the crisis lines SHALL be shown with the summary.
+
+#### Scenario: Needs attention with help
+- **WHEN** the extended summary has trend `needs_attention`, reasons and help
+- **THEN** the reasons and the crisis lines are shown with the summary
+
+#### Scenario: Stable
+- **WHEN** the extended summary has no help
+- **THEN** no crisis lines are shown
