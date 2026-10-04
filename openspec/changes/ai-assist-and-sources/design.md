@@ -85,7 +85,7 @@ Some Qwen models can put a `<think>…</think>` block in the content, so the pro
 
 Both models sometimes wrote "chciałbym" or "zastanawiałam się" although the guide prompt asked for no gender. The guide prompt now says it plainly: no first-person past tense or conditional forms that show gender, with examples. A test call after the change still gave "chciałbym" in 2 of 6 guides.
 
-So the guide also drops every generated line that holds such a form, using a regular expression for the endings `-łem`, `-łam`, `-łbym`, `-łabym` and `-łobym`. A false match (for example "stołem") costs one line, not the answer. When no line is left, the fixed lines are used. They are labelled `rules` and cite nothing, because no passage shaped them. Before this change the code returned the passages with the fixed lines.
+So the guide also drops every generated line that holds such a form. A regular expression catches the endings `-łem`, `-łam`, `-łbym`, `-łabym` and `-łobym`, and the split conditional ("żebym pomógł", found in the live check). "Żebyś mogła" speaks to the mother and stays. A false match (for example "stołem") costs one line, not the answer. When no line is left, the fixed lines are used. They are labelled `rules` and cite nothing, because no passage shaped them. Before this change the code returned the passages with the fixed lines.
 
 The "say it for me" prompt keeps her feminine first person and says not to assume the partner's gender. Models still slip there ("byłbyś"). Instead of filtering a whole message, the screen shows the suggestion in an editable field, so she fixes a word before copying.
 

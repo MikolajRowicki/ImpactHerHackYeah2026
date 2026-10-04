@@ -538,6 +538,8 @@ def test_a_line_that_shows_the_speakers_gender_is_dropped(api, monkeypatch):
         "Chciałabym Ci pomóc.",
         "Byłbym spokojniejszy, gdybyś odpoczęła.",
         "ZROBIŁEM dziś zakupy.",
+        "Czy chciałabyś, żebym pomógł ci umówić wizytę?",
+        "Chcę, żebym ci pomogła w tym tygodniu.",
     ],
 )
 def test_gendered_first_person_forms_are_recognised(api, monkeypatch, line):
@@ -545,6 +547,21 @@ def test_gendered_first_person_forms_are_recognised(api, monkeypatch, line):
     use(monkeypatch, Fixed(f"{line}\nJestem obok.", "groq"))
     result = api.call("ai_conversation_guide", query={"topic": "how_are_you"})
     assert result["opening_lines"] == ["Jestem obok."]
+
+
+@pytest.mark.parametrize(
+    "line",
+    [
+        "Jestem obok, żebyś mogła odpocząć.",
+        "Czy mogłabyś porozmawiać z lekarzem?",
+        "Chcę, żebyś czuła się bezpiecznie.",
+    ],
+)
+def test_lines_that_speak_to_the_mother_in_her_gender_stay(api, monkeypatch, line):
+    supporter(api)
+    use(monkeypatch, Fixed(line, "groq"))
+    result = api.call("ai_conversation_guide", query={"topic": "how_are_you"})
+    assert result["opening_lines"] == [line]
 
 
 def test_only_gendered_lines_give_the_fixed_guide_without_sources(api, monkeypatch):

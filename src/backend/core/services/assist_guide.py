@@ -13,9 +13,14 @@ MAX_OPENING_LINES = 4
 # A list marker a model puts before a line: "-", "*", "1.", "2)".
 _MARKER = re.compile(r"^\s*(?:[-*•]|\d+[.)])\s*")
 # First-person past and conditional forms show the speaker's gender ("myślałem", "zauważyłam",
-# "chciałbym"). Models still write them despite the prompt, and the person who reads the line
-# may be anyone, so such a line is dropped.
-_GENDERED = re.compile(r"\b\w*(?:łem|łam|łbym|łabym|łobym)\b", re.IGNORECASE)
+# "chciałbym", and the split "żebym pomógł"). Models still write them despite the prompt, and
+# the person who reads the line may be anyone, so such a line is dropped. "żebyś mogła" speaks
+# to the mother and stays.
+_GENDERED = re.compile(
+    r"\b\w*(?:łem|łam|łbym|łabym|łobym)\b"
+    r"|\b(?:że|a|jak|gdy)?bym\b(?:\s+\w+){0,2}?\s+\w+ł[ao]?\b",
+    re.IGNORECASE,
+)
 
 
 def build_prompt(topic: str) -> str:
