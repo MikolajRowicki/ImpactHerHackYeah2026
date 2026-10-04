@@ -771,6 +771,28 @@ textarea.field__input {
   height: 3rem;
 }
 
+/* A quiet card for a tool that waits next to the main step. */
+
+.cta-card--quiet {
+  border: 1px solid var(--color-line);
+  background: var(--color-surface);
+  color: var(--color-ink);
+}
+
+.cta-card--quiet:hover {
+  background: var(--color-surface-soft);
+  color: var(--color-ink);
+}
+
+.cta-card--quiet .icon-badge {
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+}
+
+.cta-card--quiet .cta-card__lead {
+  color: var(--color-ink-soft);
+}
+
 /* Two columns on a laptop: main content and a side column. */
 
 .start-grid {

@@ -1,0 +1,127 @@
+/* "Say it for me" and the conversation guide. */
+
+.say-it__counter {
+  margin: calc(-1 * var(--space-2)) 0 0;
+  color: var(--color-ink-soft);
+  font-size: var(--font-size-small);
+  text-align: right;
+}
+
+.say-it__message {
+  min-height: 9rem;
+  resize: vertical;
+}
+
+.say-it__copied {
+  margin: 0;
+  color: var(--color-ink-soft);
+  font-size: var(--font-size-small);
+}
+
+.say-it__copied:empty {
+  display: none;
+}
+
+.say-it__crisis .card__title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+/* Where a generated text came from: a small pill, never louder than the text. */
+.origin-label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  margin: 0;
+  padding: 0.125rem var(--space-3);
+  border-radius: var(--radius-pill);
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+  font-size: var(--font-size-small);
+  font-weight: var(--weight-bold);
+}
+
+.talk__topics ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.talk__topic {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--touch);
+  padding: 0 var(--space-4);
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  color: var(--color-ink);
+  font-weight: var(--weight-bold);
+  text-decoration: none;
+}
+
+.talk__topic:hover {
+  background: var(--color-surface-soft);
+  color: var(--color-ink);
+}
+
+.talk__topic[aria-current="page"] {
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+  color: var(--color-primary-ink);
+}
+
+.talk__part h3 {
+  margin: 0 0 var(--space-2);
+  font-size: var(--font-size-h3);
+}
+
+.talk__part ul {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
+.talk__part li + li {
+  margin-top: var(--space-1);
+}
+
+.sources {
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-line);
+}
+
+.sources h3 {
+  margin: 0 0 var(--space-2);
+  font-size: var(--font-size-base);
+}
+
+.sources__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sources__list li + li {
+  margin-top: var(--space-3);
+}
+
+.sources__list a {
+  font-weight: var(--weight-bold);
+  overflow-wrap: anywhere;
+}
+
+.sources__site {
+  display: block;
+  color: var(--color-ink-soft);
+  font-size: var(--font-size-small);
+}
+
+.talk__note {
+  margin: 0;
+  color: var(--color-ink-soft);
+  font-size: var(--font-size-small);
+}

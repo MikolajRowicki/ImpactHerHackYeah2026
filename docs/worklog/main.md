@@ -217,3 +217,29 @@ capabilities (`api-contract`, `frontend-mock-mode`, `ai-provider-config`) are no
 - **Not done:** the passages need a specialist's read before real use.
 - **Verification:** `ruff check .`, `ruff format --check .`, `pytest tests` (1626 passed),
   `openspec validate --strict`.
+
+## Change ai-assist-and-sources, group 3: "Powiedz to za mnie" screen
+
+- **Goal:** the mother can turn something hard into a calm message she can edit and copy.
+- **Built:**
+  - `#/say-it` for the mother of an active or closed group. It has the text with a 500-character
+    counter, the recipient and the tone. The suggestion comes in an editable field with "Kopiuj"
+    and "Inna propozycja". A crisis answer shows the crisis lines and a link to help instead of a
+    message. A failure keeps her text and offers "Spróbuj ponownie". The button says
+    "Przygotowuję…" while waiting.
+  - A quiet card on her start screen. The navigation is unchanged.
+  - `ui/ai.js`: the origin label ("Przygotowane z pomocą AI", "Tekst przykładowy", none for fixed
+    texts) and the sources list used by the guide.
+  - `api.js` sends a `query` as a query string. Both AI operations are in `operations.js`.
+  - Mock mode: `js/mock-ai.js` with sample messages, a short crisis list and sample guides.
+    Mock-store handlers mirror the roles, the validation and the crisis answer. Her text is not
+    kept.
+  - `whileBusy` can show a label while it waits. `ctaCard` has a quiet variant.
+- **Deviations:**
+  - The guide's mock handler, strings and sources list landed here as shared plumbing. Group 4
+    adds the screen.
+  - The "not for you" text for loved ones' places now says "To miejsce jest dla bliskich osób
+    mamy" instead of "Te pytania…", because the guide uses it too.
+- **Verification:** `ruff check .`, `ruff format --check .`, `pytest tests`, `pytest tests_e2e`
+  (212 passed, 16 of them new for this screen). Screenshots in mock mode at 390 px and 1280 px
+  were checked by eye.

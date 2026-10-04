@@ -10,6 +10,7 @@ import { invite } from "./screens/invite.js";
 import { account, activate, forgot, login, register, reset } from "./screens/account.js";
 import { notAllowed, notFound } from "./screens/not-found.js";
 import { questions } from "./screens/questions.js";
+import { sayIt } from "./screens/say-it.js";
 import { start } from "./screens/start.js";
 import { tasks } from "./screens/tasks.js";
 import { groupPanel } from "./screens/panel.js";
@@ -27,6 +28,7 @@ const match = createRouter([
   { path: "/register", screen: register, access: "signed-out" },
   { path: "/check-in", screen: checkIn, roles: ["woman"], statuses: ["active", "closed"] },
   { path: "/questions", screen: questions, roles: ["partner", "supporter"], statuses: ["active"] },
+  { path: "/say-it", screen: sayIt, roles: ["woman"], statuses: ["active", "closed"] },
   { path: "/tasks", screen: tasks, roles: ALL_ROLES, statuses: ["active", "closed"] },
   { path: "/group", screen: group, member: true },
   { path: "/invite/:token", screen: invite, access: "anyone" },

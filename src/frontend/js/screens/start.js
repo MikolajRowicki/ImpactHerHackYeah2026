@@ -94,6 +94,7 @@ async function motherStart(ctx) {
         "div",
         { class: "start-grid__main stack-large" },
         active && ctaCard("#/check-in", "leaf", t.wellbeing.ctaTitle, t.wellbeing.ctaLead),
+        ctaCard("#/say-it", "feather", t.sayIt.ctaTitle, t.sayIt.ctaLead, { quiet: true }),
         alone && inviteAtOnceCard(ctx),
         summaryCard(summary),
       ),

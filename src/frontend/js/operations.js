@@ -40,4 +40,6 @@ export const OPERATIONS = {
   get_summary_extended: ["GET", "/api/v1/summary/extended", 200],
   get_help: ["GET", "/api/v1/help", 200],
   list_task_suggestions: ["GET", "/api/v1/tasks/suggestions", 200],
+  ai_say_it_for_me: ["POST", "/api/v1/ai/say-it-for-me", 200],
+  ai_conversation_guide: ["GET", "/api/v1/ai/conversation-guide", 200],
 };

@@ -19,10 +19,10 @@ Each group is one commit. Before each commit: `ruff check .`, `ruff format --che
 
 ## 3. "Say it for me" screen (frontend)
 
-- [ ] 3.1 Add both AI operations to `js/operations.js` and a `query` option to `api.js`; verify `tests/test_frontend_operations.py` passes and a browser test sees `?topic=` on the live request.
-- [ ] 3.2 Add `js/mock-ai.js` with sample messages and the crisis subset, and a mock-store handler for `ai_say_it_for_me` (mother only, 1–500 characters, crisis answer); verify with a mock-mode browser test that no request goes to `/api/v1`.
-- [ ] 3.3 Build `#/say-it` (form, counter, recipient, tone, result with copy and another suggestion, labels, crisis lines, waiting state, error that keeps the text), the card on the mother's start screen, strings and CSS; verify with browser tests for every scenario of "Say it for me screen", "Crisis answer", "Waiting for an answer", the labels, and who can open it, at 375 px and on a laptop width.
-- [ ] 3.4 Add the worklog entry; verify ruff, format check, `pytest tests` and `pytest tests_e2e` pass, then commit.
+- [x] 3.1 Add both AI operations to `js/operations.js` and a `query` option to `api.js`; verify `tests/test_frontend_operations.py` passes and a browser test sees `?topic=` on the live request.
+- [x] 3.2 Add `js/mock-ai.js` with sample messages and the crisis subset, and a mock-store handler for `ai_say_it_for_me` (mother only, 1–500 characters, crisis answer); verify with a mock-mode browser test that no request goes to `/api/v1`.
+- [x] 3.3 Build `#/say-it` (form, counter, recipient, tone, result with copy and another suggestion, labels, crisis lines, waiting state, error that keeps the text), the card on the mother's start screen, strings and CSS; verify with browser tests for every scenario of "Say it for me screen", "Crisis answer", "Waiting for an answer", the labels, and who can open it, at 375 px and on a laptop width.
+- [x] 3.4 Add the worklog entry; verify ruff, format check, `pytest tests` and `pytest tests_e2e` pass, then commit.
 
 ## 4. Conversation guide with sources (frontend)
 

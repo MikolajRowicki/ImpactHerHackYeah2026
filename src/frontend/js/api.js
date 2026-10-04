@@ -82,6 +82,12 @@ function fillPath(template, params = {}) {
   });
 }
 
+// "?topic=hard_day" for { topic: "hard_day" }; nothing when there is no query.
+function queryString(query) {
+  const search = new URLSearchParams(query || {}).toString();
+  return search ? `?${search}` : "";
+}
+
 function cookie(name, source) {
   const pair = source.split("; ").find((part) => part.startsWith(`${name}=`));
   return pair ? decodeURIComponent(pair.slice(name.length + 1)) : "";
@@ -96,7 +102,7 @@ async function readJson(response) {
 }
 
 function liveAdapter({ fetchFn, getCookies }) {
-  return async function call(operationId, { params, body, group } = {}) {
+  return async function call(operationId, { params, query, body, group } = {}) {
     const { method, template } = operation(operationId);
     const headers = { Accept: "application/json" };
     if (group) headers["X-Group-Id"] = String(group);
@@ -105,7 +111,7 @@ function liveAdapter({ fetchFn, getCookies }) {
       const token = cookie("csrftoken", getCookies());
       if (token) headers["X-CSRFToken"] = token;
     }
-    const response = await fetchFn(fillPath(template, params), {
+    const response = await fetchFn(fillPath(template, params) + queryString(query), {
       method,
       headers,
       credentials: "same-origin",
