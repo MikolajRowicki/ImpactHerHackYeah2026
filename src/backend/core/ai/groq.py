@@ -6,6 +6,7 @@ cannot leak through an exception.
 """
 
 import json
+import re
 import urllib.error
 import urllib.request
 from collections.abc import Callable
@@ -16,6 +17,8 @@ from .base import Generation, ProviderError
 
 URL = "https://api.groq.com/openai/v1/chat/completions"
 TIMEOUT_SECONDS = 8
+# Some reasoning models put their thinking into the answer; people must see only the answer.
+_THINK = re.compile(r"<think>.*?(?:</think>|$)", re.DOTALL)
 
 # (url, headers, body, timeout) -> (status, body text)
 Http = Callable[[str, dict, bytes, float], tuple[int, str]]
@@ -68,6 +71,8 @@ class GroqProvider:
             content = json.loads(text)["choices"][0]["message"]["content"]
         except (ValueError, KeyError, IndexError, TypeError):
             raise ProviderError("Groq answer is not in the expected shape.") from None
+        if isinstance(content, str):
+            content = _THINK.sub("", content)
         if not isinstance(content, str) or not content.strip():
             raise ProviderError("Groq answered with an empty text.")
         return content.strip()

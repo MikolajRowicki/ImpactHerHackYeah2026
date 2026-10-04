@@ -629,7 +629,9 @@ textarea.field__input {
 }
 
 .summary__help {
-  display: inline-flex;
+  /* One link per line, also when the guide link follows the help link. */
+  display: flex;
+  width: fit-content;
   align-items: center;
   gap: var(--space-1);
   margin-top: var(--space-1);
@@ -672,7 +674,8 @@ textarea.field__input {
   font-style: italic;
 }
 
-.summary__narrative .chip {
+.summary__narrative .chip,
+.summary__narrative .origin-label {
   margin-top: var(--space-2);
 }
 
@@ -769,6 +772,28 @@ textarea.field__input {
   color: var(--color-accent-ink);
   width: 3rem;
   height: 3rem;
+}
+
+/* A quiet card for a tool that waits next to the main step. */
+
+.cta-card--quiet {
+  border: 1px solid var(--color-line);
+  background: var(--color-surface);
+  color: var(--color-ink);
+}
+
+.cta-card--quiet:hover {
+  background: var(--color-surface-soft);
+  color: var(--color-ink);
+}
+
+.cta-card--quiet .icon-badge {
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+}
+
+.cta-card--quiet .cta-card__lead {
+  color: var(--color-ink-soft);
 }
 
 /* Two columns on a laptop: main content and a side column. */

@@ -65,11 +65,12 @@ export function button(label, { variant, iconName, small, onclick, type = "butto
   );
 }
 
-// A large link card, used for the main next step of a start screen.
-export function ctaCard(href, iconName, title, lead) {
+// A large link card, used for the main next step of a start screen. A quiet one is for a tool
+// that waits next to the main step.
+export function ctaCard(href, iconName, title, lead, { quiet = false } = {}) {
   return h(
     "a",
-    { class: "cta-card", href },
+    { class: quiet ? "cta-card cta-card--quiet" : "cta-card", href },
     h("span", { class: "icon-badge" }, icon(iconName, 26)),
     h(
       "span",

@@ -257,9 +257,10 @@ the trend and the general statements only.
 
 ```mermaid
 flowchart LR
-    F[narrative, say it for me, guide] --> A[assist.generate]
-    A --> K[knowledge source: none by default]
-    K -->|passages| P[prompt]
+    F[narrative, say it for me] --> A[assist.generate]
+    GU[conversation guide] -->|query: topic + brief| A
+    A -->|only with a query| K[knowledge source: curated by default]
+    K -->|up to 3 passages| P[prompt]
     A --> P --> G{provider}
     G -->|mock| M[mock text, source mock]
     G -->|groq| Q[Groq over HTTPS, 8 s, source groq]
@@ -267,18 +268,39 @@ flowchart LR
 ```
 
 A provider is a class with `generate(prompt) -> Generation(text, source)` in `core/ai/`; it raises
-only `ProviderError`. `assist.generate(feature, prompt, fallback)` is the one entry point: it
-turns every failure into the fixed fallback with source `rules`, and lists the passages of the
-knowledge source in `sources` (empty until retrieval exists, so adding it changes no response
-shape). "Say it for me" checks fixed crisis phrases before any provider is called; a match returns
-`crisis: true` with the help block and no generated text.
+only `ProviderError`. `assist.generate(feature, prompt, fallback, query=None)` is the one entry
+point: it turns every failure into the fixed fallback with source `rules`. Only a feature that
+passes a `query` gets passages: today that is the conversation guide. "Say it for me" and the
+summary narrative pass none, so her words never become a search and a personal message has no
+citations. "Say it for me" checks fixed crisis phrases before any provider is called; a match
+returns `crisis: true` with the help block and no generated text.
 
 | `AI_PROVIDER` | Behaviour |
 |---|---|
 | `mock` (default) | Offline and deterministic, labelled `mock`. |
-| `groq` | Needs `GROQ_API_KEY`; the key never appears in logs or responses. |
+| `groq` | Needs `GROQ_API_KEY`; `GROQ_MODEL` defaults to `qwen/qwen3.8-27b`; the key never appears in logs or responses; a `<think>` block in an answer is dropped. |
 
 Any other value, or `groq` without a key, stops startup with a message that names the problem.
+
+### Knowledge source (light retrieval)
+
+| `KNOWLEDGE_SOURCE` | Behaviour |
+|---|---|
+| `curated` (default) | Reviewed passages in `core/content/knowledge.json`. |
+| `none` | No passages, `sources` stays empty. |
+
+Each passage in the file has an id, the title and link of a public Polish page, a short summary in
+our own words (at most 400 characters), guide topics and keyword stems. A lookup folds the query
+(lowercase, no Polish diacritics). Passages are ranked by topic hits (a topic tag in the query),
+then keyword hits (a keyword that starts a word), then file order. The best three from different
+pages are used. The guide asks with `"<topic> <brief>"`. The passages go into the prompt as background,
+and their titles and links come back in `sources`. When the fixed lines are used (no model answer,
+or no usable line), the guide cites nothing.
+
+Generated guide lines that show the speaker's gender ("myślałem", "żebym pomógł", "będę
+pomagał", "jestem dumny") are dropped, because the reader may be anyone. Without a key, the mock
+provider gives the helpers sample texts that fit their screens, labelled `mock`. An embedding search can replace the curated source later behind
+the same `retrieve(query)` method.
 
 ## Operations added after v0
 

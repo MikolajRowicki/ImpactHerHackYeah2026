@@ -65,6 +65,54 @@ def test_model_and_key_come_from_settings_by_default(settings):
     assert seen["body"]["model"] == "settings-model"
 
 
+@pytest.mark.parametrize(
+    ("env", "model"),
+    [({}, "qwen/qwen3.8-27b"), ({"GROQ_MODEL": "openai/gpt-oss-120b"}, "openai/gpt-oss-120b")],
+)
+def test_the_request_names_the_model_of_the_environment(load_settings, settings, env, model):
+    settings.GROQ_MODEL = load_settings(DJANGO_SECRET_KEY="x", **env).GROQ_MODEL
+    seen = {}
+
+    def http(url, headers, body, timeout):
+        seen.update(body=json.loads(body))
+        return 200, answer()
+
+    GroqProvider(http=http, api_key=KEY).generate("x")
+    assert seen["body"]["model"] == model
+
+
+@pytest.mark.parametrize(
+    ("content", "text"),
+    [
+        ("<think>plan</think>\nTekst.", "Tekst."),
+        (
+            "<think>\nkrok 1\nkrok 2\n</think>\n\nPierwsza linia.\nDruga linia.",
+            "Pierwsza linia.\nDruga linia.",
+        ),
+        ("Tekst.<think>dopisek</think>", "Tekst."),
+    ],
+)
+def test_a_think_block_is_dropped(content, text):
+    assert provider(lambda *a: (200, answer(content))).generate("x").text == text
+
+
+@pytest.mark.parametrize(
+    "content", ["<think>tylko plan</think>", "<think>urwany plan", " <think></think> \n"]
+)
+def test_an_answer_of_only_thinking_is_empty(content):
+    with pytest.raises(ProviderError, match="empty"):
+        provider(lambda *a: (200, answer(content))).generate("x")
+
+
+def test_only_thinking_gives_the_fallback_labelled_rules(monkeypatch):
+    monkeypatch.setattr(
+        "core.ai.assist.get_provider",
+        lambda: provider(lambda *a: (200, answer("<think>plan</think>"))),
+    )
+    result = assist.generate("test", "prompt", "zapasowy tekst")
+    assert (result.text, result.source) == ("zapasowy tekst", "rules")
+
+
 @pytest.mark.parametrize("status", [400, 401, 429, 500, 503])
 def test_an_http_error_is_a_provider_error(status):
     with pytest.raises(ProviderError, match=str(status)):

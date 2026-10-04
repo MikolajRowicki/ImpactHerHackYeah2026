@@ -96,9 +96,12 @@ works only while `DJANGO_DEBUG=1` unless `ALLOW_LEGACY_REGISTER=1`.
 
 `AI_PROVIDER=mock` (default) is offline and every text it produces is labelled `mock`. To use
 Groq, set `AI_PROVIDER=groq` and `GROQ_API_KEY` (a free key from the Groq console; `GROQ_MODEL`
-is optional). A missing key stops startup. A slow or failing provider (limit 8 seconds) never
+is optional, the default is `qwen/qwen3.8-27b`). A missing key stops startup. A slow or failing provider (limit 8 seconds) never
 breaks a request: the answer falls back to a fixed text labelled `rules`. Text that "say it for
 me" sends to the provider is never stored or logged here.
+
+The conversation guide cites sources from `src/backend/core/content/knowledge.json`
+(`KNOWLEDGE_SOURCE=curated`, the default). `KNOWLEDGE_SOURCE=none` switches citations off.
 
 ## Frontend without a backend (mock mode)
 

@@ -21,9 +21,13 @@ CRISIS_LINES = [
     {
         "name": "Telefon zaufania dla dorosłych w kryzysie emocjonalnym",
         "number": "116 123",
-        "hours": "codziennie, 14:00-22:00",
-        "description": "Rozmowa z doradcą, gdy jest Ci trudno i chcesz z kimś porozmawiać.",
-        "source_url": "https://116123.pl/",
+        "hours": "całą dobę",
+        # Around the clock since the line moved to the state platform 116sos.pl; the old
+        # 116123.pl domain is parked (checked 2026-10-04).
+        "description": (
+            "Rozmowa z psychologiem, gdy jest Ci trudno. Możesz też napisać na czacie 116sos.pl."
+        ),
+        "source_url": "https://116sos.pl/",
     },
     {
         "name": "Centrum Wsparcia dla osób dorosłych w kryzysie psychicznym",

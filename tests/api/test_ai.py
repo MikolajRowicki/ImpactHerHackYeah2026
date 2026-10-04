@@ -90,6 +90,16 @@ def test_the_prompt_holds_her_text_the_recipient_and_the_tone(api, monkeypatch):
     assert "bliskim osobom" in second and "bezpośredni" in second
 
 
+def test_the_prompt_keeps_her_feminine_voice_and_no_gender_for_the_recipient(api, monkeypatch):
+    anna(api)
+    provider = use(monkeypatch, Fixed())
+    api.call("ai_say_it_for_me", body=BODY)
+    prompt = provider.prompts[0]
+    assert "formach żeńskich" in prompt
+    assert "Nie zakładaj płci adresata" in prompt
+    assert "„żebyś wiedział”" in prompt
+
+
 @pytest.mark.parametrize("length", [1, 500])
 def test_the_text_boundaries_are_accepted(api, length):
     anna(api)
@@ -394,7 +404,38 @@ def test_every_topic_has_the_three_lists(api, topic):
     assert result["avoid"] == GUIDE[topic]["avoid"]
     assert result["questions"] == GUIDE[topic]["questions"]
     assert result["source"] == "mock"
+    # The curated source is the default: one to three different pages, each with a link.
+    assert 1 <= len(result["sources"]) <= 3
+    urls = [source["url"] for source in result["sources"]]
+    assert len(set(urls)) == len(urls)
+    assert all(
+        source["title"] and source["url"].startswith("https://") for source in result["sources"]
+    )
+
+
+def test_with_the_knowledge_source_off_the_guide_cites_nothing(api, settings):
+    settings.KNOWLEDGE_SOURCE = "none"
+    supporter(api)
+    result = api.call("ai_conversation_guide", query={"topic": "hard_day"})
     assert result["sources"] == []
+
+
+def test_the_guide_asks_with_its_topic_and_gives_the_passages_to_the_provider(api, monkeypatch):
+    class Recorder:
+        queries = []
+
+        def retrieve(self, query):
+            self.queries.append(query)
+            return [Passage("Pierwsze", "https://example.org/1", "Słuchaj bez oceniania.")]
+
+    recorder = Recorder()
+    monkeypatch.setattr("core.ai.assist.get_knowledge", lambda: recorder)
+    supporter(api)
+    provider = use(monkeypatch, Fixed("Jestem obok.", "groq"))
+    result = api.call("ai_conversation_guide", query={"topic": "listen_without_fixing"})
+    assert recorder.queries[0].startswith("listen_without_fixing ")
+    assert "Słuchaj bez oceniania." in provider.prompts[0]
+    assert result["sources"] == [{"title": "Pierwsze", "url": "https://example.org/1"}]
 
 
 def test_a_partner_may_ask_too(api):
@@ -480,6 +521,91 @@ def test_an_answer_without_a_usable_line_gives_the_fixed_guide(api, monkeypatch,
     assert result["source"] == "rules"
 
 
+def test_a_line_that_shows_the_speakers_gender_is_dropped(api, monkeypatch):
+    supporter(api)
+    text = "Widzę, że jest Ci ciężko.\nMartwię się i chciałbym pomóc.\nJestem tu dla Ciebie."
+    use(monkeypatch, Fixed(text, "groq"))
+    result = api.call("ai_conversation_guide", query={"topic": "hard_day"})
+    assert result["opening_lines"] == ["Widzę, że jest Ci ciężko.", "Jestem tu dla Ciebie."]
+    assert result["source"] == "groq"
+
+
+@pytest.mark.parametrize(
+    "line",
+    [
+        "Myślałem o Tobie cały dzień.",
+        "Zauważyłam, że jesteś zmęczona.",
+        "Chciałabym Ci pomóc.",
+        "Byłbym spokojniejszy, gdybyś odpoczęła.",
+        "ZROBIŁEM dziś zakupy.",
+        "Czy chciałabyś, żebym pomógł ci umówić wizytę?",
+        "Chcę, żebym ci pomogła w tym tygodniu.",
+        "Żebym w ten weekend mógł Ci pomóc, powiedz, czego potrzebujesz.",
+        "Będę Ci pomagał przy dziecku.",
+        "Jestem z Ciebie dumny.",
+        "Jestem gotowa pomóc.",
+        "Jestem gotów pomóc.",
+        "Jestem z Ciebie bardzo dumna.",
+        "Jestem ciekawa, jak minął Ci dzień.",
+        "Sam nie wiem, co powiedzieć.",
+    ],
+)
+def test_gendered_first_person_forms_are_recognised(api, monkeypatch, line):
+    supporter(api)
+    use(monkeypatch, Fixed(f"{line}\nJestem obok.", "groq"))
+    result = api.call("ai_conversation_guide", query={"topic": "how_are_you"})
+    assert result["opening_lines"] == ["Jestem obok."]
+
+
+@pytest.mark.parametrize(
+    "line",
+    [
+        "Jestem obok, żebyś mogła odpocząć.",
+        "Czy mogłabyś porozmawiać z lekarzem?",
+        "Chcę, żebyś czuła się bezpiecznie.",
+        "Zrobiłaś dziś bardzo dużo.",
+        "Byłaś dziś bardzo dzielna.",
+        "Jestem tu, żebyś była spokojna.",
+        "Będę obok, kiedy będziesz gotowa.",
+        "Przyjdę z pomysłem na obiad.",
+        "Nie łam się, jestem obok.",
+        "Jestem obok i spokojnie poczekam, aż będziesz gotowa.",
+        "Jestem tu żebyś była spokojna.",
+        "Dziś jestem od gotowania i zakupów.",
+        "Będę obok żeby było Ci łatwiej.",
+    ],
+)
+def test_lines_that_speak_to_the_mother_in_her_gender_stay(api, monkeypatch, line):
+    supporter(api)
+    use(monkeypatch, Fixed(line, "groq"))
+    result = api.call("ai_conversation_guide", query={"topic": "how_are_you"})
+    assert result["opening_lines"] == [line]
+
+
+def test_only_gendered_lines_give_the_fixed_guide_without_sources(api, monkeypatch):
+    class One:
+        def retrieve(self, query):
+            return [Passage("Pierwsze", "https://example.org/1", "tekst 1")]
+
+    monkeypatch.setattr("core.ai.assist.get_knowledge", lambda: One())
+    supporter(api)
+    use(monkeypatch, Fixed("Myślałem o Tobie.\nChciałabym pomóc.", "groq"))
+    result = api.call("ai_conversation_guide", query={"topic": "offer_help"})
+    assert result["opening_lines"] == GUIDE["offer_help"]["opening_lines"]
+    assert (result["source"], result["sources"]) == ("rules", [])
+
+
+def test_the_guide_prompt_names_the_gendered_forms_to_avoid(api, monkeypatch):
+    supporter(api)
+    provider = use(monkeypatch, Fixed("Linia."))
+    api.call("ai_conversation_guide", query={"topic": "how_are_you"})
+    prompt = provider.prompts[0]
+    assert "zdradzają płeć" in prompt
+    for form in ("myślałem", "zauważyłam", "chciałbym", "chciałabym"):
+        assert form in prompt
+    assert "czasie teraźniejszym" in prompt
+
+
 def test_the_source_of_a_fixed_guide_is_never_groq(api, monkeypatch):
     supporter(api)
     use(monkeypatch, Failing())
@@ -559,7 +685,7 @@ def test_the_prompt_differs_by_topic_only(api, monkeypatch):
 # Cited sources reach the response
 
 
-def test_the_passages_of_a_knowledge_source_are_listed_in_both_answers(api, browser, monkeypatch):
+def test_the_passages_of_a_knowledge_source_are_listed_in_the_guide(api, browser, monkeypatch):
     class Two:
         def retrieve(self, query):
             return [
@@ -568,16 +694,35 @@ def test_the_passages_of_a_knowledge_source_are_listed_in_both_answers(api, brow
             ]
 
     monkeypatch.setattr("core.ai.assist.get_knowledge", lambda: Two())
-    expected = [
+    circle = make_circle()
+    close_one = browser(circle.marta)
+    guide = close_one.call("ai_conversation_guide", query={"topic": "how_are_you"})
+    assert guide["sources"] == [
         {"title": "Pierwsze", "url": "https://example.org/1"},
         {"title": "Drugie", "url": "https://example.org/2"},
     ]
-    circle = make_circle()
-    api.sign_in(circle.anna)
-    assert api.call("ai_say_it_for_me", body=BODY)["sources"] == expected
-    close_one = browser(circle.marta)
-    guide = close_one.call("ai_conversation_guide", query={"topic": "how_are_you"})
-    assert guide["sources"] == expected
+
+
+def test_her_words_are_never_a_query_and_say_it_cites_nothing(api, monkeypatch):
+    class MustNotAsk:
+        def retrieve(self, query):
+            pytest.fail("say it for me must not ask the knowledge source")
+
+    monkeypatch.setattr("core.ai.assist.get_knowledge", lambda: MustNotAsk())
+    anna(api)
+    provider = use(monkeypatch, Fixed("Wiadomość.", "groq"))
+    result = api.call("ai_say_it_for_me", body=BODY)
+    assert result["sources"] == []
+    assert "sprawdzonych fragmentów" not in provider.prompts[0]
+
+
+def test_the_default_curated_source_is_never_asked_by_say_it(api, monkeypatch):
+    anna(api)
+    provider = use(monkeypatch, Fixed("Wiadomość.", "groq"))
+    body = {**BODY, "text": "boję się, że lekarz powie, że to depresja poporodowa"}
+    result = api.call("ai_say_it_for_me", body=body)
+    assert result["sources"] == []
+    assert "sprawdzonych fragmentów" not in provider.prompts[0]
 
 
 def test_a_crisis_answer_has_no_sources_even_with_a_knowledge_source(api, monkeypatch):

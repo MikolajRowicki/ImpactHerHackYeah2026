@@ -55,6 +55,10 @@ CHECKS = [
     ("woman", "/check-in", ".choice__label", "color", 4.5),
     ("woman", "/check-in", ".choice", "border", 3),
     ("woman", "/group", ".button--danger", "color", 4.5),
+    ("woman", "/", ".cta-card--quiet .cta-card__title", "color", 4.5),
+    ("woman", "/", ".cta-card--quiet .cta-card__lead", "color", 4.5),
+    ("woman", "/say-it", ".say-it__counter", "color", 4.5),
+    ("woman", "/say-it", ".field__input", "border", 3),
 ]
 
 
@@ -88,6 +92,7 @@ def test_error_text_has_enough_contrast_in_both_themes(mock_page):
 ROUTES = [
     ("woman", "/"),
     ("woman", "/check-in"),
+    ("woman", "/say-it"),
     ("woman", "/tasks"),
     ("woman", "/group"),
     ("woman", "/help"),
@@ -98,6 +103,8 @@ ROUTES = [
     ("partner", "/"),
     ("partner", "/questions"),
     ("partner", "/group"),
+    ("partner", "/talk"),
+    ("partner", "/talk/suggest_professional_help"),
     ("supporter", "/tasks"),
     ("no_group", "/"),
     ("no_group", "/invite/k3p9x2vb7qd4"),

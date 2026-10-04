@@ -59,6 +59,13 @@ def test_the_emergency_number_and_a_line_for_emotional_distress_are_present():
     assert "800 70 2222" in numbers
 
 
+def test_116_123_answers_around_the_clock_and_links_to_its_live_site():
+    # The line moved to 116sos.pl and works 24/7; 116123.pl is a parked domain now.
+    line = next(line for line in help_data.CRISIS_LINES if line["number"] == "116 123")
+    assert line["hours"] == "całą dobę"
+    assert line["source_url"] == "https://116sos.pl/"
+
+
 @pytest.mark.parametrize("voivodeship", [None, *VOIVODESHIPS])
 def test_the_help_block_always_carries_112_and_a_path(voivodeship):
     block = build_help(voivodeship)

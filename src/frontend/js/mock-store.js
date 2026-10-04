@@ -1,4 +1,5 @@
 import { ACCOUNT_LEVEL, ApiError } from "./api.js";
+import { GUIDE_TOPICS, isCrisis, sampleGuide, sampleMessage } from "./mock-ai.js";
 import { OPERATIONS } from "./operations.js";
 import { t } from "./strings.pl.js";
 
@@ -49,6 +50,8 @@ export function createMockStore({ base, storage, perspective = "", fetchFn = (..
   const examples = new Map();
   let memory = null;
   let selected = null;
+  // Counts AI answers, so asking again shows another sample. Her text is never kept.
+  let aiTurn = 0;
 
   function example(name) {
     if (!examples.has(name)) {
@@ -672,6 +675,32 @@ export function createMockStore({ base, storage, perspective = "", fetchFn = (..
     list_self_care(s, me, _opts, _group, membership) {
       if (membership.role !== "woman") return refuse(403, "list_self_care.403.json");
       return example("list_self_care.200.json");
+    },
+
+    ai_say_it_for_me(s, me, { body = {} }, _group, membership) {
+      if (membership.role !== "woman") return refuse(403, "ai_say_it_for_me.403.json");
+      const text = String(body.text ?? "").trim();
+      const fields = {};
+      if (!text) fields.text = t.sayIt.textMissing;
+      else if (text.length > 500) fields.text = t.mock.errors.textLong;
+      if (!["partner", "supporters"].includes(body.recipient)) fields.recipient = t.mock.errors.pickOne;
+      if (!["gentle", "direct"].includes(body.tone)) fields.tone = t.mock.errors.pickOne;
+      if (Object.keys(fields).length) return invalid(fields);
+      // Like the backend, a crisis phrase gets the help block and no message.
+      if (isCrisis(text)) return example("ai_say_it_for_me.200.crisis.json");
+      return {
+        crisis: false,
+        message: sampleMessage(body.recipient, body.tone, aiTurn++),
+        help: null,
+        source: "mock",
+        sources: [],
+      };
+    },
+
+    ai_conversation_guide(s, me, { query = {} }, _group, membership) {
+      if (membership.role === "woman") return refuse(403, "ai_conversation_guide.403.json");
+      if (!GUIDE_TOPICS.includes(query.topic)) return refuse(422, "ai_conversation_guide.422.json");
+      return sampleGuide(query.topic, aiTurn++);
     },
   };
 

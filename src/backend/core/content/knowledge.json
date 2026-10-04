@@ -1,0 +1,109 @@
+{
+  "about": "Short summaries in plain Polish of public pages, read on 2026-10-04. General information, not medical advice. A specialist should read them before real use.",
+  "passages": [
+    {
+      "id": "pacjent-mloda-matka-czestosc",
+      "title": "Młoda matka w depresji",
+      "url": "https://pacjent.gov.pl/jak-zyc-z-choroba/mloda-matka-w-depresji",
+      "text": "Depresja poporodowa dotyka od 10 do 22 procent kobiet po porodzie, a co druga nie szuka pomocy specjalisty. Może się zacząć w ciągu kilkunastu dni po porodzie albo dopiero w drugiej połowie pierwszego roku dziecka. Presja, by być „dobrą matką”, sprawia, że kobiety często ukrywają, jak naprawdę się czują.",
+      "topics": ["how_are_you"],
+      "keywords": ["czuje", "samopoczu", "nastroj", "ukryw", "depresj", "poporod"]
+    },
+    {
+      "id": "pacjent-mloda-matka-baby-blues",
+      "title": "Młoda matka w depresji",
+      "url": "https://pacjent.gov.pl/jak-zyc-z-choroba/mloda-matka-w-depresji",
+      "text": "Baby blues, czyli poporodowy smutek, pojawia się około trzeciego dnia po porodzie: płaczliwość, drażliwość, kłopoty ze snem, zwątpienie w siebie jako matkę. Taki zły nastrój może trwać około 10 dni. Jeśli nie mija, może to być depresja poporodowa i wtedy warto pójść do lekarza.",
+      "topics": ["hard_day", "how_are_you"],
+      "keywords": ["smut", "placz", "trudn", "zmecz", "baby", "blues", "sen"]
+    },
+    {
+      "id": "pacjent-mloda-matka-kiedy-do-lekarza",
+      "title": "Młoda matka w depresji",
+      "url": "https://pacjent.gov.pl/jak-zyc-z-choroba/mloda-matka-w-depresji",
+      "text": "Do lekarza warto pójść, gdy zły nastrój trwa dłużej niż kilkanaście dni, nic nie cieszy, pojawiają się silne lęki o dziecko, natrętne myśli „jestem złą matką”, brak sił, by wstać, albo sen rozregulowany inaczej niż rytm dziecka. Myśli o śmierci swojej lub dziecka wymagają natychmiastowej pomocy psychiatry.",
+      "topics": ["suggest_professional_help"],
+      "keywords": ["lekarz", "psychiatr", "objaw", "specjalist", "wizyt"]
+    },
+    {
+      "id": "pacjent-mloda-matka-bliscy",
+      "title": "Młoda matka w depresji",
+      "url": "https://pacjent.gov.pl/jak-zyc-z-choroba/mloda-matka-w-depresji",
+      "text": "Depresja poporodowa to choroba, która wymaga leczenia, a nie wina mamy. Nie czyni jej złą matką i nie znaczy, że nie kocha dziecka. Bardzo ważna jest pomoc bliskich: ktoś, kto jest obok, zajmie się na jakiś czas dzieckiem i okaże zrozumienie. Leczy się ją psychoterapią, psychoedukacją, a czasem lekami pod kontrolą lekarza.",
+      "topics": ["offer_help", "suggest_professional_help"],
+      "keywords": ["pomoc", "dzieck", "wsparc", "lecz", "win", "bliski"]
+    },
+    {
+      "id": "pacjent-jak-wspierac-pomoc",
+      "title": "Depresja – jak wspierać chorych",
+      "url": "https://pacjent.gov.pl/node/2609",
+      "text": "Wspierając osobę z depresją, nie przytłaczaj jej rozmachem i nie rób wszystkiego za nią, zostaw miejsce na jej własne działanie. Nie uszczęśliwiaj na siłę: ustalaj razem z nią, w czym i jak pomóc. Zachęcaj do ruchu bez naciskania, zaczynając od czegoś małego, na przykład 5-minutowego spaceru.",
+      "topics": ["offer_help"],
+      "keywords": ["pomoc", "pomag", "spacer", "zrob", "wspier", "konkret"]
+    },
+    {
+      "id": "pacjent-jak-wspierac-slowa",
+      "title": "Depresja – jak wspierać chorych",
+      "url": "https://pacjent.gov.pl/node/2609",
+      "text": "Unikaj łatwego pocieszania i komunałów, takich jak „Przesadzasz”, „Ogarnij się”, „Rusz się” czy „Mnie też nie jest łatwo”. Po takich słowach osoba chora czuje się jeszcze bardziej niezrozumiana i samotna. Cierpliwie powtarzaj, że z depresji można wyjść. Gdy ktoś mówi o samobójstwie, powiedz o tym lekarzowi i bliskim, nawet jeśli prosi o tajemnicę.",
+      "topics": ["listen_without_fixing", "hard_day"],
+      "keywords": ["pociesz", "rad", "unik", "sluch", "wysluch", "rozmow"]
+    },
+    {
+      "id": "mp-depresja-i-psychoza-poporodowa",
+      "title": "Depresja i psychoza poporodowa",
+      "url": "https://www.mp.pl/pacjent/psychiatria/choroby/91686,depresja-i-psychoza-poporodowa",
+      "text": "Depresja poporodowa dotyczy około 7–20% kobiet i rozwija się w ciągu kilku do kilkunastu tygodni po porodzie. Daje głęboki smutek, zmęczenie, bezradność, lęk, kłopoty ze snem i myśli o własnej niekompetencji. Ocenić ją powinien psycholog lub psychiatra. Leczy się ją psychoterapią, a w cięższych stanach także lekami, które można dobrać do karmienia piersią.",
+      "topics": ["suggest_professional_help", "how_are_you"],
+      "keywords": ["psycholog", "psychiatr", "lecz", "lek", "terapi", "objaw"]
+    },
+    {
+      "id": "rpl-depresja-poporodowa",
+      "title": "Depresja poporodowa – jak rozumieć i rozpoznawać depresję pojawiającą się po porodzie dziecka?",
+      "url": "https://rodzicpoludzku.pl/baza-wiedzy/aspekty-psychologiczne/depresja-poporodowa-jak-rozumiec-i-rozpoznawac-depresje-pojawiajaca-sie-po-porodzie-dziecka/",
+      "text": "Mamie pomaga relacja troskliwa i wspierająca, a nie kontrolująca, oraz słuchanie bez oceniania. Depresja poporodowa często dotyczy myśli i uczuć związanych z dzieckiem, na przykład lęku przed zostaniem z nim sam na sam. Pomoc w ramach NFZ dają poradnie zdrowia psychicznego i ośrodki interwencji kryzysowej.",
+      "topics": ["listen_without_fixing", "suggest_professional_help"],
+      "keywords": ["sluch", "wysluch", "ocen", "kontrol", "poradni", "rozmow"]
+    },
+    {
+      "id": "psse-depresja-to-nie-fanaberia",
+      "title": "Depresja poporodowa to nie „fanaberia”",
+      "url": "https://www.gov.pl/web/psse-aleksandrow-kujawski/depresja-poporodowa-to-nie-fanaberia",
+      "text": "Depresja poporodowa to nie „fanaberia”: dotyka około 10–20% kobiet i zwykle pojawia się między 2. a 12. tygodniem po porodzie. Bliscy pomagają, gdy słuchają bez oceny, nie bagatelizują objawów, przejmują część codziennych obowiązków i zachęcają do pomocy specjalisty.",
+      "topics": ["offer_help", "listen_without_fixing", "hard_day"],
+      "keywords": ["obowiaz", "bagateliz", "ocen", "sluch", "pomoc", "pomag"]
+    },
+    {
+      "id": "nwpm-jak-rozmawiac",
+      "title": "Jak rozmawiać z osobą w depresji: co mówić najbliższej osobie, a jakich słów unikać?",
+      "url": "https://niewidacpomnie.org/2024/10/10/jak-rozmawiac-z-osoba-w-depresji-co-mowic-najblizszej-osobie-a-jakich-slow-unikac/",
+      "text": "Nie porównuj z innymi i nie obwiniaj, bo depresja to choroba, a nie lenistwo. Zamiast zapewniać, że wszystko rozumiesz, lepiej powiedzieć: „Domyślam się, że musi Ci być bardzo trudno” albo „Nie jesteś sama, przejdziemy przez to razem”. Najważniejsze są obecność i akceptacja.",
+      "topics": ["listen_without_fixing", "hard_day", "how_are_you"],
+      "keywords": ["rozmow", "mow", "slow", "unik", "porown", "trudn"]
+    },
+    {
+      "id": "mz-gdzie-uzyskac-pomoc",
+      "title": "Gdzie uzyskać pomoc psychologiczną i psychiatryczną?",
+      "url": "https://www.gov.pl/web/zdrowie/gdzie-uzyskac-pomoc-psychologiczna-i-psychiatryczna",
+      "text": "Dorosła osoba może zgłosić się do centrum zdrowia psychicznego bez skierowania i bez wcześniejszej rejestracji. Tam, gdzie takiego centrum nie ma, pomaga poradnia zdrowia psychicznego. W nagłej sytuacji trzeba dzwonić pod 112 albo jechać na SOR szpitala z oddziałem psychiatrycznym.",
+      "topics": ["suggest_professional_help"],
+      "keywords": ["skierowan", "psychiatr", "psycholog", "centrum", "poradni", "lekarz", "wizyt"]
+    },
+    {
+      "id": "116sos-telefon-i-czat",
+      "title": "116sos.pl – pomoc psychologiczna dla osób dorosłych",
+      "url": "https://116sos.pl/",
+      "text": "Pod numerem 116 123 i na czacie 116sos.pl dorośli w kryzysie emocjonalnym mogą bezpłatnie i anonimowo porozmawiać z psychologiem, całą dobę, 7 dni w tygodniu.",
+      "topics": ["suggest_professional_help", "hard_day"],
+      "keywords": ["kryzys", "telefon", "zadzwon", "czat", "noc", "psycholog"]
+    },
+    {
+      "id": "centrum-wsparcia",
+      "title": "Centrum Wsparcia dla osób dorosłych w kryzysie psychicznym",
+      "url": "https://centrumwsparcia.pl/",
+      "text": "Centrum Wsparcia pod bezpłatnym numerem 800 70 2222 pomaga dorosłym w kryzysie psychicznym całą dobę, 7 dni w tygodniu. Można też napisać na czacie albo e-mailem. Zadanie finansuje Minister Zdrowia.",
+      "topics": ["suggest_professional_help"],
+      "keywords": ["kryzys", "telefon", "zadzwon", "czat", "noc"]
+    }
+  ]
+}

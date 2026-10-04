@@ -146,3 +146,194 @@ capabilities (`api-contract`, `frontend-mock-mode`, `ai-provider-config`) are no
   store refuses a second mother invitation like the backend, and a test checks the header text in
   the contract. Left as is: contrast probe covers text elements only; no test for suggestions in a
   pending group (that screen is closed to a pending group by the route guard).
+
+## Change ai-assist-and-sources, group 1: Groq model and prompts
+
+- **Goal:** Groq works again and its texts do not guess anyone's gender.
+- **Built:**
+  - The default `GROQ_MODEL` is `qwen/qwen3.8-27b`. `llama-3.3-70b-versatile` answered 404
+    `model_not_found` on 2026-10-04. The key listed `openai/gpt-oss-120b`, `openai/gpt-oss-20b`
+    and `qwen/qwen3.8-27b` as chat models; Qwen wrote the most natural Polish in 0.2–0.5 s. Free
+    limits for this key: 1000 requests a day, 8000 tokens a minute per model.
+  - A `<think>` block in a Groq answer is dropped. An answer of only thinking counts as empty.
+  - The guide prompt names the gendered forms to avoid. Generated guide lines that still hold a
+    first-person past or conditional form are dropped. When no line is left, the fixed lines are
+    used with `source: rules` and no sources.
+  - The "say it for me" prompt keeps her feminine voice and asks not to assume the partner's
+    gender.
+  - `load_settings` in the tests now also clears `GROQ_MODEL` and `KNOWLEDGE_SOURCE`.
+- **Deviations:**
+  - The line filter and the empty sources for the fixed lines were added to the spec
+    (`ai-assist`). A prompt alone still gave "chciałbym" in 2 of 6 guides.
+  - The "say it for me" result will be editable on screen, because the model still writes
+    "byłbyś" now and then (frontend spec updated).
+- **Manual check (real Groq):**
+  - 10 guides (2 per topic) gave 30 lines, of which 29 were kept. The dropped one held
+    "chciałbym".
+  - Three "say it for me" messages read naturally. One used "byłbyś" for the partner.
+- **Verification:** `ruff check .`, `ruff format --check .`, `pytest tests` (1600 passed).
+
+## Fix found on the way: 116 123 hours and link
+
+- **Problem:** the help data said 116 123 works "codziennie, 14:00-22:00" and linked to
+  `https://116123.pl/`, which is a parked domain for sale (checked 2026-10-04). The line moved to
+  the state platform 116sos.pl and works around the clock with a chat (116sos.pl, the line's page
+  at psychologia.edu.pl, and the Ministry of Health page "Gdzie uzyskać pomoc psychologiczną i
+  psychiatryczną?").
+- **Changed:** hours "całą dobę", link `https://116sos.pl/`, and the description now names the
+  chat. The help data and the five contract examples that repeat it were updated; one test was
+  added.
+- **Verification:** `ruff check .`, `ruff format --check .`, `pytest tests` (1601 passed), the
+  browser tests for summary and help (23 passed).
+
+## Change ai-assist-and-sources, group 2: curated knowledge source
+
+- **Goal:** the conversation guide cites real Polish sources (light retrieval, no embeddings).
+- **Built:**
+  - `core/content/knowledge.json` has 13 short passages from 9 public pages: pacjent.gov.pl (two
+    articles), mp.pl, Fundacja Rodzić po Ludzku, the sanitary station's page on gov.pl, the
+    Ministry of Health, Fundacja Nie Widać Po Mnie, 116sos.pl and Centrum Wsparcia. Each page was
+    read during this task, and every passage is a summary in our own words.
+  - `CuratedKnowledge` folds the query. A topic tag scores 3 and a keyword prefix scores 1. It
+    returns the best three passages from different pages, with ties in file order.
+  - `KNOWLEDGE_SOURCE` defaults to `curated`, and a bad value or file stops startup.
+  - `assist.generate` asks the knowledge source only when a feature passes a `query`, and only
+    the guide does (`"<topic> <brief>"`). The guide prompt treats the passages as background
+    without numbers or institution names.
+  - New example `ai_conversation_guide.200.sources.json`. README and architecture describe the
+    source.
+- **Deviations:**
+  - "At most one passage per page" was added to the spec, so the cited links are different pages.
+  - The pacjent.gov.pl article on supporting a person with depression is linked as
+    `https://pacjent.gov.pl/node/2609`. Its slug address is refused by the site's firewall even in
+    headless Chromium, while the node address opens the article.
+  - Tests changed on purpose: the default knowledge source is `curated`; the guide lists its
+    curated sources by default; "say it for me" no longer lists passages.
+- **Manual checks:**
+  - Headless Chromium opened all 9 links with the expected titles.
+  - With real Groq and the curated source, the guide answered in 0.3–0.4 s for three topics, with
+    lines drawn from the passages ("zająć się dzieckiem", "w czym konkretnie mogę pomóc") and
+    three sources each.
+- **Not done:** the passages need a specialist's read before real use.
+- **Verification:** `ruff check .`, `ruff format --check .`, `pytest tests` (1626 passed),
+  `openspec validate --strict`.
+
+## Change ai-assist-and-sources, group 3: "Powiedz to za mnie" screen
+
+- **Goal:** the mother can turn something hard into a calm message she can edit and copy.
+- **Built:**
+  - `#/say-it` for the mother of an active or closed group. It has the text with a 500-character
+    counter, the recipient and the tone. The suggestion comes in an editable field with "Kopiuj"
+    and "Inna propozycja". A crisis answer shows the crisis lines and a link to help instead of a
+    message. A failure keeps her text and offers "Spróbuj ponownie". The button says
+    "Przygotowuję…" while waiting.
+  - A quiet card on her start screen. The navigation is unchanged.
+  - `ui/ai.js`: the origin label ("Przygotowane z pomocą AI", "Tekst przykładowy", none for fixed
+    texts) and the sources list used by the guide.
+  - `api.js` sends a `query` as a query string. Both AI operations are in `operations.js`.
+  - Mock mode: `js/mock-ai.js` with sample messages, a short crisis list and sample guides.
+    Mock-store handlers mirror the roles, the validation and the crisis answer. Her text is not
+    kept.
+  - `whileBusy` can show a label while it waits. `ctaCard` has a quiet variant.
+- **Deviations:**
+  - The guide's mock handler, strings and sources list landed here as shared plumbing. Group 4
+    adds the screen.
+  - The "not for you" text for loved ones' places now says "To miejsce jest dla bliskich osób
+    mamy" instead of "Te pytania…", because the guide uses it too.
+- **Verification:** `ruff check .`, `ruff format --check .`, `pytest tests`, `pytest tests_e2e`
+  (212 passed, 16 of them new for this screen). Screenshots in mock mode at 390 px and 1280 px
+  were checked by eye.
+
+## Change ai-assist-and-sources, group 4: conversation guide with sources
+
+- **Goal:** a partner or supporter prepares a caring conversation and sees the sources behind
+  the text.
+- **Built:**
+  - `#/talk` (topic list and a hint) and `#/talk/<topic>` for partners and supporters of an
+    active or closed group. The current topic is marked with `aria-current`. The guide has three
+    parts ("Od czego zacząć", "Czego unikać", "O co dopytać"), "Inne propozycje zdań", the origin
+    label, a "Źródła" list (title, site name, new tab, https only) and a short note.
+  - A quiet card on the loved ones' start screen. When the trend needs attention, their summary
+    also links to the professional-help topic. The mother's summary has no such link.
+  - Help and guide links in the summary now sit on their own lines.
+- **Deviations:** none from the spec. An unknown topic shows the list with a hint and sends no
+  request.
+- **Verification:**
+  - `ruff check .`, `ruff format --check .`, `pytest tests` (1626 passed), `pytest tests_e2e`
+    (233 passed, 21 new). Two of the new tests run against the seeded backend: Marta sees three
+    curated sources for "Po trudnym dniu", and Anna gets a message and the crisis answer with
+    116 123 "całą dobę".
+  - Screenshots in mock mode at 390 px and 1280 px were checked by eye.
+
+## Change ai-assist-and-sources: live check (task 5.1)
+
+- **Setup:**
+  - The real app with `AI_PROVIDER=groq`, `KNOWLEDGE_SOURCE=curated` and e-mail to the console.
+  - A fresh demo database in the scratch folder. `db.sqlite3` was not touched.
+- **Anna:**
+  - "Powiedz to za mnie" answered in 0.4 s, labelled "Przygotowane z pomocą AI".
+  - The Groq narrative showed on her summary.
+- **Marta:** the professional-help guide showed three Groq lines and three sources (mp.pl,
+  gov.pl, pacjent.gov.pl). Screenshots were taken at 390 px and 1280 px.
+- **Found and fixed during the check:**
+  - A line with "żebym pomógł" passed the gender filter (`9c14a97`).
+  - The origin label shared a line with the field label (`a2b83f7`).
+  - The counter overlapped the text box, and the message box was too short on a phone
+    (`a2b83f7`).
+- **Own mutation checks:** 8 behaviours were broken on purpose in a throwaway worktree, and each
+  was caught by its test.
+
+## Change ai-assist-and-sources: review round 1 (independent reviewer): FAIL, fixed
+
+- **M1:** a slow, older answer (a pending "Inna propozycja") could replace a newer crisis answer.
+  - Only the latest request's answer is shown now. A counter grows when a request really leaves.
+  - A test holds the older request and releases it after the crisis answer.
+  - The first attempt counted a blocked second press too; the double-press test caught that.
+- **M2:** the main spec's "Guide for a topic" still said `sources` is empty.
+  - The delta now MODIFIES "Conversation guide".
+  - The ai-assist Purpose in the main spec was updated.
+- **L1:** ranking by a sum (+3 per topic, +1 per keyword) did not guarantee topic first.
+  - Passages are now ranked by topic hits, then keyword hits.
+  - A new test has a keyword-heavy passage without a tag.
+- **L2:** the gender filter missed some forms.
+  - It now also catches the split conditional up to four words apart, the compound future
+    ("będę pomagał"), adjectives after "jestem" and "sam nie wiem".
+  - Nouns that only look like past forms ("z pomysłem", "nie łam się") are ignored.
+  - Spec scenarios were added.
+- **L3:** "zrobiłaś" and "byłaś" are now in the test of lines that stay.
+- **L4:** a Groq narrative on the summary is now labelled "Przygotowane z pomocą AI" (spec
+  scenario added).
+- **L5:** after a failure, focus goes to "Spróbuj ponownie" or "Inne propozycje zdań".
+- **L6:** the privacy note says the text is not stored and goes only to the AI service.
+- **L7:** without a key, the mock provider gives the helpers sample texts that fit their screens.
+- **L8:** these worklog entries.
+- **Verification:**
+  - The new tests fail on the code before the fixes (checked in a throwaway worktree).
+  - `ruff check .`, `ruff format --check .`, `pytest tests` (1646 passed).
+  - At the user's request, only the browser tests of the touched screens ran: say it for me,
+    guide, summary, live AI, contrast and layout (59 passed). The full browser suite last ran
+    before these fixes (233 passed).
+
+## Change ai-assist-and-sources: review round 2 (same reviewer): PASS
+
+- All round-1 findings were verified as fixed. The reviewer broke 4 fixes on purpose in a
+  throwaway worktree, and the tests caught each one.
+- **N1 (low), fixed after the verdict:** the new adjective check dropped neutral lines and lines
+  to the mother.
+  - Examples: "Jestem obok i spokojnie poczekam, aż będziesz gotowa", "Dziś jestem od gotowania",
+    "Będę obok żeby było Ci łatwiej".
+  - Adjectives now need their -y/-a ending (plus "pewien", "gotów").
+  - The words between the parts of a form may not open another clause ("i", "aż", "żeby") or
+    speak to the mother ("żebyś", "jesteś").
+  - The test lists grew by 7 lines.
+- **N2 (info), left as is:** a late error from an older say-it request is ignored by the same
+  ticket check as a late answer, but has no test of its own.
+- **Verification:** `ruff check .`, `ruff format --check .`, `pytest tests` (1653 passed). The
+  change is backend-only, so no browser tests ran.
+
+## Change ai-assist-and-sources: archive
+
+- The change is archived as `openspec/changes/archive/2026-10-04-ai-assist-and-sources`.
+- `ai-assist` got one renamed requirement, two modified and three added. `ai-provider-config` got
+  two added requirements. `frontend-ai-assist` is a new main spec with 9 requirements.
+- `openspec validate --specs` passes (25 items).

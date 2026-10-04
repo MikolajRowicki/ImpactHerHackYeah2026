@@ -120,3 +120,28 @@ def test_provider_sources_are_values_the_contract_knows():
     answer = '{"choices": [{"message": {"content": "tekst"}}]}'
     groq = GroqProvider(http=lambda *args: (200, answer), api_key="k")
     assert groq.generate("x").source in allowed
+
+
+def test_the_mock_gives_a_sample_message_for_say_it():
+    from core.ai import mock
+    from core.services.assist_say_it import build_prompt
+
+    text = MockProvider().generate(build_prompt("Jest mi ciężko.", "partner", "gentle")).text
+    assert text in mock.MESSAGES
+
+
+def test_the_mock_gives_three_opening_lines_for_the_guide():
+    from core.ai import mock
+    from core.services import assist_guide
+
+    for topic in assist_guide.BRIEFS:
+        text = MockProvider().generate(assist_guide.build_prompt(topic)).text
+        assert text in mock.GUIDES
+        assert len(assist_guide.opening_lines(text)) == 3
+
+
+def test_the_mock_keeps_the_general_sentences_for_other_prompts():
+    from core.ai import mock
+    from core.ai.narrative import build_prompt
+
+    assert MockProvider().generate(build_prompt("stable", ["Spokojnie."])).text in mock.TEXTS

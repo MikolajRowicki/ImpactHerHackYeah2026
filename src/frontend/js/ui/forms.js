@@ -123,15 +123,19 @@ export function submitButton(label, { variant, iconName } = {}) {
 }
 
 // Runs `work` with the button marked busy, so a second press does not send twice.
-export async function whileBusy(button, work) {
+// With `label`, the button says it while it waits (for example "Przygotowuję…").
+export async function whileBusy(button, work, { label } = {}) {
   if (button.getAttribute("aria-busy") === "true") return undefined;
   button.setAttribute("aria-busy", "true");
   button.disabled = true;
+  const content = label ? [...button.childNodes] : null;
+  if (label) button.replaceChildren(label);
   try {
     return await work();
   } finally {
     button.removeAttribute("aria-busy");
     button.disabled = false;
+    if (content) button.replaceChildren(...content);
   }
 }
 
