@@ -113,7 +113,7 @@ python3 -m http.server 8000
 ```
 
 Then open <http://localhost:8000/src/frontend/index.html?mock=1>. Django serves the same page at
-<http://localhost:8000/static/index.html?mock=1>.
+<http://localhost:8000/?mock=1> (and still at <http://localhost:8000/static/index.html?mock=1>).
 
 - `?mock=1` turns mock mode on and `?mock=0` turns it off. The choice stays for the browser tab.
 - `?variant=partner` shows another example (`get_me.200.partner.json`). Available variants are

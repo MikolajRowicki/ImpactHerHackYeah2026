@@ -40,7 +40,7 @@ export function readMode(search, storage) {
 }
 
 // Standalone (python -m http.server in the repo root): /src/frontend/index.html -> /contracts/examples/.
-// Served by Django: /static/index.html -> /static/contracts/examples/.
+// Served by Django: / and /static/index.html -> /contracts/examples/ and /static/contracts/examples/.
 export function examplesBase(pathname) {
   const marker = "/src/frontend/";
   const at = pathname.indexOf(marker);

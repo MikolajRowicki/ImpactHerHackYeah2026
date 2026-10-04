@@ -9,6 +9,8 @@ def sign_in(page, url, email):
     page.goto(f"{url}/")
     signed_in = call(page, "login", body={"email": email, "password": PASSWORD})
     assert signed_in["ok"], signed_in
+    # The login went around the page, so reload it to let the page see the new session.
+    page.reload()
 
 
 def test_a_supporter_reads_a_guide_with_sources_from_the_curated_file(page, seeded):  # noqa: F811
