@@ -39,10 +39,10 @@
 
 ## 5. Landing page
 
-- [ ] 5.1 Landing screen at the root for visitors: hero, roles, how it works, privacy, not-a-doctor note, final call to action; `frontend-design` guidance for look and motion.
-- [ ] 5.2 Motion with `IntersectionObserver` and CSS, disabled under reduced motion; inline SVG illustrations; light and dark theme.
-- [ ] 5.3 Tests: root shows landing when signed out and start when signed in, invitation link bypasses it, roles blocks, reduced motion, no horizontal scroll at 375 px, contrast in both themes.
-- [ ] 5.4 Verify. Commit.
+- [x] 5.1 Landing screen at the root for visitors: hero, roles, how it works, privacy, not-a-doctor note, final call to action; `frontend-design` guidance for look and motion.
+- [x] 5.2 Motion with `IntersectionObserver` and CSS, disabled under reduced motion; inline SVG illustrations; light and dark theme.
+- [x] 5.3 Tests: root shows landing when signed out and start when signed in, invitation link bypasses it, roles blocks, reduced motion, no horizontal scroll at 375 px, contrast in both themes.
+- [x] 5.4 Verify. Commit.
 
 ## 6. Review and wrap-up
 

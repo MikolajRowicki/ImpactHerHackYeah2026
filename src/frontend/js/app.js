@@ -21,7 +21,8 @@ import { t } from "./strings.pl.js";
 // Who may open what: `access` (anyone, signed-out, signed-in), then `roles` and group `statuses`.
 const ALL_ROLES = ["woman", "partner", "supporter"];
 const match = createRouter([
-  { path: "/", screen: start, access: "signed-in" },
+  // A visitor sees the landing page here, a signed-in person their start.
+  { path: "/", screen: start, access: "anyone" },
   { path: "/login", screen: login, access: "signed-out" },
   { path: "/register", screen: register, access: "signed-out" },
   { path: "/check-in", screen: checkIn, roles: ["woman"], statuses: ["active", "closed"] },
@@ -154,7 +155,8 @@ async function show() {
     } catch (error) {
       if (stale()) return;
       // Help and invitation previews still work when the session cannot be read.
-      if (!found || found.route.access !== "anyone") {
+      // The start also needs the session: a visitor and a failed read look the same without it.
+      if (!found || found.route.access !== "anyone" || path === "/") {
         // A failed read is not a sign-out: keep the frame of the person known so far.
         frame.update(session.me, path, session);
         render(errorState(error, retry));

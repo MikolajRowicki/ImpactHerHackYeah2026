@@ -141,6 +141,98 @@ export const t = {
     helpLink: "Zobacz telefony wsparcia i ścieżkę pomocy",
   },
 
+  landing: {
+    brand: "MaydayMama",
+    heroTitleLines: ["zauważyć wcześnie,", "wspierać razem"],
+    heroScript: "mama nie musi radzić sobie sama",
+    heroLead:
+      "Aplikacja dla mamy i jej bliskich. Pomaga zauważyć trudne chwile po porodzie i podzielić się codziennymi obowiązkami.",
+    signUp: "Załóż konto",
+    signIn: "Zaloguj się",
+    voicesTitle: "Ona mówi:",
+    voices: ["„Dam radę.”", "„To tylko zmęczenie.”", "„Powinnam być szczęśliwa.”"],
+    signalsTitle: "Bliscy widzą:",
+    signals: [
+      "nie wychodzi z domu",
+      "częściej płacze",
+      "je mniej, nie odpoczywa",
+      "nie cieszą jej drobiazgi",
+    ],
+    voicesNote:
+      "Brakuje bezpiecznego sposobu, żeby zauważyć to razem: bez oceniania mamy i bez działania za jej plecami.",
+    rolesTitle: "Dla kogo jest MaydayMama",
+    roles: [
+      {
+        key: "woman",
+        title: "Mama",
+        icon: "heart",
+        text: "Zaznaczasz w kilku kliknięciach, jak się czujesz. Widzisz swoje podsumowanie i sama decydujesz, kto jest w Twojej grupie.",
+      },
+      {
+        key: "partner",
+        title: "Partner",
+        icon: "chat",
+        text: "Odpowiadasz na krótkie pytania o codzienność mamy i bierzesz na siebie konkretne zadania.",
+      },
+      {
+        key: "supporter",
+        title: "Bliska osoba",
+        icon: "people",
+        text: "Pomagasz w codziennych sprawach i od czasu do czasu odpowiadasz na krótkie pytanie.",
+      },
+    ],
+    stepsTitle: "Jak to działa",
+    steps: [
+      {
+        title: "Mama zakłada grupę i zaprasza bliskich",
+        text: "Sama decyduje, kto do niej należy.",
+      },
+      {
+        title: "Mama zaznacza dzień, bliscy odpowiadają na pytania",
+        text: "Samopoczucie, sen, niepokój. Bez ocen i bez liczb.",
+      },
+      {
+        title: "Wszyscy widzą łagodny, ogólny obraz",
+        text: "I wiedzą, co zrobić: pomoc, zadania, wsparcie.",
+      },
+    ],
+    privacyTitle: "Kto co widzi?",
+    privacyScript: "nic za jej plecami",
+    privacyLead:
+      "Pojedyncze wpisy widzi tylko mama. Bliscy widzą wyłącznie ogólny obraz, nigdy odpowiedzi jednej osoby.",
+    privacyColumns: ["Mama", "Partner", "Bliscy"],
+    privacyRows: [
+      { label: "Jej codzienne wpisy", sees: [true, false, false] },
+      { label: "Ogólny obraz", sees: [true, true, true] },
+      { label: "Pojedyncze odpowiedzi", sees: [false, false, false] },
+      { label: "Wspólne zadania", sees: [true, true, true] },
+    ],
+    yes: "widzi",
+    no: "nie widzi",
+    safetyTitle: "Siatka bezpieczeństwa",
+    safetyScript: "gdy jest naprawdę trudno:",
+    safetyItems: [
+      "Aplikacja niczego nie diagnozuje i nie zastępuje lekarza.",
+      "Gdy jest trudno, możesz od razu zadzwonić pod jeden z numerów obok.",
+    ],
+    safetyLines: [
+      { number: "112", note: "całą dobę" },
+      { number: "116 123", note: "kryzys emocjonalny" },
+      { number: "800 70 2222", note: "całą dobę" },
+    ],
+    helpLink: "Zobacz, gdzie szukać pomocy",
+    finalTitle: "Zacznij od jednego konta",
+    finalText: "Założenie konta zajmuje chwilę. Grupę założysz albo dołączysz do niej z zaproszenia.",
+    phoneAlt: "Podgląd ekranu aplikacji",
+    phone: {
+      greeting: "Cześć, Anna",
+      cardTitle: "Jak się dziś czujesz?",
+      cardText: "Zapisz to w minutę. Widzisz to tylko Ty.",
+      summary: "Ogólny obraz",
+      summaryText: "Nie musisz radzić sobie z tym sama.",
+    },
+  },
+
   startGeneral: {
     title: "Dla każdego",
     educationTitle: "Wiedza",

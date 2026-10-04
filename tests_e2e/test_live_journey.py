@@ -43,7 +43,7 @@ def call(page, operation, **options):
 
 def test_anna_reads_her_summary_and_the_page_knows_her(page, seeded):
     page.goto(f"{seeded}/")
-    expect(page.get_by_role("heading", level=1)).to_have_text("Zaloguj się")
+    expect(page.get_by_role("heading", level=1)).to_have_text("zauważyć wcześnie, wspierać razem")
 
     signed_in = call(page, "login", body={"email": "anna@example.com", "password": PASSWORD})
     assert signed_in["ok"], signed_in
@@ -58,7 +58,7 @@ def test_anna_reads_her_summary_and_the_page_knows_her(page, seeded):
     expect(page.get_by_role("heading", level=1)).to_have_text("Cześć, Anna")
     assert call(page, "logout")["ok"]
     page.reload()
-    expect(page.get_by_role("heading", level=1)).to_have_text("Zaloguj się")
+    expect(page.get_by_role("heading", level=1)).to_have_text("zauważyć wcześnie, wspierać razem")
 
 
 def test_marta_takes_a_task_and_the_refusals_are_readable(page, seeded):
@@ -78,7 +78,7 @@ def test_marta_takes_a_task_and_the_refusals_are_readable(page, seeded):
 
 
 def test_anna_switches_between_her_own_group_and_ewas_against_the_real_backend(page, seeded):
-    page.goto(f"{seeded}/")
+    page.goto(f"{seeded}/#/login")
     page.get_by_label("Adres e-mail").fill("anna@example.com")
     page.get_by_label("Hasło").fill(PASSWORD)
     page.get_by_role("button", name="Zaloguj się").click()

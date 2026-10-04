@@ -133,7 +133,7 @@ def test_failed_call_shows_the_error_message_and_try_again_reloads(mock_page):
     answers.pop(0)
     mock_page.get_by_role("button", name="Spróbuj ponownie").click()
 
-    expect(h1(mock_page)).to_have_text("Zaloguj się")
+    expect(h1(mock_page)).to_have_text("zauważyć wcześnie, wspierać razem")
 
 
 def test_failed_call_without_an_error_body_shows_a_general_message(mock_page):

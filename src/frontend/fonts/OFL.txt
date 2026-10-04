@@ -1,3 +1,5 @@
+Caveat (caveat-*.woff2) is Copyright 2014 The Caveat Project Authors (https://github.com/googlefonts/caveat) and uses the same license, copied below.
+
 Copyright 2014 The Nunito Project Authors (https://github.com/googlefonts/nunito)
 
 This Font Software is licensed under the SIL Open Font License, Version 1.1.

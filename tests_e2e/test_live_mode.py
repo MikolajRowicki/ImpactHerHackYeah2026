@@ -15,7 +15,7 @@ def test_django_serves_the_page_and_its_static_files(page, django_url):
     expect(page).to_have_url(re.compile(rf"^{re.escape(django_url)}/static/index.html(#/login)?$"))
     expect(page.get_by_role("link", name="MaydayMama")).to_be_visible()
     # Nobody is signed in, so /api/v1/me answers 401 and the page says so.
-    expect(page.get_by_role("heading", level=1)).to_have_text("Zaloguj się")
+    expect(page.get_by_role("heading", level=1)).to_have_text("zauważyć wcześnie, wspierać razem")
     expect(page.get_by_text("Tryb demonstracyjny")).to_have_count(0)
     assert failed == []
 

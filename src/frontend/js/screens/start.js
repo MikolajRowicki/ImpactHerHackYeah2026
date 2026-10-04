@@ -3,12 +3,14 @@ import { icon, SELF_CARE_ICONS } from "../icons.js";
 import { t } from "../strings.pl.js";
 import { ctaCard, pageHead, section } from "../ui/layout.js";
 import { summaryCard } from "../ui/summary.js";
+import { landing } from "./landing.js";
 import { invitationForm } from "./invitation-form.js";
 import { onboarding, waiting } from "./onboarding.js";
 import { tasksPreview } from "./tasks-preview.js";
 
 // `#/` shows a different start for each situation of the signed-in person.
 export async function start(ctx) {
+  if (!ctx.session.me) return landing();
   const membership = ctx.session.me.membership;
   if (!membership) return onboarding(ctx);
   if (membership.group_status === "pending") return waiting(ctx);
