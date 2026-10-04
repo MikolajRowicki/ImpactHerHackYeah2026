@@ -29,7 +29,9 @@ def build_prompt(topic: str) -> str:
         "mówiącego: bez czasu przeszłego i trybu przypuszczającego w pierwszej osobie "
         "(nie pisz na przykład „myślałem”, „zauważyłam”, „chciałbym”, „chciałabym”). "
         "Pisz w czasie teraźniejszym, na przykład „Widzę…”, „Martwię się…”, „Chcę…”. "
-        "Zwracaj się do mamy na Ty. Nie stawiaj diagnoz."
+        "Zwracaj się do mamy na Ty. Nie stawiaj diagnoz. "
+        "Sprawdzone fragmenty poniżej, jeśli są, traktuj jako tło: nie przytaczaj z nich liczb "
+        "ani nazw instytucji."
     )
 
 
@@ -41,7 +43,11 @@ def opening_lines(text: str) -> list[str]:
 def guide(topic: str) -> dict:
     fixed = GUIDE[topic]
     result = assist.generate(
-        "conversation_guide", build_prompt(topic), "\n".join(fixed["opening_lines"])
+        "conversation_guide",
+        build_prompt(topic),
+        "\n".join(fixed["opening_lines"]),
+        # The topic id matches the tags of the passages, the brief their keywords.
+        query=f"{topic} {BRIEFS[topic]}",
     )
     lines = opening_lines(result.text) if result.source != "rules" else []
     if not lines:

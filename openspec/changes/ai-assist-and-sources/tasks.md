@@ -11,11 +11,11 @@ Each group is one commit. Before each commit: `ruff check .`, `ruff format --che
 
 ## 2. Curated knowledge source (backend)
 
-- [ ] 2.1 Write `core/content/knowledge.json`: about a dozen short passages in plain Polish, written from public Polish pages opened and read during this task, each with id, title, https link, text, topics and keywords; verify every link answers, and verify with a data test that ids are unique, links are https, texts have at most 400 characters, keywords exist, topics are known and every topic has a passage.
-- [ ] 2.2 Add the curated source to `core/ai/knowledge.py` (fold, topic +3, keyword prefix +1, best first, at most three) and make `curated` the default in settings and `.env.example`; verify with tests for topic match, order, word forms and diacritics, no match, the limit of three and the default.
-- [ ] 2.3 Let `assist.generate` retrieve only when a feature passes a query: the guide passes `"<topic> <brief>"`, while "say it for me" and the narrative pass none. Update the tests that change on purpose (two passages with an explicit query; sources listed only for the guide; default guide sources now come from the file). Verify with tests that "say it for me" and the narrative never ask the knowledge source, and that every topic gets one to three sources.
-- [ ] 2.4 Add `contracts/examples/ai_conversation_guide.200.sources.json`; verify the contract example tests validate it against the schema.
-- [ ] 2.5 Describe the knowledge source, the retrieval and the defaults in `docs/architecture.md` (and in the README if it lists AI variables, checking any command there), add the worklog entry, and verify ruff, format check and `pytest tests` pass, then commit.
+- [x] 2.1 Write `core/content/knowledge.json`: about a dozen short passages in plain Polish, written from public Polish pages opened and read during this task, each with id, title, https link, text, topics and keywords; verify every link answers, and verify with a data test that ids are unique, links are https, texts have at most 400 characters, keywords exist, topics are known and every topic has a passage.
+- [x] 2.2 Add the curated source to `core/ai/knowledge.py` (fold, topic +3, keyword prefix +1, best first, at most three) and make `curated` the default in settings and `.env.example`; verify with tests for topic match, order, word forms and diacritics, no match, the limit of three and the default.
+- [x] 2.3 Let `assist.generate` retrieve only when a feature passes a query: the guide passes `"<topic> <brief>"`, while "say it for me" and the narrative pass none. Update the tests that change on purpose (two passages with an explicit query; sources listed only for the guide; default guide sources now come from the file). Verify with tests that "say it for me" and the narrative never ask the knowledge source, and that every topic gets one to three sources.
+- [x] 2.4 Add `contracts/examples/ai_conversation_guide.200.sources.json`; verify the contract example tests validate it against the schema.
+- [x] 2.5 Describe the knowledge source, the retrieval and the defaults in `docs/architecture.md` (and in the README if it lists AI variables, checking any command there), add the worklog entry, and verify ruff, format check and `pytest tests` pass, then commit.
 
 ## 3. "Say it for me" screen (frontend)
 

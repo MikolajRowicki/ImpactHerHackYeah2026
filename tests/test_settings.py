@@ -81,7 +81,11 @@ def test_groq_and_knowledge_settings_have_safe_defaults(load_settings):
     settings = load_settings(DJANGO_SECRET_KEY="x")
     assert settings.GROQ_API_KEY == ""
     assert settings.GROQ_MODEL == "qwen/qwen3.8-27b"
-    assert settings.KNOWLEDGE_SOURCE == "none"
+    assert settings.KNOWLEDGE_SOURCE == "curated"
+
+
+def test_the_knowledge_source_can_be_switched_off(load_settings):
+    assert load_settings(DJANGO_SECRET_KEY="x", KNOWLEDGE_SOURCE="none").KNOWLEDGE_SOURCE == "none"
 
 
 def test_the_groq_model_comes_from_the_environment(load_settings):

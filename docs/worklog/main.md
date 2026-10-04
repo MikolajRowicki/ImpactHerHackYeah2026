@@ -185,3 +185,35 @@ capabilities (`api-contract`, `frontend-mock-mode`, `ai-provider-config`) are no
   added.
 - **Verification:** `ruff check .`, `ruff format --check .`, `pytest tests` (1601 passed), the
   browser tests for summary and help (23 passed).
+
+## Change ai-assist-and-sources, group 2: curated knowledge source
+
+- **Goal:** the conversation guide cites real Polish sources (light retrieval, no embeddings).
+- **Built:**
+  - `core/content/knowledge.json` has 13 short passages from 9 public pages: pacjent.gov.pl (two
+    articles), mp.pl, Fundacja Rodzić po Ludzku, the sanitary station's page on gov.pl, the
+    Ministry of Health, Fundacja Nie Widać Po Mnie, 116sos.pl and Centrum Wsparcia. Each page was
+    read during this task, and every passage is a summary in our own words.
+  - `CuratedKnowledge` folds the query. A topic tag scores 3 and a keyword prefix scores 1. It
+    returns the best three passages from different pages, with ties in file order.
+  - `KNOWLEDGE_SOURCE` defaults to `curated`, and a bad value or file stops startup.
+  - `assist.generate` asks the knowledge source only when a feature passes a `query`, and only
+    the guide does (`"<topic> <brief>"`). The guide prompt treats the passages as background
+    without numbers or institution names.
+  - New example `ai_conversation_guide.200.sources.json`. README and architecture describe the
+    source.
+- **Deviations:**
+  - "At most one passage per page" was added to the spec, so the cited links are different pages.
+  - The pacjent.gov.pl article on supporting a person with depression is linked as
+    `https://pacjent.gov.pl/node/2609`. Its slug address is refused by the site's firewall even in
+    headless Chromium, while the node address opens the article.
+  - Tests changed on purpose: the default knowledge source is `curated`; the guide lists its
+    curated sources by default; "say it for me" no longer lists passages.
+- **Manual checks:**
+  - Headless Chromium opened all 9 links with the expected titles.
+  - With real Groq and the curated source, the guide answered in 0.3–0.4 s for three topics, with
+    lines drawn from the passages ("zająć się dzieckiem", "w czym konkretnie mogę pomóc") and
+    three sources each.
+- **Not done:** the passages need a specialist's read before real use.
+- **Verification:** `ruff check .`, `ruff format --check .`, `pytest tests` (1626 passed),
+  `openspec validate --strict`.

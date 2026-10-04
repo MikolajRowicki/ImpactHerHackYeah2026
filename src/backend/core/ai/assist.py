@@ -17,16 +17,19 @@ class Result:
     text: str
     # `mock`, `groq`, or `rules` when the fallback was used. Never forged.
     source: str
-    # Cited passages as {"title", "url"}. Empty until retrieval exists.
+    # Cited passages as {"title", "url"}. Empty when the feature asked for none.
     sources: list = field(default_factory=list)
 
 
-def _passages(feature: str, prompt: str) -> list:
-    # A wrong KNOWLEDGE_SOURCE value is a setup error and get_knowledge() raises it. A source
-    # that breaks while running costs the citations, not the answer.
+def _passages(feature: str, query: str | None) -> list:
+    # A wrong KNOWLEDGE_SOURCE value is a setup error and get_knowledge() raises it, even for a
+    # feature that cites nothing. A source that breaks while running costs the citations, not
+    # the answer.
     knowledge = get_knowledge()
+    if query is None:
+        return []
     try:
-        return list(knowledge.retrieve(prompt))
+        return list(knowledge.retrieve(query))
     except Exception as error:
         logger.warning(
             "Knowledge lookup failed: feature=%s error=%s", feature, type(error).__name__
@@ -41,8 +44,10 @@ def _with_passages(prompt: str, passages: list) -> str:
     return f"{prompt}\n\nUżyj tych sprawdzonych fragmentów, gdy są pomocne:\n{lines}"
 
 
-def generate(feature: str, prompt: str, fallback: str) -> Result:
-    passages = _passages(feature, prompt)
+def generate(feature: str, prompt: str, fallback: str, query: str | None = None) -> Result:
+    """`query` asks the knowledge source for passages. Without it nothing is looked up, so a
+    feature never turns private text into a search by accident."""
+    passages = _passages(feature, query)
     sources = [{"title": p.title, "url": p.url} for p in passages]
     try:
         generation = get_provider().generate(_with_passages(prompt, passages))

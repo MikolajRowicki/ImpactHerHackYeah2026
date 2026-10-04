@@ -1,0 +1,32 @@
+{
+  "topic": "suggest_professional_help",
+  "opening_lines": [
+    "Widzę, że ostatnio jest Ci bardzo ciężko, i martwię się o Ciebie.",
+    "Czy chcesz porozmawiać z lekarzem albo psychologiem? Mogę pomóc umówić wizytę.",
+    "Jestem obok, niezależnie od tego, co zdecydujesz."
+  ],
+  "avoid": [
+    "Sugerowania, że coś jest z nią nie tak albo że sobie nie radzi.",
+    "Stawiania diagnozy. Nie jesteśmy od tego, od tego jest lekarz.",
+    "Naciskania, gdy ona nie jest gotowa. Wróć do tematu spokojnie za jakiś czas."
+  ],
+  "questions": [
+    "Czy chciałabyś pomocy w znalezieniu numeru lub umówieniu wizyty?",
+    "Co sprawia, że trudno Ci prosić o taką pomoc?"
+  ],
+  "source": "groq",
+  "sources": [
+    {
+      "title": "Depresja i psychoza poporodowa",
+      "url": "https://www.mp.pl/pacjent/psychiatria/choroby/91686,depresja-i-psychoza-poporodowa"
+    },
+    {
+      "title": "Gdzie uzyskać pomoc psychologiczną i psychiatryczną?",
+      "url": "https://www.gov.pl/web/zdrowie/gdzie-uzyskac-pomoc-psychologiczna-i-psychiatryczna"
+    },
+    {
+      "title": "Młoda matka w depresji",
+      "url": "https://pacjent.gov.pl/jak-zyc-z-choroba/mloda-matka-w-depresji"
+    }
+  ]
+}

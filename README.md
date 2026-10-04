@@ -100,6 +100,9 @@ is optional, the default is `qwen/qwen3.8-27b`). A missing key stops startup. A 
 breaks a request: the answer falls back to a fixed text labelled `rules`. Text that "say it for
 me" sends to the provider is never stored or logged here.
 
+The conversation guide cites sources from `src/backend/core/content/knowledge.json`
+(`KNOWLEDGE_SOURCE=curated`, the default). `KNOWLEDGE_SOURCE=none` switches citations off.
+
 ## Frontend without a backend (mock mode)
 
 Mock mode answers every API call from the files in `contracts/examples/` and sends nothing to the

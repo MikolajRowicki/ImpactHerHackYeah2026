@@ -41,7 +41,7 @@ The conversation guide SHALL ask a knowledge source for passages that fit its to
 ## ADDED Requirements
 
 ### Requirement: Curated knowledge source
-With `KNOWLEDGE_SOURCE=curated`, which is the default, passages SHALL come from a reviewed file in the repository. A lookup SHALL return at most three passages that match the topic or the keywords of the query, best match first, and an empty list when nothing matches. Case and Polish diacritics SHALL NOT affect matching.
+With `KNOWLEDGE_SOURCE=curated`, which is the default, passages SHALL come from a reviewed file in the repository. A lookup SHALL return at most three passages that match the topic or the keywords of the query, best match first, each from a different page, and an empty list when nothing matches. Case and Polish diacritics SHALL NOT affect matching.
 
 #### Scenario: Every topic is covered
 - **WHEN** a guide is requested with the curated source for any of the five topics
@@ -50,6 +50,10 @@ With `KNOWLEDGE_SOURCE=curated`, which is the default, passages SHALL come from 
 #### Scenario: At most three, best first
 - **WHEN** a query matches more than three passages
 - **THEN** three passages are returned, and a passage tagged with the topic of the query comes before one that matches only by keywords
+
+#### Scenario: Different pages
+- **WHEN** two matching passages come from the same page
+- **THEN** only the better of the two is returned and the next passage from another page takes the free place
 
 #### Scenario: Any word form
 - **WHEN** a query holds "Lekarzem" and a passage has the keyword "lekarz", or a query holds "pomóc" and a passage has the keyword "pomoc"

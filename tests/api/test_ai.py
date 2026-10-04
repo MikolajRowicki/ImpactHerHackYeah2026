@@ -404,7 +404,38 @@ def test_every_topic_has_the_three_lists(api, topic):
     assert result["avoid"] == GUIDE[topic]["avoid"]
     assert result["questions"] == GUIDE[topic]["questions"]
     assert result["source"] == "mock"
+    # The curated source is the default: one to three different pages, each with a link.
+    assert 1 <= len(result["sources"]) <= 3
+    urls = [source["url"] for source in result["sources"]]
+    assert len(set(urls)) == len(urls)
+    assert all(
+        source["title"] and source["url"].startswith("https://") for source in result["sources"]
+    )
+
+
+def test_with_the_knowledge_source_off_the_guide_cites_nothing(api, settings):
+    settings.KNOWLEDGE_SOURCE = "none"
+    supporter(api)
+    result = api.call("ai_conversation_guide", query={"topic": "hard_day"})
     assert result["sources"] == []
+
+
+def test_the_guide_asks_with_its_topic_and_gives_the_passages_to_the_provider(api, monkeypatch):
+    class Recorder:
+        queries = []
+
+        def retrieve(self, query):
+            self.queries.append(query)
+            return [Passage("Pierwsze", "https://example.org/1", "Słuchaj bez oceniania.")]
+
+    recorder = Recorder()
+    monkeypatch.setattr("core.ai.assist.get_knowledge", lambda: recorder)
+    supporter(api)
+    provider = use(monkeypatch, Fixed("Jestem obok.", "groq"))
+    result = api.call("ai_conversation_guide", query={"topic": "listen_without_fixing"})
+    assert recorder.queries[0].startswith("listen_without_fixing ")
+    assert "Słuchaj bez oceniania." in provider.prompts[0]
+    assert result["sources"] == [{"title": "Pierwsze", "url": "https://example.org/1"}]
 
 
 def test_a_partner_may_ask_too(api):
@@ -619,7 +650,7 @@ def test_the_prompt_differs_by_topic_only(api, monkeypatch):
 # Cited sources reach the response
 
 
-def test_the_passages_of_a_knowledge_source_are_listed_in_both_answers(api, browser, monkeypatch):
+def test_the_passages_of_a_knowledge_source_are_listed_in_the_guide(api, browser, monkeypatch):
     class Two:
         def retrieve(self, query):
             return [
@@ -628,16 +659,35 @@ def test_the_passages_of_a_knowledge_source_are_listed_in_both_answers(api, brow
             ]
 
     monkeypatch.setattr("core.ai.assist.get_knowledge", lambda: Two())
-    expected = [
+    circle = make_circle()
+    close_one = browser(circle.marta)
+    guide = close_one.call("ai_conversation_guide", query={"topic": "how_are_you"})
+    assert guide["sources"] == [
         {"title": "Pierwsze", "url": "https://example.org/1"},
         {"title": "Drugie", "url": "https://example.org/2"},
     ]
-    circle = make_circle()
-    api.sign_in(circle.anna)
-    assert api.call("ai_say_it_for_me", body=BODY)["sources"] == expected
-    close_one = browser(circle.marta)
-    guide = close_one.call("ai_conversation_guide", query={"topic": "how_are_you"})
-    assert guide["sources"] == expected
+
+
+def test_her_words_are_never_a_query_and_say_it_cites_nothing(api, monkeypatch):
+    class MustNotAsk:
+        def retrieve(self, query):
+            pytest.fail("say it for me must not ask the knowledge source")
+
+    monkeypatch.setattr("core.ai.assist.get_knowledge", lambda: MustNotAsk())
+    anna(api)
+    provider = use(monkeypatch, Fixed("Wiadomość.", "groq"))
+    result = api.call("ai_say_it_for_me", body=BODY)
+    assert result["sources"] == []
+    assert "sprawdzonych fragmentów" not in provider.prompts[0]
+
+
+def test_the_default_curated_source_is_never_asked_by_say_it(api, monkeypatch):
+    anna(api)
+    provider = use(monkeypatch, Fixed("Wiadomość.", "groq"))
+    body = {**BODY, "text": "boję się, że lekarz powie, że to depresja poporodowa"}
+    result = api.call("ai_say_it_for_me", body=body)
+    assert result["sources"] == []
+    assert "sprawdzonych fragmentów" not in provider.prompts[0]
 
 
 def test_a_crisis_answer_has_no_sources_even_with_a_knowledge_source(api, monkeypatch):

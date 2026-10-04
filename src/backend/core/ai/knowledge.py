@@ -1,10 +1,25 @@
-"""Where cited passages come from. Empty for now; retrieval later adds one class and one value."""
+"""Where cited passages come from.
 
+`curated` (the default) ranks reviewed passages from `content/knowledge.json` by topic tags and
+keyword stems. It has no model and no index, so it is offline and deterministic; an embedding
+search can replace it later behind the same `retrieve`.
+"""
+
+import json
 from dataclasses import dataclass
+from functools import cache
+from pathlib import Path
 from typing import Protocol
 
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
+
+from ..content.crisis_terms import fold
+
+KNOWLEDGE_FILE = Path(__file__).resolve().parent.parent / "content" / "knowledge.json"
+MAX_PASSAGES = 3
+TOPIC_SCORE = 3
+KEYWORD_SCORE = 1
 
 
 @dataclass(frozen=True)
@@ -23,7 +38,71 @@ class NullKnowledge:
         return []
 
 
-KNOWLEDGE_SOURCES: dict[str, type[KnowledgeSource]] = {"none": NullKnowledge}
+@dataclass(frozen=True)
+class Entry:
+    id: str
+    passage: Passage
+    # Guide topic ids, for example "hard_day".
+    topics: tuple[str, ...]
+    # Folded word beginnings, for example "lekarz" for "lekarzem".
+    keywords: tuple[str, ...]
+
+
+@cache
+def load_entries(path: Path = KNOWLEDGE_FILE) -> tuple[Entry, ...]:
+    data = json.loads(path.read_text(encoding="utf-8"))
+    return tuple(
+        Entry(
+            id=item["id"],
+            passage=Passage(item["title"], item["url"], item["text"]),
+            topics=tuple(item["topics"]),
+            keywords=tuple(item["keywords"]),
+        )
+        for item in data["passages"]
+    )
+
+
+def score(entry: Entry, query: str) -> int:
+    """Topic tags count more than keywords. `query` is already folded."""
+    padded = f" {query} "
+    words = query.split()
+    topics = sum(1 for topic in entry.topics if f" {fold(topic)} " in padded)
+    keywords = sum(1 for key in entry.keywords if any(word.startswith(key) for word in words))
+    return TOPIC_SCORE * topics + KEYWORD_SCORE * keywords
+
+
+class CuratedKnowledge:
+    """At most three matching passages, best first, each from another page.
+
+    Ties keep the order of the file. Case and Polish diacritics do not matter.
+    """
+
+    def __init__(self, entries: tuple[Entry, ...] | None = None):
+        self._entries = load_entries() if entries is None else tuple(entries)
+
+    def retrieve(self, query: str) -> list[Passage]:
+        folded = fold(query)
+        scored = [(score(entry, folded), index, entry) for index, entry in enumerate(self._entries)]
+        ranked = sorted(
+            (item for item in scored if item[0] > 0), key=lambda item: (-item[0], item[1])
+        )
+        chosen: list[Passage] = []
+        pages: set[str] = set()
+        for _, _, entry in ranked:
+            # One passage per page, so the cited sources are different pages.
+            if entry.passage.url in pages:
+                continue
+            pages.add(entry.passage.url)
+            chosen.append(entry.passage)
+            if len(chosen) == MAX_PASSAGES:
+                break
+        return chosen
+
+
+KNOWLEDGE_SOURCES: dict[str, type[KnowledgeSource]] = {
+    "none": NullKnowledge,
+    "curated": CuratedKnowledge,
+}
 
 
 def get_knowledge() -> KnowledgeSource:

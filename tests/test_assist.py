@@ -113,21 +113,32 @@ def test_two_passages_fill_the_sources_and_the_prompt(monkeypatch):
     provider = Fixed()
     knowledge = Knowledge(TWO)
     use(monkeypatch, provider, knowledge)
-    result = assist.generate("test", PROMPT, FALLBACK)
+    result = assist.generate("test", PROMPT, FALLBACK, query="hard_day trudny dzień")
     assert result.sources == [
         {"title": "Baby blues i depresja", "url": "https://example.org/a"},
         {"title": "Kiedy szukać pomocy", "url": "https://example.org/b"},
     ]
-    assert knowledge.queries == [PROMPT]
+    # The query, not the prompt, goes to the knowledge source.
+    assert knowledge.queries == ["hard_day trudny dzień"]
     prompt = provider.prompts[0]
     assert prompt.startswith(PROMPT)
     assert "Smutek po porodzie bywa częsty." in prompt
     assert "Gdy trwa dłużej niż dwa tygodnie." in prompt
 
 
+def test_without_a_query_nothing_is_looked_up_and_the_prompt_stays_plain(monkeypatch):
+    provider = Fixed()
+    knowledge = Knowledge(TWO)
+    use(monkeypatch, provider, knowledge)
+    result = assist.generate("test", PROMPT, FALLBACK)
+    assert result.sources == []
+    assert knowledge.queries == []
+    assert provider.prompts == [PROMPT]
+
+
 def test_a_fallback_cites_no_sources_because_none_were_used(monkeypatch):
     use(monkeypatch, Failing(ProviderError("x")), Knowledge(TWO))
-    result = assist.generate("test", PROMPT, FALLBACK)
+    result = assist.generate("test", PROMPT, FALLBACK, query="zapytanie")
     assert (result.text, result.source, result.sources) == (FALLBACK, "rules", [])
 
 
@@ -137,11 +148,11 @@ def test_a_broken_knowledge_source_costs_the_citations_not_the_answer(monkeypatc
             raise RuntimeError("index offline")
 
     use(monkeypatch, Fixed("Tekst."), Broken())
-    result = assist.generate("test", PROMPT, FALLBACK)
+    result = assist.generate("test", PROMPT, FALLBACK, query="zapytanie")
     assert (result.text, result.sources) == ("Tekst.", [])
 
 
-def test_the_default_knowledge_source_is_the_null_one(settings):
+def test_none_gives_the_null_knowledge_source(settings):
     settings.KNOWLEDGE_SOURCE = "none"
     assert isinstance(get_knowledge(), NullKnowledge)
     assert NullKnowledge().retrieve("cokolwiek") == []

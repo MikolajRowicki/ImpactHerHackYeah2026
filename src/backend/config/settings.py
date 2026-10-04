@@ -59,8 +59,8 @@ AI_PROVIDER = env.get("AI_PROVIDER") or "mock"
 GROQ_API_KEY = env.get("GROQ_API_KEY")
 # Groq retires models; llama-3.3-70b-versatile was gone by 2026-10-04.
 GROQ_MODEL = env.get("GROQ_MODEL") or "qwen/qwen3.8-27b"
-# Where passages with cited sources come from. "none" is the only value until retrieval exists.
-KNOWLEDGE_SOURCE = env.get("KNOWLEDGE_SOURCE") or "none"
+# Where cited passages come from: "curated" (reviewed passages in the repository) or "none".
+KNOWLEDGE_SOURCE = env.get("KNOWLEDGE_SOURCE") or "curated"
 
 # Sessions and CSRF. The frontend reads the csrftoken cookie, so it must not be HttpOnly.
 SESSION_COOKIE_SAMESITE = "Lax"
