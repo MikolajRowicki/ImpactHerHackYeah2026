@@ -65,7 +65,7 @@ function linkResult(invitation) {
 }
 
 // Creates an invitation for one of `roles` and shows the link to share.
-export function invitationForm(ctx, roles) {
+export function invitationForm(ctx, roles, { onCreated } = {}) {
   const message = messageSlot();
   const result = h("div", { class: "invite-result" });
   const who =
@@ -98,6 +98,7 @@ export function invitationForm(ctx, roles) {
       try {
         const invitation = await ctx.api.call("create_invitation", { body });
         result.replaceChildren(linkResult(invitation));
+        if (onCreated) await onCreated(invitation);
       } catch (error) {
         if (error instanceof ApiError && error.status === 422) showFieldErrors(error, { email });
         message.error(messageOf(error));

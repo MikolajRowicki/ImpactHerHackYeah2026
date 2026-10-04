@@ -22,9 +22,10 @@ function accountScreen({ title, lead, form, footer = [], extra }) {
 
 // Signs the person in on the screen and goes where they wanted to go. Without a group only an
 // invitation can be opened, so other remembered addresses lead to the start instead.
-async function signedIn(ctx, me) {
-  await ctx.setMe(me);
-  ctx.navigate(ctx.session.takeRememberedPath({ invitationsOnly: !me.membership }));
+async function signedIn(ctx) {
+  await ctx.reloadSession();
+  const noGroup = ctx.session.memberships.length === 0;
+  ctx.navigate(ctx.session.takeRememberedPath({ invitationsOnly: noGroup }));
 }
 
 // In mock mode the "e-mail" is in the demo outbox, so its link can be opened right here.
@@ -103,10 +104,10 @@ export async function login(ctx) {
     if (!email.value.trim() || !password.value) return;
     await whileBusy(submit, async () => {
       try {
-        const me = await ctx.api.call("login", {
+        await ctx.api.call("login", {
           body: { email: email.value.trim(), password: password.value },
         });
-        await signedIn(ctx, me);
+        await signedIn(ctx);
       } catch (error) {
         if (error instanceof ApiError && error.status === 422) {
           showFieldErrors(error, { email, password });

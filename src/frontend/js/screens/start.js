@@ -1,8 +1,9 @@
 import { h } from "../dom.js";
 import { icon, SELF_CARE_ICONS } from "../icons.js";
 import { t } from "../strings.pl.js";
-import { linkButton, pageHead, section } from "../ui/layout.js";
+import { pageHead, section } from "../ui/layout.js";
 import { summaryCard } from "../ui/summary.js";
+import { invitationForm } from "./invitation-form.js";
 import { onboarding, waiting } from "./onboarding.js";
 import { tasksPreview } from "./tasks-preview.js";
 
@@ -37,14 +38,19 @@ function ctaCard(href, iconName, title, lead) {
   );
 }
 
-// Shown to the mother while nobody else is in her group yet.
-function invitePartnerCard() {
+// Shown to the mother while nobody else is in her group yet: invite at once, right here.
+function inviteAtOnceCard(ctx) {
   return h(
-    "div",
-    { class: "card card--accent invite-offer" },
-    h("h2", { class: "card__title" }, icon("people"), t.group.invitePartnerTitle),
-    h("p", {}, t.group.invitePartnerText),
-    linkButton("#/group", t.group.invitePartnerLink, { iconName: "arrow" }),
+    "section",
+    { class: "card card--accent invite-offer", "aria-labelledby": "invite-at-once-title" },
+    h(
+      "h2",
+      { id: "invite-at-once-title", class: "card__title" },
+      icon("people"),
+      t.group.inviteAtOnceTitle,
+    ),
+    h("p", {}, t.group.inviteAtOnceText),
+    invitationForm(ctx, ["partner", "supporter"]),
   );
 }
 
@@ -101,7 +107,7 @@ async function motherStart(ctx) {
         "div",
         { class: "start-grid__main stack-large" },
         active && ctaCard("#/check-in", "leaf", t.wellbeing.ctaTitle, t.wellbeing.ctaLead),
-        alone && invitePartnerCard(),
+        alone && inviteAtOnceCard(ctx),
         summaryCard(summary),
       ),
       h(

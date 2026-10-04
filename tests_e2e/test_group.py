@@ -17,16 +17,16 @@ def create_link(page, role_label=None):
     page.get_by_role("button", name="Utwórz link zaproszenia").click()
 
 
-def test_mother_starts_a_group_and_is_offered_to_invite_her_partner(mock_page):
+def test_mother_starts_a_group_and_is_offered_to_invite_her_partner_at_once(mock_page):
     open_as(mock_page, "no_group")
 
     mock_page.get_by_role("button", name="Jestem mamą").click()
 
     expect(h1(mock_page)).to_have_text("Cześć, Anna")
-    expect(mock_page.get_by_role("heading", name="Zaproś Partnera")).to_be_visible()
-    mock_page.get_by_role("link", name="Przejdź do zapraszania").click()
-    expect(h1(mock_page)).to_have_text("Twoja grupa")
-    expect(mock_page.get_by_label("Partnera")).to_be_checked()
+    expect(mock_page.get_by_role("heading", name="Zaproś Partnera i bliskie osoby")).to_be_visible()
+    expect(mock_page.get_by_role("radio", name="Partnera")).to_be_checked()
+    create_link(mock_page)
+    expect(mock_page.get_by_label("Link zaproszenia")).to_have_value(re.compile(r"#/invite/\w+$"))
 
 
 def test_partner_starts_a_group_and_waits_with_a_step_to_invite_the_mother(mock_page):
@@ -187,7 +187,7 @@ def test_loved_ones_cannot_remove(mock_page):
     open_as(mock_page, "partner", "/group")
     expect(members(mock_page)).to_have_count(3)
 
-    expect(mock_page.get_by_role("button", name=re.compile("^Usuń"))).to_have_count(0)
+    expect(mock_page.get_by_role("button", name=re.compile("^Usuń: "))).to_have_count(0)
     expect(mock_page.get_by_role("button", name="Zamknij grupę")).to_have_count(0)
 
 
@@ -202,7 +202,7 @@ def test_mother_closes_the_group_after_confirming(mock_page):
     expect(mock_page.get_by_text("Grupa jest zamknięta")).to_be_visible()
     expect(mock_page.get_by_role("button", name="Utwórz link zaproszenia")).to_have_count(0)
     expect(mock_page.get_by_role("button", name="Zamknij grupę")).to_have_count(0)
-    expect(mock_page.get_by_role("button", name=re.compile("^Usuń"))).to_have_count(0)
+    expect(mock_page.get_by_role("button", name=re.compile("^Usuń: "))).to_have_count(0)
 
 
 def test_closed_group_is_shown_as_closed_to_every_member(mock_page):

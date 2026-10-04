@@ -11,8 +11,11 @@ import { notAllowed, notFound } from "./screens/not-found.js";
 import { questions } from "./screens/questions.js";
 import { start } from "./screens/start.js";
 import { tasks } from "./screens/tasks.js";
+import { groupPanel } from "./screens/panel.js";
 import { createSession } from "./session.js";
+import { openDialog } from "./ui/dialog.js";
 import { errorState, loading } from "./ui/feedback.js";
+import { t } from "./strings.pl.js";
 
 // Who may open what: `access` (anyone, signed-out, signed-in), then `roles` and group `statuses`.
 const ALL_ROLES = ["woman", "partner", "supporter"];
@@ -40,17 +43,65 @@ function storage() {
   }
 }
 
+// The selected group is remembered in the browser, not only in the tab.
+function remembered() {
+  try {
+    return window.localStorage;
+  } catch {
+    return null;
+  }
+}
+
 const mode = readMode(location.search, storage());
 const base = examplesBase(location.pathname);
 if (!mode.mock) clearMockState(storage());
 const api = mode.mock
   ? createMockStore({ base, storage: storage(), perspective: mode.variant })
   : createApi({ ...mode, base });
-const session = createSession(api, storage());
+const session = createSession(api, storage(), remembered());
 const outlet = document.getElementById("screen");
-const frame = createFrame({ onSignOut: signOut });
+const frame = createFrame({
+  onSignOut: signOut,
+  onSwitchGroup: switchGroup,
+  onAddGroup: addGroup,
+});
 
 let shown = 0;
+
+function makeCtx(params = {}) {
+  return {
+    api,
+    session,
+    params,
+    navigate,
+    refresh: show,
+    // After sign-in, group changes and sign-out the person's role or group may differ.
+    async reloadSession() {
+      await session.load();
+      await sessionChanged();
+    },
+    // Reads the groups again and selects one the person just created or joined.
+    async enterGroup(groupId) {
+      await session.load(groupId);
+      await sessionChanged();
+    },
+  };
+}
+
+async function switchGroup(groupId) {
+  await session.load(groupId);
+  await sessionChanged();
+  show();
+}
+
+// The panel of "what do you want to do" as a dialog, for a person who already has groups.
+function addGroup() {
+  openDialog({
+    title: t.group.addGroupTitle,
+    content: (close) =>
+      groupPanel(makeCtx(), { onStarted: close }),
+  });
+}
 
 function navigate(path) {
   if (currentPath() === path) show();
@@ -97,14 +148,14 @@ async function show() {
       // Help and invitation previews still work when the session cannot be read.
       if (!found || found.route.access !== "anyone") {
         // A failed read is not a sign-out: keep the frame of the person known so far.
-        frame.update(session.me, path);
+        frame.update(session.me, path, session);
         render(errorState(error, retry));
         return;
       }
     }
   }
   if (stale()) return;
-  frame.update(session.me, path);
+  frame.update(session.me, path, session);
   if (!found) {
     render(notFound());
     return;
@@ -125,22 +176,7 @@ async function show() {
     return;
   }
 
-  const ctx = {
-    api,
-    session,
-    params: found.params,
-    navigate,
-    refresh: show,
-    // After sign-in, group changes and sign-out the person's role or group may differ.
-    async reloadSession() {
-      await session.load();
-      await sessionChanged();
-    },
-    async setMe(me) {
-      session.set(me);
-      await sessionChanged();
-    },
-  };
+  const ctx = makeCtx(found.params);
   try {
     const node = await found.route.screen(ctx);
     if (stale()) return;
@@ -173,7 +209,7 @@ async function signOut() {
 }
 
 async function sessionChanged() {
-  frame.update(session.me, currentPath());
+  frame.update(session.me, currentPath(), session);
   await showNotice();
 }
 

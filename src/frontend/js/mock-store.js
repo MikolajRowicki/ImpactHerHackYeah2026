@@ -1,4 +1,4 @@
-import { ApiError } from "./api.js";
+import { ACCOUNT_LEVEL, ApiError } from "./api.js";
 import { OPERATIONS } from "./operations.js";
 import { t } from "./strings.pl.js";
 
@@ -7,15 +7,19 @@ import { t } from "./strings.pl.js";
 // The rules the backend enforces are mirrored here with the matching contract error examples.
 
 const STATE_KEY = "mock-state";
-const VERSION = 1;
+const VERSION = 2;
 export const DEMO_PASSWORD = "tajne-haslo-123";
-export const PERSPECTIVES = ["woman", "partner", "supporter", "no_group", "pending"];
+export const PERSPECTIVES = ["woman", "partner", "supporter", "no_group", "pending", "both"];
 
 // The perspectives are separate people: the mother, her partner and a supporter in one active
-// group, someone without a group, and a partner whose group waits for the mother.
-const PERSON_OF = { woman: 1, partner: 2, supporter: 3, no_group: 101, pending: 102 };
+// group, someone without a group, a partner whose group waits for the mother, and a person who
+// is the mother of her own group and a supporter in Ewa's.
+const PERSON_OF = { woman: 1, partner: 2, supporter: 3, no_group: 101, pending: 102, both: 103 };
+const EWA = 104;
 const ACTIVE_GROUP = 1;
 const PENDING_GROUP = 2;
+const OWN_GROUP = 3;
+const EWAS_GROUP = 4;
 
 const STATUS_ORDER = { open: 0, claimed: 1, done: 2 };
 const EMAIL = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
@@ -44,6 +48,7 @@ export function clearMockState(storage) {
 export function createMockStore({ base, storage, perspective = "", fetchFn = (...a) => fetch(...a) }) {
   const examples = new Map();
   let memory = null;
+  let selected = null;
 
   function example(name) {
     if (!examples.has(name)) {
@@ -114,10 +119,27 @@ export function createMockStore({ base, storage, perspective = "", fetchFn = (..
       email: me.email,
       display_name: me.display_name,
       password: DEMO_PASSWORD,
-      membership: groupId
-        ? { group_id: groupId, role: me.membership.role, joined_at: joined(PERSON_OF[key]) }
-        : null,
+      memberships: groupId
+        ? [{ group_id: groupId, role: me.membership.role, joined_at: joined(PERSON_OF[key]) }]
+        : [],
     });
+    const ola = {
+      ...person("both", marta, null),
+      email: "julia@example.com",
+      display_name: "Julia",
+      memberships: [
+        { group_id: OWN_GROUP, role: "woman", joined_at: group.created_at },
+        { group_id: EWAS_GROUP, role: "supporter", joined_at: joined(PERSON_OF.supporter) },
+      ],
+    };
+    const ewa = {
+      key: null,
+      id: EWA,
+      email: "ewa@example.com",
+      display_name: "Ewa",
+      password: DEMO_PASSWORD,
+      memberships: [{ group_id: EWAS_GROUP, role: "woman", joined_at: group.created_at }],
+    };
     const created = await example("create_invitation.201.json");
     return {
       version: VERSION,
@@ -130,10 +152,14 @@ export function createMockStore({ base, storage, perspective = "", fetchFn = (..
         person("supporter", marta, ACTIVE_GROUP),
         person("no_group", alone, null),
         person("pending", waiting, PENDING_GROUP),
+        ola,
+        ewa,
       ],
       groups: [
         { id: ACTIVE_GROUP, status: group.status, created_at: group.created_at },
         { id: PENDING_GROUP, status: "pending", created_at: group.created_at },
+        { id: OWN_GROUP, status: "active", created_at: group.created_at },
+        { id: EWAS_GROUP, status: "active", created_at: group.created_at },
       ],
       tasks: tasks.items.map((task) => ({ ...task, group_id: ACTIVE_GROUP })),
       checkIns: checkIns.items.map((item) => ({ ...item, person_id: PERSON_OF.woman })),
@@ -167,19 +193,27 @@ export function createMockStore({ base, storage, perspective = "", fetchFn = (..
 
   // Views in the exact shapes of the contract.
   const findGroup = (s, id) => s.groups.find((g) => g.id === id);
-  const groupOf = (s, person) => person?.membership && findGroup(s, person.membership.group_id);
-  const meView = (s, person) => ({
+  const groupOf = (s, membership) => membership && findGroup(s, membership.group_id);
+  const memberOf = (person, groupId) => person.memberships.find((m) => m.group_id === groupId);
+  // The earliest membership is the one used when no group is named, as in the backend.
+  const earliest = (person) =>
+    [...person.memberships].sort(
+      (a, b) => a.joined_at.localeCompare(b.joined_at) || a.group_id - b.group_id,
+    )[0] || null;
+  const meView = (s, person, membership) => ({
     id: person.id,
     email: person.email,
     display_name: person.display_name,
-    membership: person.membership
+    membership: membership
       ? {
-          group_id: person.membership.group_id,
-          role: person.membership.role,
-          group_status: groupOf(s, person).status,
+          group_id: membership.group_id,
+          role: membership.role,
+          group_status: groupOf(s, membership).status,
         }
       : null,
   });
+  const womanOf = (s, groupId) =>
+    s.people.find((p) => memberOf(p, groupId)?.role === "woman") || null;
   const groupView = (group, role) => ({
     id: group.id,
     status: group.status,
@@ -232,12 +266,12 @@ export function createMockStore({ base, storage, perspective = "", fetchFn = (..
         email,
         display_name: String(body.display_name).trim(),
         password: String(body.password),
-        membership: null,
+        memberships: [],
       };
       s.people.push(person);
       s.signedIn = true;
       s.current = person.id;
-      return meView(s, person);
+      return meView(s, person, null);
     },
 
     login(s, _me, { body = {} }) {
@@ -246,7 +280,7 @@ export function createMockStore({ base, storage, perspective = "", fetchFn = (..
       if (!person || person.inactive) return refuse(401, "login.401.json");
       s.signedIn = true;
       s.current = person.id;
-      return meView(s, person);
+      return meView(s, person, earliest(person));
     },
 
     logout(s) {
@@ -254,59 +288,136 @@ export function createMockStore({ base, storage, perspective = "", fetchFn = (..
       return { status: "ok" };
     },
 
-    get_me: (s, me) => meView(s, me),
+    get_me: (s, me, _opts, _group, membership) => meView(s, me, membership),
+
+    list_memberships(s, me) {
+      const items = [...me.memberships]
+        .sort((a, b) => a.joined_at.localeCompare(b.joined_at) || a.group_id - b.group_id)
+        .map((m) => ({
+          group_id: m.group_id,
+          role: m.role,
+          group_status: findGroup(s, m.group_id).status,
+          woman_name: womanOf(s, m.group_id)?.display_name ?? null,
+        }));
+      return { items };
+    },
 
     create_group(s, me, { body = {} }) {
-      if (me.membership) return refuse(409, "create_group.409.json");
       if (!["woman", "partner"].includes(body.role)) return refuse(422, "create_group.422.json");
+      const waiting = me.memberships.some(
+        (m) => m.role === "partner" && findGroup(s, m.group_id).status === "pending",
+      );
+      const isMother = me.memberships.some((m) => m.role === "woman");
+      if ((body.role === "woman" && isMother) || (body.role === "partner" && waiting)) {
+        return refuse(409, "create_group.409.json");
+      }
       const group = {
         id: nextId(s),
         status: body.role === "woman" ? "active" : "pending",
         created_at: now(),
       };
       s.groups.push(group);
-      me.membership = { group_id: group.id, role: body.role, joined_at: group.created_at };
+      me.memberships.push({ group_id: group.id, role: body.role, joined_at: group.created_at });
       return groupView(group, body.role);
     },
 
-    get_group(s, me) {
-      if (!me.membership) return refuse(404, "get_group.404.json");
-      return groupView(groupOf(s, me), me.membership.role);
+    get_group(s, me, _opts, _group, membership) {
+      if (!membership) return refuse(404, "get_group.404.json");
+      return groupView(groupOf(s, membership), membership.role);
     },
 
-    close_group(s, me, _opts, group) {
-      if (me.membership.role !== "woman") return refuse(403, "close_group.403.json");
+    close_group(s, me, _opts, group, membership) {
+      if (membership.role !== "woman") return refuse(403, "close_group.403.json");
       group.status = "closed";
       return groupView(group, "woman");
     },
 
     list_members(s, _me, _opts, group) {
       const items = s.people
-        .filter((p) => p.membership?.group_id === group.id)
+        .filter((p) => memberOf(p, group.id))
+        .map((p) => ({ person: p, membership: memberOf(p, group.id) }))
         .sort((a, b) => a.membership.joined_at.localeCompare(b.membership.joined_at))
-        .map((p) => ({
-          id: p.id,
-          display_name: p.display_name,
-          role: p.membership.role,
-          joined_at: p.membership.joined_at,
+        .map(({ person, membership }) => ({
+          id: person.id,
+          display_name: person.display_name,
+          role: membership.role,
+          joined_at: membership.joined_at,
         }));
       return { items };
     },
 
-    remove_member(s, me, { params = {} }, group) {
-      if (me.membership.role !== "woman") return refuse(403, "remove_member.403.json");
+    remove_member(s, me, { params = {} }, group, membership) {
+      if (membership.role !== "woman") return refuse(403, "remove_member.403.json");
       const target = s.people.find(
-        (p) => p.id === Number(params.member_id) && p.membership?.group_id === group.id,
+        (p) => p.id === Number(params.member_id) && memberOf(p, group.id),
       );
       if (!target) return refuse(404, "remove_member.404.json");
       if (target.id === me.id) return refuse(409, "remove_member.409.json");
-      target.membership = null;
+      target.memberships = target.memberships.filter((m) => m.group_id !== group.id);
       return { status: "ok" };
     },
 
-    create_invitation(s, me, { body = {} }, group) {
+    leave_group(s, me, _opts, group, membership) {
+      if (membership.role === "woman" && group.status !== "closed") {
+        return refuse(409, "leave_group.409.json");
+      }
+      if (membership.role === "woman") {
+        // She closed it and walks away: the group goes with its people's memberships.
+        s.people.forEach((p) => {
+          p.memberships = p.memberships.filter((m) => m.group_id !== group.id);
+        });
+        s.groups = s.groups.filter((g) => g.id !== group.id);
+        s.tasks = s.tasks.filter((task) => task.group_id !== group.id);
+        s.invitations = s.invitations.filter((i) => i.group_id !== group.id);
+      } else {
+        me.memberships = me.memberships.filter((m) => m.group_id !== group.id);
+      }
+      return { status: "ok" };
+    },
+
+    list_invitations(s, me, _opts, group, membership) {
+      const manages =
+        membership.role === "woman" ||
+        (membership.role === "partner" && group.status === "pending");
+      if (!manages) return refuse(403, "list_invitations.403.json");
+      const items = s.invitations
+        .filter((i) => i.group_id === group.id && !i.used && !i.revoked)
+        .sort((a, b) => b.created_at.localeCompare(a.created_at))
+        .map(({ token, role, created_at, expires_at }) => ({ token, role, created_at, expires_at }));
+      return { items };
+    },
+
+    revoke_invitation(s, me, { params = {} }, group, membership) {
+      const manages =
+        membership.role === "woman" ||
+        (membership.role === "partner" && group.status === "pending");
+      if (!manages) return refuse(403, "revoke_invitation.403.json");
+      const invitation = s.invitations.find(
+        (i) => i.group_id === group.id && i.token === params.token && !i.used && !i.revoked,
+      );
+      if (!invitation) return refuse(404, "revoke_invitation.404.json");
+      invitation.revoked = true;
+      return { status: "ok" };
+    },
+
+    delete_account(s, me) {
+      // A mother takes her group with her; elsewhere only the person's memberships go.
+      for (const membership of [...me.memberships]) {
+        if (membership.role === "woman") {
+          s.people.forEach((p) => {
+            p.memberships = p.memberships.filter((m) => m.group_id !== membership.group_id);
+          });
+          s.groups = s.groups.filter((g) => g.id !== membership.group_id);
+        }
+      }
+      s.people = s.people.filter((p) => p.id !== me.id);
+      s.signedIn = false;
+      return { status: "ok" };
+    },
+
+    create_invitation(s, me, { body = {} }, group, membership) {
       if (group.status === "closed") return refuse(409, "create_invitation.409.json");
-      const role = me.membership.role;
+      const role = membership.role;
       const allowed =
         role === "woman"
           ? ["partner", "supporter"]
@@ -331,7 +442,7 @@ export function createMockStore({ base, storage, perspective = "", fetchFn = (..
     },
 
     get_invitation(s, _me, { params = {} }) {
-      const invitation = s.invitations.find((i) => i.token === params.token && !i.used);
+      const invitation = s.invitations.find((i) => i.token === params.token && !i.used && !i.revoked);
       if (!invitation) return refuse(404, "get_invitation.404.json");
       const inviter = s.people.find((p) => p.id === invitation.invited_by);
       return {
@@ -343,19 +454,21 @@ export function createMockStore({ base, storage, perspective = "", fetchFn = (..
     },
 
     accept_invitation(s, me, { params = {} }) {
-      const invitation = s.invitations.find((i) => i.token === params.token && !i.used);
+      const invitation = s.invitations.find((i) => i.token === params.token && !i.used && !i.revoked);
       if (!invitation) return refuse(404, "accept_invitation.404.json");
-      if (me.membership) return refuse(409, "accept_invitation.409.json");
       const group = findGroup(s, invitation.group_id);
       if (group.status === "closed") return refuse(409, "accept_invitation.409.closed.json");
-      me.membership = { group_id: group.id, role: invitation.role, joined_at: now() };
+      const alreadyMother = invitation.role === "woman" && me.memberships.some((m) => m.role === "woman");
+      if (memberOf(me, group.id) || alreadyMother) return refuse(409, "accept_invitation.409.json");
+      const membership = { group_id: group.id, role: invitation.role, joined_at: now() };
+      me.memberships.push(membership);
       if (invitation.role === "woman" && group.status === "pending") group.status = "active";
       invitation.used = true;
-      return meView(s, me);
+      return meView(s, me, membership);
     },
 
-    create_check_in(s, me, { body = {} }, group) {
-      if (me.membership.role !== "woman") return refuse(403, "create_check_in.403.json");
+    create_check_in(s, me, { body = {} }, group, membership) {
+      if (membership.role !== "woman") return refuse(403, "create_check_in.403.json");
       const blocked = requireActive("create_check_in", group);
       if (blocked) return blocked;
       const fields = {};
@@ -374,8 +487,8 @@ export function createMockStore({ base, storage, perspective = "", fetchFn = (..
       return entry;
     },
 
-    list_check_ins(s, me) {
-      if (me.membership.role !== "woman") return refuse(403, "list_check_ins.403.json");
+    list_check_ins(s, me, _opts, _group, membership) {
+      if (membership.role !== "woman") return refuse(403, "list_check_ins.403.json");
       const items = s.checkIns
         .filter((entry) => entry.person_id === me.id)
         .sort((a, b) => b.created_at.localeCompare(a.created_at) || b.id - a.id)
@@ -383,13 +496,13 @@ export function createMockStore({ base, storage, perspective = "", fetchFn = (..
       return { items };
     },
 
-    list_observation_questions(s, me) {
-      if (me.membership.role === "woman") return refuse(403, "list_observation_questions.403.json");
+    list_observation_questions(s, me, _opts, _group, membership) {
+      if (membership.role === "woman") return refuse(403, "list_observation_questions.403.json");
       return example("list_observation_questions.200.json");
     },
 
-    create_observation(s, me, { body = {} }, group) {
-      if (me.membership.role === "woman") return refuse(403, "create_observation.403.json");
+    create_observation(s, me, { body = {} }, group, membership) {
+      if (membership.role === "woman") return refuse(403, "create_observation.403.json");
       const blocked = requireActive("create_observation", group);
       if (blocked) return blocked;
       if (!Array.isArray(body.answers) || body.answers.length === 0) {
@@ -400,8 +513,8 @@ export function createMockStore({ base, storage, perspective = "", fetchFn = (..
       return { id: nextId(s), created_at: now() };
     },
 
-    get_summary(s, me) {
-      const role = me.membership.role;
+    get_summary(s, me, _opts, _group, membership) {
+      const role = membership.role;
       return example(role === "woman" ? "get_summary.200.json" : `get_summary.200.${role}.json`);
     },
 
@@ -474,7 +587,7 @@ export function createMockStore({ base, storage, perspective = "", fetchFn = (..
           email,
           display_name: String(body.display_name).trim(),
           password: String(body.password),
-          membership: null,
+          memberships: [],
           inactive: true,
         });
         mail(s, "activate", email);
@@ -538,8 +651,8 @@ export function createMockStore({ base, storage, perspective = "", fetchFn = (..
       return taskView(task);
     },
 
-    list_self_care(s, me) {
-      if (me.membership.role !== "woman") return refuse(403, "list_self_care.403.json");
+    list_self_care(s, me, _opts, _group, membership) {
+      if (membership.role !== "woman") return refuse(403, "list_self_care.403.json");
       return example("list_self_care.200.json");
     },
   };
@@ -558,10 +671,12 @@ export function createMockStore({ base, storage, perspective = "", fetchFn = (..
   const SIGNED_IN = new Set([
     "logout",
     "get_me",
+    "list_memberships",
     "create_group",
     "get_group",
     "accept_invitation",
     "change_password",
+    "delete_account",
   ]);
 
   async function call(operationId, options = {}) {
@@ -570,15 +685,21 @@ export function createMockStore({ base, storage, perspective = "", fetchFn = (..
     // From here to save() nothing is awaited, so two calls never interleave their changes.
     const s = load();
     const me = s.signedIn ? s.people.find((p) => p.id === s.current) : null;
+    // The named group, like the `X-Group-Id` header of the real API.
+    const named = ACCOUNT_LEVEL.has(operationId) ? null : (options.group ?? selected);
+    const membership = !me ? null : named ? memberOf(me, Number(named)) || null : earliest(me);
     let answer;
     if (!ANYONE.has(operationId) && !me) {
       answer = refuse(401, `${operationId}.401.json`, "get_me.401.json");
+    } else if (named && !membership && !ANYONE.has(operationId) && operationId !== "list_memberships") {
+      // A group the person does not belong to is refused, whatever the operation.
+      answer = refuse(403, "list_members.403.json");
     } else if (ANYONE.has(operationId) || SIGNED_IN.has(operationId)) {
-      answer = handlers[operationId](s, me, options);
-    } else if (!me.membership) {
+      answer = handlers[operationId](s, me, options, membership && groupOf(s, membership), membership);
+    } else if (!membership) {
       answer = refuse(403, "list_tasks.403.json");
     } else {
-      answer = handlers[operationId](s, me, options, groupOf(s, me));
+      answer = handlers[operationId](s, me, options, groupOf(s, membership), membership);
     }
     save(s);
     return copy(await answer);
@@ -587,6 +708,10 @@ export function createMockStore({ base, storage, perspective = "", fetchFn = (..
   return {
     mock: true,
     call,
+
+    setGroup(id) {
+      selected = id || null;
+    },
 
     async perspective() {
       const s = await state();

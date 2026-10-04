@@ -88,8 +88,9 @@ def test_successful_registration_confirms_the_email_then_leads_to_a_group(mock_p
     sign_in(mock_page, "ola@example.com", "dlugie-haslo")
 
     expect(h1(mock_page)).to_have_text("Cześć, Ola")
-    expect(mock_page.get_by_role("heading", name="Załóż grupę")).to_be_visible()
-    expect(mock_page.get_by_role("heading", name="Masz zaproszenie?")).to_be_visible()
+    expect(mock_page.get_by_role("heading", name="Co chcesz zrobić?")).to_be_visible()
+    for choice in ("Jestem mamą", "Jestem Partnerem", "Poczekam na link od mamy"):
+        expect(mock_page.get_by_role("button", name=choice)).to_be_visible()
 
 
 def test_sign_in_before_activation_offers_a_new_link(mock_page):
@@ -287,6 +288,9 @@ def test_live_sign_in_sends_the_form_and_shows_the_start(mock_page):
     live_signed_out(mock_page, calls)
     mock_page.route("**/api/v1/auth/login", login)
     mock_page.route("**/api/v1/me", current)
+    mock_page.route(
+        "**/api/v1/me/memberships", lambda route: route.fulfill(status=200, json={"items": []})
+    )
     mock_page.get_by_role("link", name="Zaloguj się").last.click()
     sign_in(mock_page, "anna@example.com")
 

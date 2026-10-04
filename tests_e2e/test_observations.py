@@ -19,6 +19,11 @@ def live_partner(page, sent):
     """Live mode with routed answers for a signed-in partner; records observation bodies."""
     answers = {
         "/api/v1/me": example("get_me.200.partner.json"),
+        "/api/v1/me/memberships": {
+            "items": [
+                {"group_id": 1, "role": "partner", "group_status": "active", "woman_name": "Anna"}
+            ]
+        },
         "/api/v1/observations/questions": example("list_observation_questions.200.json"),
     }
 

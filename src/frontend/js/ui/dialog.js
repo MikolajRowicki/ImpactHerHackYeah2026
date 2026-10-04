@@ -34,3 +34,24 @@ export function confirmDialog({ title, text, confirmLabel, danger = false }) {
     cancel.focus();
   });
 }
+
+// A native modal dialog around any content. `content` receives `close` so it can end itself.
+export function openDialog({ title, content }) {
+  const headingId = `dialog-${Date.now()}`;
+  const dialog = h("dialog", { class: "dialog dialog--wide", "aria-labelledby": headingId });
+  const close = () => dialog.close();
+  const closeButton = button(t.group.closeDialog, { variant: "quiet", onclick: close });
+  dialog.append(
+    h(
+      "div",
+      { class: "dialog__body" },
+      h("h2", { id: headingId }, title),
+      content(close),
+      h("div", { class: "actions" }, closeButton),
+    ),
+  );
+  dialog.addEventListener("close", () => dialog.remove());
+  document.body.append(dialog);
+  dialog.showModal();
+  return close;
+}

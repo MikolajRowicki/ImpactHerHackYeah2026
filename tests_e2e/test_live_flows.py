@@ -168,7 +168,7 @@ def test_first_sign_in_after_a_redirect_lands_on_starting_a_group(mock_page):
     mock_page.get_by_role("button", name="Zaloguj się").click()
 
     expect(h1(mock_page)).to_have_text("Cześć, Ola")
-    expect(mock_page.get_by_role("heading", name="Załóż grupę")).to_be_visible()
+    expect(mock_page.get_by_role("heading", name="Co chcesz zrobić?")).to_be_visible()
 
 
 def test_signup_sends_the_form_and_opens_no_session(mock_page):

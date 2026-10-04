@@ -54,7 +54,68 @@ function themeButton() {
   return button;
 }
 
-export function createFrame({ onSignOut }) {
+// The label of one group in the switcher: the mother's own group, or the group of another
+// mother, with the person's role in it.
+export function groupLabel(membership) {
+  if (membership.role === "woman") return t.group.switcher.own;
+  const name = membership.woman_name
+    ? t.group.switcher.of(membership.woman_name)
+    : t.group.switcher.noMother;
+  return t.group.switcher.option(name, t.common.roles[membership.role]);
+}
+
+function groupBar({ onSwitchGroup, onAddGroup }) {
+  const slot = document.getElementById("group-bar-slot");
+  return {
+    update(session) {
+      const { memberships, groupId } = session;
+      if (!slot || memberships.length === 0) {
+        slot?.replaceChildren();
+        return;
+      }
+      const current = memberships.find((m) => m.group_id === groupId) || memberships[0];
+      let chooser;
+      if (memberships.length > 1) {
+        const select = h(
+          "select",
+          { id: "group-select", name: "group" },
+          ...memberships.map((m) =>
+            h("option", { value: String(m.group_id), selected: m.group_id === current.group_id }, groupLabel(m)),
+          ),
+        );
+        select.addEventListener("change", () => onSwitchGroup(Number(select.value)));
+        chooser = h(
+          "div",
+          { class: "group-bar__chooser" },
+          h("label", { class: "group-bar__label", for: "group-select" }, t.group.switcher.label),
+          select,
+        );
+      } else {
+        chooser = h(
+          "p",
+          { class: "group-bar__name" },
+          h("span", { class: "group-bar__label" }, t.group.switcher.label),
+          groupLabel(current),
+        );
+      }
+      slot.replaceChildren(
+        h(
+          "div",
+          { class: "group-bar" },
+          h(
+            "div",
+            { class: "group-bar__inner" },
+            chooser,
+            h("button", { class: "text-button", type: "button", onclick: onAddGroup }, icon("plus", 18), t.group.addGroup),
+          ),
+        ),
+      );
+    },
+  };
+}
+
+export function createFrame({ onSignOut, onSwitchGroup, onAddGroup }) {
+  const bar = groupBar({ onSwitchGroup, onAddGroup });
   const inner = document.getElementById("header-inner");
   const brand = h(
     "a",
@@ -78,7 +139,8 @@ export function createFrame({ onSignOut }) {
   inner.replaceChildren(brand, nav, actions);
 
   return {
-    update(me, path) {
+    update(me, path, session) {
+      bar.update(session && me ? session : { memberships: [] });
       const items = navItems(me);
       nav.replaceChildren(
         h(

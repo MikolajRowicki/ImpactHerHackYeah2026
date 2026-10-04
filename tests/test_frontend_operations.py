@@ -29,3 +29,13 @@ def test_frontend_operation_table_matches_the_contract():
     frontend, contract = frontend_operations(), contract_operations()
     assert {name: contract.get(name) for name in frontend} == frontend
     assert set(V0_OPERATIONS) <= set(frontend)
+
+
+def test_frontend_adopts_the_group_operations():
+    assert {
+        "list_memberships",
+        "leave_group",
+        "list_invitations",
+        "revoke_invitation",
+        "delete_account",
+    } <= set(frontend_operations())

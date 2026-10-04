@@ -18,14 +18,14 @@
 
 ## 3. Frontend: accounts, panel and group switcher
 
-- [ ] 3.1 `operations.js`: `list_memberships`, `leave_group`, `list_invitations`, `revoke_invitation`, `delete_account`; extend `tests/test_frontend_operations.py`.
-- [ ] 3.2 Session: memberships and selected group (remembered, validated); `api.js` sends `X-Group-Id` except for account-level calls.
-- [ ] 3.3 Mock store: memberships per person, selected group, the new operations.
-- [ ] 3.4 Panel after sign-up and "Dodaj grupę" dialog; mother hidden when already a mother; waiting-for-link choice.
-- [ ] 3.5 Switcher in the frame; navigation built from the general part and the group part by role.
-- [ ] 3.6 Invitations: invite at once from the mother's start; accept with other groups; issued list with revoke; leave group with confirmation.
-- [ ] 3.7 Tests (mock mode and live with routed answers): panel, both starts, switching changes nav and header, mother-and-supporter person, accept with other groups, leave, list and revoke, mother hidden.
-- [ ] 3.8 Verify, including the live e2e against the real backend. Commit.
+- [x] 3.1 `operations.js`: `list_memberships`, `leave_group`, `list_invitations`, `revoke_invitation`, `delete_account`; extend `tests/test_frontend_operations.py`.
+- [x] 3.2 Session: memberships and selected group (remembered, validated); `api.js` sends `X-Group-Id` except for account-level calls.
+- [x] 3.3 Mock store: memberships per person, selected group, the new operations.
+- [x] 3.4 Panel after sign-up and "Dodaj grupę" dialog; mother hidden when already a mother; waiting-for-link choice.
+- [x] 3.5 Switcher in the frame; navigation built from the general part and the group part by role.
+- [x] 3.6 Invitations: invite at once from the mother's start; accept with other groups; issued list with revoke; leave group with confirmation.
+- [x] 3.7 Tests (mock mode and live with routed answers): panel, both starts, switching changes nav and header, mother-and-supporter person, accept with other groups, leave, list and revoke, mother hidden.
+- [x] 3.8 Verify, including the live e2e against the real backend. Commit.
 
 ## 4. Education, help, summary and tasks
 
