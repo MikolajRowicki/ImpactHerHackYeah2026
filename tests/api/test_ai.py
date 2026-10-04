@@ -544,6 +544,9 @@ def test_a_line_that_shows_the_speakers_gender_is_dropped(api, monkeypatch):
         "Będę Ci pomagał przy dziecku.",
         "Jestem z Ciebie dumny.",
         "Jestem gotowa pomóc.",
+        "Jestem gotów pomóc.",
+        "Jestem z Ciebie bardzo dumna.",
+        "Jestem ciekawa, jak minął Ci dzień.",
         "Sam nie wiem, co powiedzieć.",
     ],
 )
@@ -566,6 +569,10 @@ def test_gendered_first_person_forms_are_recognised(api, monkeypatch, line):
         "Będę obok, kiedy będziesz gotowa.",
         "Przyjdę z pomysłem na obiad.",
         "Nie łam się, jestem obok.",
+        "Jestem obok i spokojnie poczekam, aż będziesz gotowa.",
+        "Jestem tu żebyś była spokojna.",
+        "Dziś jestem od gotowania i zakupów.",
+        "Będę obok żeby było Ci łatwiej.",
     ],
 )
 def test_lines_that_speak_to_the_mother_in_her_gender_stay(api, monkeypatch, line):

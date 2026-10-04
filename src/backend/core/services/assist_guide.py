@@ -17,16 +17,24 @@ _MARKER = re.compile(r"^\s*(?:[-*•]|\d+[.)])\s*")
 # a missed form costs a word the reader may change, a false match costs one line.
 #   past and conditional: "myślałem", "zauważyłam", "chciałbym"
 _PAST = re.compile(r"\b\w*(?:łem|łam|łbym|łabym|łobym)\b", re.IGNORECASE)
+# Words between the parts of a form: they may not open another clause ("aż", "żeby", "i") or
+# speak to the mother ("żebyś", "jesteś"), so "jestem tu, żebyś była spokojna" stays.
+_GAP = (
+    r"(?:\s+(?!(?:żeby|aby|kiedy|gdy|że|bo|jak|aż|jeśli|gdyby|i|a|ale|oraz|czy)\b)"
+    r"(?!\w*(?:byś|eś|aś)\b)\w+)"
+)
 #   split conditional: "żebym pomógł", "żebym w ten weekend mógł"
 _SPLIT_CONDITIONAL = re.compile(
-    r"\b(?:że|a|jak|gdy)?bym\b(?:\s+\w+){0,4}?\s+\w+ł[ao]?\b", re.IGNORECASE
+    rf"\b(?:że|a|jak|gdy)?bym\b{_GAP}{{0,4}}?\s+\w+ł[ao]?\b", re.IGNORECASE
 )
 #   compound future: "będę pomagał", "będę Ci pomagała"
-_FUTURE = re.compile(r"\bbędę\b(?:\s+\w+){0,2}?\s+\w+ł[ao]?\b", re.IGNORECASE)
-#   common adjectives about oneself: "jestem z Ciebie dumny", "jestem gotowa", "sam nie wiem"
+_FUTURE = re.compile(rf"\bbędę\b{_GAP}{{0,2}}?\s+\w+ł[ao]?\b", re.IGNORECASE)
+#   adjectives about oneself, with their -y/-a ending: "jestem z Ciebie dumny", "jestem gotowa",
+#   and "sam nie wiem"; "spokojnie" or "gotowania" are not adjectives and stay
 _ADJECTIVE = re.compile(
-    r"\bjestem\b(?:\s+\w+){0,2}?\s+"
-    r"(?:dumn|gotow|pewn|pewien|wdzięczn|szczęśliw|zmartwion|zaniepokojon|przekonan|spokojn)\w*"
+    rf"\bjestem\b{_GAP}{{0,3}}?\s+"
+    r"(?:(?:dumn|gotow|pewn|wdzięczn|szczęśliw|zmartwion|zaniepokojon|przekonan|spokojn|ciekaw)"
+    r"[ay]|pewien|gotów)\b"
     r"|\bsama?\s+nie\s+wiem\b",
     re.IGNORECASE,
 )

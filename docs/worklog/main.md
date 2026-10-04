@@ -313,3 +313,20 @@ capabilities (`api-contract`, `frontend-mock-mode`, `ai-provider-config`) are no
   - At the user's request, only the browser tests of the touched screens ran: say it for me,
     guide, summary, live AI, contrast and layout (59 passed). The full browser suite last ran
     before these fixes (233 passed).
+
+## Change ai-assist-and-sources: review round 2 (same reviewer): PASS
+
+- All round-1 findings were verified as fixed. The reviewer broke 4 fixes on purpose in a
+  throwaway worktree, and the tests caught each one.
+- **N1 (low), fixed after the verdict:** the new adjective check dropped neutral lines and lines
+  to the mother.
+  - Examples: "Jestem obok i spokojnie poczekam, aż będziesz gotowa", "Dziś jestem od gotowania",
+    "Będę obok żeby było Ci łatwiej".
+  - Adjectives now need their -y/-a ending (plus "pewien", "gotów").
+  - The words between the parts of a form may not open another clause ("i", "aż", "żeby") or
+    speak to the mother ("żebyś", "jesteś").
+  - The test lists grew by 7 lines.
+- **N2 (info), left as is:** a late error from an older say-it request is ignored by the same
+  ticket check as a late answer, but has no test of its own.
+- **Verification:** `ruff check .`, `ruff format --check .`, `pytest tests` (1653 passed). The
+  change is backend-only, so no browser tests ran.
