@@ -33,6 +33,6 @@ Each group is one commit. Before each commit: `ruff check .`, `ruff format --che
 
 ## 5. Verification and archive
 
-- [ ] 5.1 Run the real app with `AI_PROVIDER=groq` on a throwaway copy of the database, use both screens as the mother and as a supporter, and take screenshots at phone and laptop width; verify the texts come from Groq, the sources open, and record the result in the worklog.
-- [ ] 5.2 Have a fresh reviewer check the change against the specs (every scenario mapped to a test, real defects with failing scenarios, PASS or FAIL); fix the findings and review again until PASS, recording each round in the worklog.
-- [ ] 5.3 Archive the change (`openspec archive ai-assist-and-sources`), verify `openspec validate --specs` passes, commit, merge into `main` and push.
+- [x] 5.1 Run the real app with `AI_PROVIDER=groq` on a throwaway copy of the database, use both screens as the mother and as a supporter, and take screenshots at phone and laptop width; verify the texts come from Groq, the sources open, and record the result in the worklog.
+- [x] 5.2 Have a fresh reviewer check the change against the specs (every scenario mapped to a test, real defects with failing scenarios, PASS or FAIL); fix the findings and review again until PASS, recording each round in the worklog.
+- [x] 5.3 Archive the change (`openspec archive ai-assist-and-sources`), verify `openspec validate --specs` passes, commit, merge into `main` and push.

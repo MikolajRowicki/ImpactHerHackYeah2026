@@ -330,3 +330,10 @@ capabilities (`api-contract`, `frontend-mock-mode`, `ai-provider-config`) are no
   ticket check as a late answer, but has no test of its own.
 - **Verification:** `ruff check .`, `ruff format --check .`, `pytest tests` (1653 passed). The
   change is backend-only, so no browser tests ran.
+
+## Change ai-assist-and-sources: archive
+
+- The change is archived as `openspec/changes/archive/2026-10-04-ai-assist-and-sources`.
+- `ai-assist` got one renamed requirement, two modified and three added. `ai-provider-config` got
+  two added requirements. `frontend-ai-assist` is a new main spec with 9 requirements.
+- `openspec validate --specs` passes (25 items).
