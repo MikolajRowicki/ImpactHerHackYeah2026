@@ -139,6 +139,20 @@ def test_narrative_from_rules_is_shown(mock_page):
 
     expect(summary(mock_page).get_by_text("Spokojny tydzień.")).to_be_visible()
     expect(summary(mock_page).get_by_text("Przykładowy tekst", exact=True)).to_have_count(0)
+    expect(summary(mock_page).locator(".origin-label")).to_have_count(0)
+
+
+def test_narrative_from_a_model_says_it_was_prepared_with_ai(mock_page):
+    serve_summary(
+        mock_page,
+        "get_summary_extended.200.json",
+        narrative={"text": "Tekst od modelu.", "source": "groq"},
+    )
+    open_as(mock_page, "woman")
+
+    narrative = summary(mock_page).locator(".summary__narrative")
+    expect(narrative).to_contain_text("Tekst od modelu.")
+    expect(narrative.locator(".origin-label")).to_have_text("Przygotowane z pomocą AI")
 
 
 @pytest.mark.parametrize(

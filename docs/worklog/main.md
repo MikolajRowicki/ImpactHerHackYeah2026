@@ -264,3 +264,52 @@ capabilities (`api-contract`, `frontend-mock-mode`, `ai-provider-config`) are no
     curated sources for "Po trudnym dniu", and Anna gets a message and the crisis answer with
     116 123 "całą dobę".
   - Screenshots in mock mode at 390 px and 1280 px were checked by eye.
+
+## Change ai-assist-and-sources: live check (task 5.1)
+
+- **Setup:**
+  - The real app with `AI_PROVIDER=groq`, `KNOWLEDGE_SOURCE=curated` and e-mail to the console.
+  - A fresh demo database in the scratch folder. `db.sqlite3` was not touched.
+- **Anna:**
+  - "Powiedz to za mnie" answered in 0.4 s, labelled "Przygotowane z pomocą AI".
+  - The Groq narrative showed on her summary.
+- **Marta:** the professional-help guide showed three Groq lines and three sources (mp.pl,
+  gov.pl, pacjent.gov.pl). Screenshots were taken at 390 px and 1280 px.
+- **Found and fixed during the check:**
+  - A line with "żebym pomógł" passed the gender filter (`9c14a97`).
+  - The origin label shared a line with the field label (`a2b83f7`).
+  - The counter overlapped the text box, and the message box was too short on a phone
+    (`a2b83f7`).
+- **Own mutation checks:** 8 behaviours were broken on purpose in a throwaway worktree, and each
+  was caught by its test.
+
+## Change ai-assist-and-sources: review round 1 (independent reviewer): FAIL, fixed
+
+- **M1:** a slow, older answer (a pending "Inna propozycja") could replace a newer crisis answer.
+  - Only the latest request's answer is shown now. A counter grows when a request really leaves.
+  - A test holds the older request and releases it after the crisis answer.
+  - The first attempt counted a blocked second press too; the double-press test caught that.
+- **M2:** the main spec's "Guide for a topic" still said `sources` is empty.
+  - The delta now MODIFIES "Conversation guide".
+  - The ai-assist Purpose in the main spec was updated.
+- **L1:** ranking by a sum (+3 per topic, +1 per keyword) did not guarantee topic first.
+  - Passages are now ranked by topic hits, then keyword hits.
+  - A new test has a keyword-heavy passage without a tag.
+- **L2:** the gender filter missed some forms.
+  - It now also catches the split conditional up to four words apart, the compound future
+    ("będę pomagał"), adjectives after "jestem" and "sam nie wiem".
+  - Nouns that only look like past forms ("z pomysłem", "nie łam się") are ignored.
+  - Spec scenarios were added.
+- **L3:** "zrobiłaś" and "byłaś" are now in the test of lines that stay.
+- **L4:** a Groq narrative on the summary is now labelled "Przygotowane z pomocą AI" (spec
+  scenario added).
+- **L5:** after a failure, focus goes to "Spróbuj ponownie" or "Inne propozycje zdań".
+- **L6:** the privacy note says the text is not stored and goes only to the AI service.
+- **L7:** without a key, the mock provider gives the helpers sample texts that fit their screens.
+- **L8:** these worklog entries.
+- **Verification:**
+  - The new tests fail on the code before the fixes (checked in a throwaway worktree).
+  - `ruff check .`, `ruff format --check .`, `pytest tests` (1646 passed).
+  - At the user's request, only the browser tests of the touched screens ran: say it for me,
+    guide, summary, live AI, contrast and layout (59 passed). The full browser suite last ran
+    before these fixes (233 passed).

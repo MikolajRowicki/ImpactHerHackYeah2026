@@ -79,6 +79,17 @@ def test_a_topic_tag_comes_before_a_keyword_match():
     assert titles == ["Tytuł topic", "Tytuł keyword"]
 
 
+def test_a_topic_tag_beats_any_number_of_keywords():
+    knowledge = CuratedKnowledge(
+        [
+            entry("many-keywords", "https://a.example/", keywords=["trudn", "dzien", "wesprz"]),
+            entry("topic", "https://b.example/", topics=["hard_day"]),
+        ]
+    )
+    titles = [p.title for p in knowledge.retrieve("hard_day wesprzeć po trudnym dzień")]
+    assert titles == ["Tytuł topic", "Tytuł many-keywords"]
+
+
 def test_at_most_three_best_first_and_ties_keep_the_file_order():
     knowledge = CuratedKnowledge(
         [

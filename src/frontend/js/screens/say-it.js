@@ -67,20 +67,32 @@ export async function sayIt(ctx) {
   );
   const result = h("div", { class: "say-it__result" });
   let lastBody = null;
+  // Only the answer to the latest request may be shown: a slow, older answer must never
+  // replace a newer one, above all not a crisis answer.
+  let latest = 0;
 
   async function send(body, trigger) {
-    lastBody = body;
     await whileBusy(
       trigger,
       async () => {
+        // Counted only when a request really leaves: a press on a busy button sends nothing.
+        lastBody = body;
+        const ticket = ++latest;
         try {
           const answer = await ctx.api.call("ai_say_it_for_me", { body });
+          if (ticket !== latest) return;
           result.replaceChildren(answer.crisis ? crisisCard(answer) : messageCard(answer));
           focusHeading(result);
         } catch (error) {
+          if (ticket !== latest) return;
           result.replaceChildren();
-          if (error.status === 422 && showFieldErrors(error, { text, recipient, tone })) return;
+          if (error.status === 422 && showFieldErrors(error, { text, recipient, tone })) {
+            text.input.focus();
+            return;
+          }
           result.replaceChildren(failure(error));
+          // The pressed button was disabled and lost the focus; the way out gets it.
+          result.querySelector("button")?.focus();
         }
       },
       { label: t.ai.preparing },

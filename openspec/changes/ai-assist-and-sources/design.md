@@ -27,8 +27,9 @@ See proposal.md for the motivation. Current state:
 
 Each passage in `core/content/knowledge.json` has `id`, `title`, `url`, `text`, `topics` (guide topic ids) and `keywords` (folded stems such as `lekarz`, `pomoc`, `sluch`). The query is folded with the same `fold` as the crisis list (lowercase, no Polish diacritics, single spaces) and split into words.
 
-- Score: +3 for each passage topic that equals a query word, +1 for each keyword that starts a query word (prefix match covers Polish word forms).
-- Keep passages with a score of 1 or more, sort by score (highest first) and then by file order, and return the first three.
+- Count topic hits (a passage topic found in the query) and keyword hits (a keyword that starts a query word; the prefix match covers Polish word forms).
+- Keep passages with any hit and rank them by topic hits, then keyword hits, then file order. Any topic hit beats any number of keyword hits; the review found that a sum (+3 per topic, +1 per keyword) did not guarantee this.
+- Return the first three, at most one per page.
 
 The guide's query is `"<topic id> <topic brief>"`, so the topic tag decides first and the keywords break ties.
 
@@ -85,7 +86,14 @@ Some Qwen models can put a `<think>…</think>` block in the content, so the pro
 
 Both models sometimes wrote "chciałbym" or "zastanawiałam się" although the guide prompt asked for no gender. The guide prompt now says it plainly: no first-person past tense or conditional forms that show gender, with examples. A test call after the change still gave "chciałbym" in 2 of 6 guides.
 
-So the guide also drops every generated line that holds such a form. A regular expression catches the endings `-łem`, `-łam`, `-łbym`, `-łabym` and `-łobym`, and the split conditional ("żebym pomógł", found in the live check). "Żebyś mogła" speaks to the mother and stays. A false match (for example "stołem") costs one line, not the answer. When no line is left, the fixed lines are used. They are labelled `rules` and cite nothing, because no passage shaped them. Before this change the code returned the passages with the fixed lines.
+So the guide also drops every generated line that shows the speaker's gender. The check is a heuristic, not a parser:
+
+- the endings `-łem`, `-łam`, `-łbym`, `-łabym` and `-łobym`;
+- the split conditional ("żebym pomógł", up to four words apart);
+- the compound future ("będę pomagał");
+- a short list of adjectives after "jestem" ("dumny", "gotowa"), and "sam/sama nie wiem".
+
+A short list of nouns that only look like past forms ("z pomysłem", "nie łam się") is ignored. "Żebyś mogła" and "zrobiłaś" speak to the mother and stay. A missed form costs a word the reader may change, and a false match costs one line, not the answer. When no line is left, the fixed lines are used. They are labelled `rules` and cite nothing, because no passage shaped them. Before this change the code returned the passages with the fixed lines.
 
 The "say it for me" prompt keeps her feminine first person and says not to assume the partner's gender. Models still slip there ("byłbyś"). Instead of filtering a whole message, the screen shows the suggestion in an editable field, so she fixes a word before copying.
 
@@ -95,6 +103,8 @@ The "say it for me" prompt keeps her feminine first person and says not to assum
 - Entry points: a card on each start screen, and a link in the loved ones' summary when the trend is `needs_attention`. No navigation items: a seventh bottom-bar item does not fit 375 px.
 - Labels by `source`: `groq` gives "Przygotowane z pomocą AI", plus "na podstawie źródeł poniżej" when sources exist. `mock` gives "Tekst przykładowy". `rules` gives no label.
 - Copy: `navigator.clipboard.writeText`. On failure the message text is selected so it can be copied by hand.
+- Only the answer to the latest request is shown. A counter grows when a request really leaves, so a slow, older answer (for example a pending "Inna propozycja") can never replace a newer crisis answer. The review found this race.
+- After a failure, focus moves to the way out ("Spróbuj ponownie", or the guide's "Inne propozycje zdań"), because the pressed button was disabled while waiting and lost the focus.
 - Her text: a `textarea` with `maxlength=500` and a live counter. It is never written to storage, and the form is rebuilt empty each time the screen opens.
 
 ### 8. API client and mock mode
@@ -102,6 +112,7 @@ The "say it for me" prompt keeps her feminine first person and says not to assum
 - `api.call(op, { query })` appends `?key=value` (`URLSearchParams`). The live adapter uses it. The mock adapter ignores it.
 - The mock store gets handlers for both operations. Their sample texts and sources live in a new `js/mock-ai.js`, so `mock-store.js` does not grow further.
 - The mock crisis check uses a short subset of the backend phrases. The backend list stays the real safety net.
+- The backend's mock provider (used without a key) gives a sample message to "say it for me" and three sample opening lines to the guide. It recognises their prompts by a few words. Other prompts keep the general sentences. All of them stay labelled `mock`.
 
 ## Risks / Trade-offs
 

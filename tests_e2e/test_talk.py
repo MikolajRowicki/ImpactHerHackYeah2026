@@ -162,6 +162,7 @@ def test_a_failure_to_get_other_lines_keeps_the_guide_and_says_so(mock_page):
     mock_page.get_by_role("button", name="Inne propozycje zdań").click()
     expect(mock_page.get_by_text("Nie udało się przygotować nowych propozycji.")).to_be_visible()
     expect(part(mock_page, "Od czego zacząć")).to_contain_text("Pierwsza linia.")
+    expect(mock_page.get_by_role("button", name="Inne propozycje zdań")).to_be_focused()
 
 
 # Sources and labels

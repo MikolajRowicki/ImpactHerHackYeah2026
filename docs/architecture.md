@@ -291,14 +291,15 @@ Any other value, or `groq` without a key, stops startup with a message that name
 
 Each passage in the file has an id, the title and link of a public Polish page, a short summary in
 our own words (at most 400 characters), guide topics and keyword stems. A lookup folds the query
-(lowercase, no Polish diacritics). A topic tag that appears in the query scores 3 and a keyword
-that starts a word scores 1. The best three passages from different pages are used, ties in file
-order. The guide asks with `"<topic> <brief>"`. The passages go into the prompt as background,
+(lowercase, no Polish diacritics). Passages are ranked by topic hits (a topic tag in the query),
+then keyword hits (a keyword that starts a word), then file order. The best three from different
+pages are used. The guide asks with `"<topic> <brief>"`. The passages go into the prompt as background,
 and their titles and links come back in `sources`. When the fixed lines are used (no model answer,
 or no usable line), the guide cites nothing.
 
-Generated guide lines that show the speaker's gender ("myślałem", "chciałabym") are dropped,
-because the reader may be anyone. An embedding search can replace the curated source later behind
+Generated guide lines that show the speaker's gender ("myślałem", "żebym pomógł", "będę
+pomagał", "jestem dumny") are dropped, because the reader may be anyone. Without a key, the mock
+provider gives the helpers sample texts that fit their screens, labelled `mock`. An embedding search can replace the curated source later behind
 the same `retrieve(query)` method.
 
 ## Operations added after v0

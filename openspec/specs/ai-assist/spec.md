@@ -1,7 +1,7 @@
 # ai-assist Specification
 
 ## Purpose
-Gives two optional helpers that use text generation: one helps the woman say something hard to her close ones, the other helps her close ones start a caring conversation. Every answer says where its text came from, is safe when the provider fails and is ready for cited sources later.
+Gives two optional helpers that use text generation: one helps the woman say something hard to her close ones, the other helps her close ones start a caring conversation with cited sources. Every answer says where its text came from and is safe when the provider fails.
 
 ## Requirements
 

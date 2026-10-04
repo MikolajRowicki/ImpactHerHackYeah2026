@@ -79,6 +79,8 @@ export async function talk(ctx) {
           },
           { label: t.ai.preparing },
         );
+        // After a failure this card stays and its button lost the focus while disabled.
+        if (again.isConnected) again.focus();
       },
     });
     return h(

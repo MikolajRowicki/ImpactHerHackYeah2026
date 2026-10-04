@@ -97,6 +97,10 @@ Text from a model SHALL carry a short label saying it was prepared with the help
 - **WHEN** an answer has source `rules`
 - **THEN** no AI label and no sample label are shown
 
+#### Scenario: Summary narrative from a model
+- **WHEN** the summary narrative has source `groq`
+- **THEN** "Przygotowane z pomocą AI" is shown with the narrative
+
 ### Requirement: Who can open the screens
 "Powiedz to za mnie" SHALL be open only to the mother of an active or closed group. The guide SHALL be open only to a partner or a supporter of an active or closed group. Anyone else SHALL see the calm "not for you" screen.
 

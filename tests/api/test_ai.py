@@ -540,6 +540,11 @@ def test_a_line_that_shows_the_speakers_gender_is_dropped(api, monkeypatch):
         "ZROBIŁEM dziś zakupy.",
         "Czy chciałabyś, żebym pomógł ci umówić wizytę?",
         "Chcę, żebym ci pomogła w tym tygodniu.",
+        "Żebym w ten weekend mógł Ci pomóc, powiedz, czego potrzebujesz.",
+        "Będę Ci pomagał przy dziecku.",
+        "Jestem z Ciebie dumny.",
+        "Jestem gotowa pomóc.",
+        "Sam nie wiem, co powiedzieć.",
     ],
 )
 def test_gendered_first_person_forms_are_recognised(api, monkeypatch, line):
@@ -555,6 +560,12 @@ def test_gendered_first_person_forms_are_recognised(api, monkeypatch, line):
         "Jestem obok, żebyś mogła odpocząć.",
         "Czy mogłabyś porozmawiać z lekarzem?",
         "Chcę, żebyś czuła się bezpiecznie.",
+        "Zrobiłaś dziś bardzo dużo.",
+        "Byłaś dziś bardzo dzielna.",
+        "Jestem tu, żebyś była spokojna.",
+        "Będę obok, kiedy będziesz gotowa.",
+        "Przyjdę z pomysłem na obiad.",
+        "Nie łam się, jestem obok.",
     ],
 )
 def test_lines_that_speak_to_the_mother_in_her_gender_stay(api, monkeypatch, line):

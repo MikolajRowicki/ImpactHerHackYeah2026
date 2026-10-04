@@ -59,7 +59,7 @@ def test_the_mothers_start_has_a_card_that_opens_say_it(mock_page):
     open_as(mock_page, "woman")
     mock_page.get_by_role("link", name="Powiedz to za mnie").click()
     expect(h1(mock_page)).to_have_text("Powiedz to za mnie")
-    expect(mock_page.get_by_text("Twój tekst nie jest nigdzie zapisywany.")).to_be_visible()
+    expect(mock_page.get_by_text("Nie zapisujemy Twojego tekstu.")).to_be_visible()
 
 
 def test_the_navigation_gets_no_new_item(mock_page):
@@ -169,6 +169,8 @@ def test_a_failure_keeps_her_text_and_offers_to_try_again(mock_page):
     send(mock_page)
     expect(mock_page.get_by_text("Nie udało się przygotować wiadomości.")).to_be_visible()
     expect(text_field(mock_page)).to_have_value(TEXT)
+    # The pressed button lost the focus while it was disabled; the way out gets it.
+    expect(mock_page.get_by_role("button", name="Spróbuj ponownie")).to_be_focused()
 
     answers[SAY_IT] = (200, answer("Teraz się udało."))
     mock_page.get_by_role("button", name="Spróbuj ponownie").click()
@@ -194,6 +196,54 @@ def test_a_second_press_sends_nothing_while_the_answer_is_on_its_way(mock_page):
     expect(message_field(mock_page)).to_have_value("Gotowe.")
     expect(busy).to_have_text("Przygotuj wiadomość")
     assert len(sent) == 1
+
+
+# Records when each answer has been read by the page: after its body is parsed, the app's own
+# code runs in microtasks, so a zero-delay task queued then runs after it.
+WATCH_ANSWERS = """() => {
+    window.answersRead = 0;
+    const original = window.fetch;
+    window.fetch = async (...args) => {
+        const response = await original(...args);
+        const read = response.json.bind(response);
+        response.json = async () => {
+            const data = await read();
+            setTimeout(() => { window.answersRead += 1; }, 0);
+            return data;
+        };
+        return response;
+    };
+}"""
+
+
+def test_a_slow_older_answer_never_replaces_a_newer_crisis_answer(mock_page):
+    open_live(mock_page, (200, answer("Pierwsza propozycja.")))
+    text_field(mock_page).fill("Jestem bardzo zmęczona.")
+    send(mock_page)
+    expect(message_field(mock_page)).to_have_value("Pierwsza propozycja.")
+
+    crisis = example("ai_say_it_for_me.200.crisis.json")
+    held = []
+
+    def answer_or_hold(route):
+        if route.request.post_data_json["text"] == "Jestem bardzo zmęczona.":
+            held.append(route)  # the older request waits for a slow model
+        else:
+            route.fulfill(status=200, json=crisis)
+
+    mock_page.route("**/api/v1/ai/say-it-for-me", answer_or_hold)
+    mock_page.evaluate(WATCH_ANSWERS)
+    mock_page.get_by_role("button", name="Inna propozycja").click()
+    text_field(mock_page).fill("Nie chcę już żyć.")
+    send(mock_page)
+    crisis_heading = mock_page.get_by_role("heading", name="Nie musisz być z tym sama")
+    expect(crisis_heading).to_be_visible()
+
+    held[0].fulfill(status=200, json=answer("Spóźniona propozycja."))
+    mock_page.wait_for_function("() => window.answersRead >= 2")
+    expect(crisis_heading).to_be_visible()
+    expect(message_field(mock_page)).to_have_count(0)
+    expect(mock_page.get_by_role("button", name="Kopiuj")).to_have_count(0)
 
 
 # Labels and the crisis answer

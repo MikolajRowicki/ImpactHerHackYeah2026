@@ -674,7 +674,8 @@ textarea.field__input {
   font-style: italic;
 }
 
-.summary__narrative .chip {
+.summary__narrative .chip,
+.summary__narrative .origin-label {
   margin-top: var(--space-2);
 }
 

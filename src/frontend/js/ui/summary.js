@@ -2,6 +2,7 @@ import { h } from "../dom.js";
 import { dateTime } from "../format.js";
 import { icon } from "../icons.js";
 import { t } from "../strings.pl.js";
+import { originLabel } from "./ai.js";
 import { crisisLines } from "./crisis-lines.js";
 
 // One calm icon per trend. No colour carries meaning on its own, and none of them is red.
@@ -74,10 +75,15 @@ export function summaryCard(summary) {
           h("p", { class: "summary__reminder-text" }, summary.care_reminder),
         ),
       ),
-    // A mock narrative is placeholder text; people never see it.
+    // A mock narrative is placeholder text; people never see it. A model's text says so.
     summary.narrative &&
       summary.narrative.source !== "mock" &&
-      h("figure", { class: "summary__narrative" }, h("p", {}, summary.narrative.text)),
+      h(
+        "figure",
+        { class: "summary__narrative" },
+        h("p", {}, summary.narrative.text),
+        summary.narrative.source === "groq" && originLabel(summary.narrative),
+      ),
     h(
       "p",
       { class: "summary__time" },

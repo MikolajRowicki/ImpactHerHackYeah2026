@@ -7,6 +7,25 @@
 
 ## MODIFIED Requirements
 
+### Requirement: Conversation guide
+A partner or a supporter SHALL ask for a guide on a topic from a fixed set and receive suggested opening lines, things to avoid and follow-up questions. The guide SHALL NOT use any answer or check-in as input.
+
+#### Scenario: Guide for a topic
+- **WHEN** a supporter asks for the topic `how_are_you`
+- **THEN** the response has opening lines, things to avoid, questions, a `source` and the `sources` the knowledge source gave (one to three pages with the default curated source)
+
+#### Scenario: Unknown topic
+- **WHEN** the topic is not in the set
+- **THEN** the response is 422 with a message under `fields.topic`
+
+#### Scenario: Not the woman
+- **WHEN** the woman asks for a guide
+- **THEN** the response is 403 with code `forbidden`
+
+#### Scenario: Topic for the trend
+- **WHEN** the trend is `needs_attention`
+- **THEN** a topic about suggesting professional help exists in the set and is available to everyone who may ask
+
 ### Requirement: Cited sources come from a knowledge source
 The conversation guide SHALL ask a knowledge source for passages that fit its topic and SHALL give their text to the provider. Each passage has a title and a link. The response `sources` list SHALL list the passages used. "Say it for me" and the summary narrative SHALL NOT ask the knowledge source, and the `sources` of "say it for me" SHALL stay empty.
 
@@ -64,11 +83,19 @@ With `KNOWLEDGE_SOURCE=curated`, which is the default, passages SHALL come from 
 - **THEN** the list is empty
 
 ### Requirement: Opening lines do not show the speaker's gender
-The guide SHALL drop a generated opening line that holds a first-person past or conditional form, which shows the speaker's gender (for example "myślałem", "zauważyłam", "chciałbym"). When no generated line is left, the guide SHALL answer with its fixed opening lines, `source` `rules` and an empty `sources` list.
+The guide SHALL drop a generated opening line that shows the speaker's gender: a first-person past, conditional or compound future form ("myślałem", "chciałbym", "żebym w ten weekend mógł", "będę pomagał") or a common adjective about oneself ("jestem z Ciebie dumny", "sam nie wiem"). Lines that speak to the mother ("zrobiłaś", "żebyś mogła") SHALL stay. When no generated line is left, the guide SHALL answer with its fixed opening lines, `source` `rules` and an empty `sources` list.
 
 #### Scenario: One gendered line
 - **WHEN** the provider writes three lines and one of them holds "chciałbym"
 - **THEN** the guide shows the other two lines
+
+#### Scenario: Other gendered forms
+- **WHEN** a generated line holds "żebym pomógł", "będę Ci pomagał" or "jestem gotowa"
+- **THEN** that line is dropped
+
+#### Scenario: Lines to the mother stay
+- **WHEN** a generated line holds "zrobiłaś", "żebyś mogła" or a noun such as "z pomysłem"
+- **THEN** that line is shown
 
 #### Scenario: Only gendered lines
 - **WHEN** every generated line holds such a form

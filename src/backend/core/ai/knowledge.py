@@ -1,7 +1,7 @@
 """Where cited passages come from.
 
-`curated` (the default) ranks reviewed passages from `content/knowledge.json` by topic tags and
-keyword stems. It has no model and no index, so it is offline and deterministic; an embedding
+`curated` (the default) ranks reviewed passages from `content/knowledge.json` by topic tags,
+then keyword stems. It has no model and no index, so it is offline and deterministic; an embedding
 search can replace it later behind the same `retrieve`.
 """
 
@@ -18,8 +18,6 @@ from ..content.crisis_terms import fold
 
 KNOWLEDGE_FILE = Path(__file__).resolve().parent.parent / "content" / "knowledge.json"
 MAX_PASSAGES = 3
-TOPIC_SCORE = 3
-KEYWORD_SCORE = 1
 
 
 @dataclass(frozen=True)
@@ -62,13 +60,14 @@ def load_entries(path: Path = KNOWLEDGE_FILE) -> tuple[Entry, ...]:
     )
 
 
-def score(entry: Entry, query: str) -> int:
-    """Topic tags count more than keywords. `query` is already folded."""
+def score(entry: Entry, query: str) -> tuple[int, int]:
+    """(topic hits, keyword hits). Compared as a pair, so any topic hit beats any number of
+    keyword hits. `query` is already folded."""
     padded = f" {query} "
     words = query.split()
     topics = sum(1 for topic in entry.topics if f" {fold(topic)} " in padded)
     keywords = sum(1 for key in entry.keywords if any(word.startswith(key) for word in words))
-    return TOPIC_SCORE * topics + KEYWORD_SCORE * keywords
+    return topics, keywords
 
 
 class CuratedKnowledge:
@@ -84,7 +83,8 @@ class CuratedKnowledge:
         folded = fold(query)
         scored = [(score(entry, folded), index, entry) for index, entry in enumerate(self._entries)]
         ranked = sorted(
-            (item for item in scored if item[0] > 0), key=lambda item: (-item[0], item[1])
+            (item for item in scored if sum(item[0]) > 0),
+            key=lambda item: (-item[0][0], -item[0][1], item[1]),
         )
         chosen: list[Passage] = []
         pages: set[str] = set()

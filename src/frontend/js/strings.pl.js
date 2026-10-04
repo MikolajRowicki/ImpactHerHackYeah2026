@@ -543,7 +543,8 @@ export const t = {
     title: "Powiedz to za mnie",
     eyebrow: "Dla Ciebie",
     lead: "Napisz własnymi słowami, co chcesz przekazać. Pomogę ułożyć z tego spokojną wiadomość.",
-    privacy: "Twój tekst nie jest nigdzie zapisywany. Wiadomość wyślesz sama, jeśli zechcesz.",
+    privacy:
+      "Nie zapisujemy Twojego tekstu. Trafia tylko do usługi AI, która przygotowuje propozycję. Wiadomość wyślesz sama, jeśli zechcesz.",
     ctaTitle: "Powiedz to za mnie",
     ctaLead: "Trudno Ci coś powiedzieć? Pomogę ubrać to w słowa.",
     text: "Co chcesz powiedzieć?",
