@@ -28,3 +28,22 @@ Change: `accept-woman-invitation`, branch `change/accept-woman-invitation`.
 - **Verification:** browser suite 243 passed; screenshots of the notice at 375 and 1280 px checked.
   The live tests run the real backend with the real screen.
 - **Commit:** `4cd5b35`
+
+## Review (independent reviewer): PASS
+
+Every delta scenario maps to a test; ruff and the fast suite as expected (4 known failures); the
+related browser files passed (52). A mutation (member check removed) made the right test fail.
+Findings and what was done:
+
+- **Low, fixed:** when the insert hits the unique constraint because another woman took the target
+  group's place at the last moment, the rolled back accept answered "already the mother of another
+  group" instead of `role_taken`. The handler now answers `role_taken` when the target group has a
+  woman. Not covered by a test: it needs a second database connection committing between the
+  check and the insert, and SQLite serialises writers (the transaction takes its write lock at the
+  start), so the case cannot be reproduced there.
+- **Info, noted:** the mock treats any check-in of the person as content and keeps no observations
+  per group, so it is a little stricter than the backend; a comment in `mock-store.js` says so.
+- **Info, accepted:** the notice also shows when the target group already has a woman or the person
+  already belongs to it; she then gets `role_taken` or "this group" after the click.
+- Checked without findings: no data loss path (locked check, then delete), the consumed invitation
+  rolls back with everything, constraint order, `role_taken` before any delete, no markup injection.

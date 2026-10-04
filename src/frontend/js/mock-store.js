@@ -197,7 +197,8 @@ export function createMockStore({ base, storage, perspective = "", fetchFn = (..
   // Views in the exact shapes of the contract.
   const findGroup = (s, id) => s.groups.find((g) => g.id === id);
 
-  // Only the person is in it, and it holds no task and no check-in.
+  // Only the person is in it, and it holds no task and no check-in. The demo keys check-ins by
+  // person and keeps no observations per group, so this is a little stricter than the backend.
   const emptyGroup = (s, me, groupId) =>
     s.people.every((p) => p.id === me.id || !memberOf(p, groupId)) &&
     !s.tasks.some((task) => task.group_id === groupId) &&

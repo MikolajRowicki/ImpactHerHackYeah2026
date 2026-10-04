@@ -17,5 +17,5 @@
 
 ## 3. Documentation and worklog
 
-- [ ] 3.1 `docs/architecture.md`: the accept flow (Mermaid, from the design). `docs/worklog/`: entries for groups 1 and 2 with commits and the review result.
-- [ ] 3.2 Independent review against the delta specs by a fresh reviewer (PASS or FAIL); fix and review again. Commit.
+- [x] 3.1 `docs/architecture.md`: the accept flow (Mermaid, from the design). `docs/worklog/`: entries for groups 1 and 2 with commits and the review result.
+- [x] 3.2 Independent review against the delta specs by a fresh reviewer (PASS or FAIL); fix and review again. Commit.

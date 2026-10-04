@@ -188,7 +188,8 @@ def accept(user, token: str) -> dict:
         # The transaction rolled back, so the invitation is unused again.
         if _in_group(user, invitation):
             raise already_in_group(ALREADY_IN_THIS_GROUP) from None
-        if invitation.role == ROLE_WOMAN and _is_woman_somewhere(user):
+        taken = Membership.objects.filter(group_id=invitation.group_id, role=ROLE_WOMAN).exists()
+        if invitation.role == ROLE_WOMAN and not taken and _is_woman_somewhere(user):
             raise already_in_group(ALREADY_MOTHER_ELSEWHERE) from None
         raise ApiError(409, "role_taken", ROLE_TAKEN) from None
     return accounts.me(user, accounts.membership_of(user, invitation.group_id))
