@@ -22,7 +22,7 @@ The code lives in a git clone on the VM. An update is `git pull` and a rebuild.
 | `AI_PROVIDER` | `groq`, with `GROQ_API_KEY` |
 | `EMAIL_MODE` | `smtp`, with `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_USER`, `EMAIL_PASS`, `EMAIL_FROM` |
 
-`DATABASE_PATH` is set by the image; leave it out.
+`DATABASE_PATH` is set by `docker-compose.yml`; whatever `.env` says is ignored.
 
 ## Update
 

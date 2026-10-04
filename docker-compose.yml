@@ -3,6 +3,9 @@ services:
     build: .
     restart: unless-stopped
     env_file: .env
+    environment:
+      # Wins over an empty DATABASE_PATH in .env, so the file always lands on the volume.
+      DATABASE_PATH: /data/db.sqlite3
     volumes:
       - db:/data
     expose:
