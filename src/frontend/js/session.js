@@ -73,6 +73,7 @@ export function createSession(api, storage, remembered = null) {
       session.me = null;
       session.memberships = [];
       session.groupId = null;
+      writeGroup(null);
       session.loaded = true;
       api.setGroup?.(null);
     },

@@ -98,7 +98,12 @@ function makeCtx(params = {}) {
 }
 
 async function switchGroup(groupId) {
-  await session.load(groupId);
+  try {
+    await session.load(groupId);
+  } catch (error) {
+    render(errorState(error, retry));
+    return;
+  }
   await sessionChanged();
   show();
 }

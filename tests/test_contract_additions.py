@@ -97,3 +97,10 @@ def test_account_security_answers_never_depend_on_the_address():
 def test_release_task_needs_an_active_group_like_the_other_task_changes():
     op = c.operation_by_id()["release_task"][2]
     assert op["x-requires-active-group"] is True
+
+
+def test_the_group_header_convention_is_in_the_contract():
+    text = c.DOC["info"]["description"]
+    assert "X-Group-Id" in text
+    assert "not_a_member" in text
+    assert "earliest membership" in text

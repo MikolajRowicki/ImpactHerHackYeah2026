@@ -460,6 +460,8 @@ export function createMockStore({ base, storage, perspective = "", fetchFn = (..
       if (group.status === "closed") return refuse(409, "accept_invitation.409.closed.json");
       const alreadyMother = invitation.role === "woman" && me.memberships.some((m) => m.role === "woman");
       if (memberOf(me, group.id) || alreadyMother) return refuse(409, "accept_invitation.409.json");
+      const hasWoman = invitation.role === "woman" && womanOf(s, group.id);
+      if (hasWoman) return refuse(409, "accept_invitation.409.json");
       const membership = { group_id: group.id, role: invitation.role, joined_at: now() };
       me.memberships.push(membership);
       if (invitation.role === "woman" && group.status === "pending") group.status = "active";
