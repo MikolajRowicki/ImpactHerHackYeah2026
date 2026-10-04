@@ -464,6 +464,11 @@ export const t = {
     invitationRole: "Twoja rola w grupie",
     invitationClosed: "Ta grupa została już zamknięta, więc nie można do niej dołączyć.",
     accept: "Przyjmij zaproszenie",
+    motherNotice: [
+      "Jesteś już mamą w swojej grupie. Jeśli jest pusta (tylko Ty, bez zadań i wpisów), zostanie zastąpiona tą grupą.",
+      "Jeśli ma w sobie dane albo inne osoby, najpierw ją zamknij i usuń.",
+    ],
+    toOwnGroup: "Przejdź do swojej grupy",
     signInToAccept: "Żeby przyjąć zaproszenie, zaloguj się albo załóż konto. Potem wrócisz tutaj.",
     signIn: "Zaloguj się",
     signUp: "Załóż konto",

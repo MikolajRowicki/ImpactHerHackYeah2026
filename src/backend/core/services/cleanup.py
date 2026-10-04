@@ -7,7 +7,7 @@ answers go, then the membership goes. Everything runs in one transaction.
 from django.db import transaction
 
 from ..constants import ROLE_WOMAN, TASK_CLAIMED, TASK_DONE, TASK_OPEN
-from ..models import Group, Membership, Observation, Task
+from ..models import CheckIn, Group, Membership, Observation, Task
 
 
 def _reopen_claimed_tasks(user_id: int, group_id: int) -> None:
@@ -36,6 +36,29 @@ def delete_group(group_id: int) -> None:
     """Remove the whole group; this cascades to memberships, check-ins, observations, tasks and
     invitations."""
     Group.objects.filter(pk=group_id).delete()
+
+
+def delete_group_if_empty(group_id: int, user_id: int) -> bool:
+    """Delete the group when its only member is that person and it holds no data.
+
+    Call it inside a transaction. The group row is locked first, so data added at the same moment
+    waits: it is either seen by the check or refused after the delete, never lost with the group.
+    (SQLite ignores the row lock; its write lock, taken at the start of the transaction, does it.)
+    """
+    group = Group.objects.select_for_update().filter(pk=group_id).first()
+    if group is None:
+        return False
+    if list(Membership.objects.filter(group_id=group_id).values_list("user_id", flat=True)) != [
+        user_id
+    ]:
+        return False
+    holds_data = any(
+        model.objects.filter(group_id=group_id).exists() for model in (CheckIn, Task, Observation)
+    )
+    if holds_data:
+        return False
+    group.delete()
+    return True
 
 
 def delete_account(user) -> None:

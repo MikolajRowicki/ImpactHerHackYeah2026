@@ -1,0 +1,6 @@
+{
+  "error": {
+    "code": "already_in_group",
+    "message": "Jesteś już mamą w innej grupie, w której są dane albo inne osoby. Zamknij ją i usuń na jej ekranie, a potem przyjmij zaproszenie jeszcze raz."
+  }
+}

@@ -19,8 +19,8 @@ from ..constants import (
 from ..errors import ApiError
 from ..models import Group, Invitation, Membership
 from ..permissions import GROUP_CLOSED_MESSAGE, MemberContext
-from . import accounts
-from .groups import already_in_group, utc
+from . import accounts, cleanup
+from .groups import ALREADY_IN_THIS_GROUP, ALREADY_MOTHER_ELSEWHERE, already_in_group, utc
 
 NOT_FOUND = "To zaproszenie nie istnieje albo wygasło."
 ROLE_NOT_ALLOWED = "Ta rola nie może zapraszać osób w tej roli."
@@ -143,14 +143,17 @@ def accept(user, token: str) -> dict:
     The checks that only read come first and run outside the transaction. The transaction then
     starts with the conditional update that consumes the invitation, so two accepts queue on the
     database's write lock and exactly one of them wins.
+
+    A person who is already the woman of an empty group gives that group up for the new one; with
+    any content or another member in it, the accept is refused and nothing changes.
     """
     invitation = Invitation.objects.select_related("group").filter(token=token).first()
     if invitation is None:
         raise not_found()
     if invitation.group.status == GROUP_CLOSED:
         raise ApiError(409, "group_closed", GROUP_CLOSED_MESSAGE)
-    if _already_blocked(user, invitation):
-        raise already_in_group()
+    if _in_group(user, invitation):
+        raise already_in_group(ALREADY_IN_THIS_GROUP)
     if (
         invitation.role == ROLE_WOMAN
         and Membership.objects.filter(group_id=invitation.group_id, role=ROLE_WOMAN).exists()
@@ -168,6 +171,8 @@ def accept(user, token: str) -> dict:
             )
             if consumed == 0:
                 raise _lost_race(invitation)
+            if invitation.role == ROLE_WOMAN:
+                _give_up_empty_group(user)
             Membership.objects.create(
                 user=user,
                 group_id=invitation.group_id,
@@ -181,18 +186,34 @@ def accept(user, token: str) -> dict:
                 )
     except IntegrityError:
         # The transaction rolled back, so the invitation is unused again.
-        if _already_blocked(user, invitation):
-            raise already_in_group() from None
+        if _in_group(user, invitation):
+            raise already_in_group(ALREADY_IN_THIS_GROUP) from None
+        taken = Membership.objects.filter(group_id=invitation.group_id, role=ROLE_WOMAN).exists()
+        if invitation.role == ROLE_WOMAN and not taken and _is_woman_somewhere(user):
+            raise already_in_group(ALREADY_MOTHER_ELSEWHERE) from None
         raise ApiError(409, "role_taken", ROLE_TAKEN) from None
     return accounts.me(user, accounts.membership_of(user, invitation.group_id))
 
 
-def _already_blocked(user, invitation: Invitation) -> bool:
-    """Already in that group, or already the woman of a group when the invitation is for one."""
-    mine = Membership.objects.filter(user=user)
-    if mine.filter(group_id=invitation.group_id).exists():
-        return True
-    return invitation.role == ROLE_WOMAN and mine.filter(role=ROLE_WOMAN).exists()
+def _in_group(user, invitation: Invitation) -> bool:
+    return Membership.objects.filter(user=user, group_id=invitation.group_id).exists()
+
+
+def _is_woman_somewhere(user) -> bool:
+    return Membership.objects.filter(user=user, role=ROLE_WOMAN).exists()
+
+
+def _give_up_empty_group(user) -> None:
+    """Delete the person's own group as the woman when it is empty; refuse when it is not.
+
+    Runs inside the accept transaction, so the refusal rolls back the consumed invitation. The
+    unique rule (one woman membership per person) needs the old one gone before the new one.
+    """
+    own = Membership.objects.filter(user=user, role=ROLE_WOMAN).first()
+    if own is None:
+        return
+    if not cleanup.delete_group_if_empty(own.group_id, user.pk):
+        raise already_in_group(ALREADY_MOTHER_ELSEWHERE)
 
 
 def _lost_race(invitation: Invitation) -> ApiError:

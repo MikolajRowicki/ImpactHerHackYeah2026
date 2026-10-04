@@ -211,6 +211,32 @@ operations ignore it. The frontend session reads `get_me`, then `list_membership
 selected group in `localStorage`, drops it when the person is no longer a member, and sends the
 header on every call that is not account-level (`ACCOUNT_LEVEL` in `js/api.js`).
 
+## Accepting a mother invitation
+
+A person is the woman of at most one group, so a `woman` invitation meets a person who may already
+be one. `accept` keeps the checks that only read outside the transaction. The transaction consumes
+the invitation first (two accepts still queue and one wins), then `cleanup.delete_group_if_empty`
+decides about the person's own group under a lock on its row.
+
+```mermaid
+flowchart TD
+  A[accept woman invitation] --> B{already in this group?}
+  B -- yes --> E1["409 already_in_group (this group)"]
+  B -- no --> C{group already has a woman?}
+  C -- yes --> E2[409 role_taken]
+  C -- no --> D[transaction: consume the invitation]
+  D -- lost --> N[404 invitation_not_found]
+  D -- won --> M{person is the woman of a group?}
+  M -- no --> J[create membership, activate a pending group]
+  M -- yes --> X{lock that group: only member, no check-in, task or observation?}
+  X -- yes --> Z[delete it with its invitations] --> J
+  X -- no --> E3["roll back, 409 already_in_group (another group)"]
+```
+
+The frontend shows a notice on the invitation screen before the click (the contract has no field
+that says whether the group is empty, so the notice names both outcomes). Mock mode applies the
+same rule in `mock-store.js`.
+
 ## Roles and permissions
 
 `x` means allowed. Every group operation also needs a membership (otherwise 403 `not_a_member`),
@@ -219,7 +245,7 @@ and the operations marked with `*` need an active group (otherwise 409 `group_pe
 | Operation | woman | partner | supporter | Notes |
 |---|---|---|---|---|
 | health, register, login | anyone | anyone | anyone | no session needed |
-| logout, get_me, get_group, create_group, accept_invitation, list_memberships | x | x | x | any signed-in person, in a group or not; get_group answers 404 without a group; a supporter cannot create a group; a person who is the woman of a group cannot create or accept a second one as the woman |
+| logout, get_me, get_group, create_group, accept_invitation, list_memberships | x | x | x | any signed-in person, in a group or not; get_group answers 404 without a group; a supporter cannot create a group; a person who is the woman of a group cannot create a second one as the woman, and accepting a woman invitation replaces her own group only when it is empty |
 | get_invitation | anyone | anyone | anyone | the token is the secret |
 | list_members, get_summary, list_tasks | x | x | x | summary wording depends on the role |
 | create_invitation | x | x | | the woman invites a partner or a supporter; a partner invites only the woman, and only while the group is pending |
