@@ -46,6 +46,7 @@ export async function invite(ctx) {
   );
 
   let action;
+  let motherNotice = null;
   if (preview.group_status === "closed") {
     action = notice({ tone: "accent", iconName: "lock" }, t.group.invitationClosed);
   } else if (!ctx.session.me) {
@@ -81,6 +82,24 @@ export async function invite(ctx) {
       },
     });
     action = h("div", { class: "actions" }, accept);
+    // A mother who takes a mother invitation gives up her own group when it is empty.
+    const own = ctx.session.memberships.find((m) => m.role === "woman");
+    if (preview.role === "woman" && own) {
+      const toOwnGroup = button(t.group.toOwnGroup, {
+        variant: "ghost",
+        iconName: "people",
+        async onclick() {
+          await ctx.enterGroup(own.group_id);
+          ctx.navigate("/group");
+        },
+      });
+      motherNotice = h(
+        "div",
+        { class: "stack" },
+        notice({ tone: "accent", iconName: "info" }, ...t.group.motherNotice),
+        h("div", { class: "actions" }, toOwnGroup),
+      );
+    }
   }
 
   return h(
@@ -92,6 +111,7 @@ export async function invite(ctx) {
       lead: t.group.invitationLead,
     }),
     details,
+    motherNotice,
     message.node,
     action,
   );

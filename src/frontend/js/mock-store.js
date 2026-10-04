@@ -196,6 +196,22 @@ export function createMockStore({ base, storage, perspective = "", fetchFn = (..
 
   // Views in the exact shapes of the contract.
   const findGroup = (s, id) => s.groups.find((g) => g.id === id);
+
+  // Only the person is in it, and it holds no task and no check-in.
+  const emptyGroup = (s, me, groupId) =>
+    s.people.every((p) => p.id === me.id || !memberOf(p, groupId)) &&
+    !s.tasks.some((task) => task.group_id === groupId) &&
+    !s.checkIns.some((entry) => entry.person_id === me.id);
+
+  // The group goes with its memberships, tasks and invitations.
+  function removeGroup(s, groupId) {
+    s.people.forEach((p) => {
+      p.memberships = p.memberships.filter((m) => m.group_id !== groupId);
+    });
+    s.groups = s.groups.filter((g) => g.id !== groupId);
+    s.tasks = s.tasks.filter((task) => task.group_id !== groupId);
+    s.invitations = s.invitations.filter((i) => i.group_id !== groupId);
+  }
   const groupOf = (s, membership) => membership && findGroup(s, membership.group_id);
   const memberOf = (person, groupId) => person.memberships.find((m) => m.group_id === groupId);
   // The earliest membership is the one used when no group is named, as in the backend.
@@ -366,12 +382,7 @@ export function createMockStore({ base, storage, perspective = "", fetchFn = (..
       }
       if (membership.role === "woman") {
         // She closed it and walks away: the group goes with its people's memberships.
-        s.people.forEach((p) => {
-          p.memberships = p.memberships.filter((m) => m.group_id !== group.id);
-        });
-        s.groups = s.groups.filter((g) => g.id !== group.id);
-        s.tasks = s.tasks.filter((task) => task.group_id !== group.id);
-        s.invitations = s.invitations.filter((i) => i.group_id !== group.id);
+        removeGroup(s, group.id);
       } else {
         me.memberships = me.memberships.filter((m) => m.group_id !== group.id);
       }
@@ -461,10 +472,15 @@ export function createMockStore({ base, storage, perspective = "", fetchFn = (..
       if (!invitation) return refuse(404, "accept_invitation.404.json");
       const group = findGroup(s, invitation.group_id);
       if (group.status === "closed") return refuse(409, "accept_invitation.409.closed.json");
-      const alreadyMother = invitation.role === "woman" && me.memberships.some((m) => m.role === "woman");
-      if (memberOf(me, group.id) || alreadyMother) return refuse(409, "accept_invitation.409.json");
+      if (memberOf(me, group.id)) return refuse(409, "accept_invitation.409.json");
       const hasWoman = invitation.role === "woman" && womanOf(s, group.id);
       if (hasWoman) return refuse(409, "accept_invitation.409.json");
+      // Like the backend: a mother with an empty group gives it up, one with content stays blocked.
+      const own = invitation.role === "woman" ? me.memberships.find((m) => m.role === "woman") : null;
+      if (own) {
+        if (!emptyGroup(s, me, own.group_id)) return refuse(409, "accept_invitation.409.mother.json");
+        removeGroup(s, own.group_id);
+      }
       const membership = { group_id: group.id, role: invitation.role, joined_at: now() };
       me.memberships.push(membership);
       if (invitation.role === "woman" && group.status === "pending") group.status = "active";

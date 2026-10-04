@@ -9,11 +9,11 @@
 
 ## 2. Frontend: the invitation screen and the mock
 
-- [ ] 2.1 `strings.pl.js`: the notice and the link text (drafts from the design).
-- [ ] 2.2 `screens/invite.js`: for a signed-in mother and a `woman` invitation, show the notice and a link that selects her group and opens its group screen; the refusal message stays visible under it.
-- [ ] 2.3 Mock store: `accept_invitation` replaces an empty mother group and otherwise answers the new 409 example.
-- [ ] 2.4 Tests (mock mode and live): notice shown to a mother and hidden for a person who is not one; empty group replaced and the switcher loses it; group with content refused with the message and the link still visible; the link opens the group screen. Assert what the person sees.
-- [ ] 2.5 Verify, including `pytest tests_e2e`; run the app and take screenshots of the notice at 375 and 1280 px. Commit.
+- [x] 2.1 `strings.pl.js`: the notice and the link text (drafts from the design).
+- [x] 2.2 `screens/invite.js`: for a signed-in mother and a `woman` invitation, show the notice and a link that selects her group and opens its group screen; the refusal message stays visible under it.
+- [x] 2.3 Mock store: `accept_invitation` replaces an empty mother group and otherwise answers the new 409 example.
+- [x] 2.4 Tests (mock mode and live): notice shown to a mother and hidden for a person who is not one; empty group replaced and the switcher loses it; group with content refused with the message and the link still visible; the link opens the group screen. Assert what the person sees.
+- [x] 2.5 Verify, including `pytest tests_e2e`; run the app and take screenshots of the notice at 375 and 1280 px. Commit.
 
 ## 3. Documentation and worklog
 
