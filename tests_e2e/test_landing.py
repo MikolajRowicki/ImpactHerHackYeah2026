@@ -1,5 +1,7 @@
 """The landing page of a signed-out visitor (spec: frontend-landing)."""
 
+import re
+
 from playwright.sync_api import expect
 
 from .helpers import h1, live, nav, open_as
@@ -172,3 +174,21 @@ def test_body_text_has_enough_contrast_in_both_themes(browser, static_url):
         signed_out(page)
         assert page.evaluate(probe) == [], scheme
         context.close()
+
+
+def test_one_letter_words_are_glued_to_the_next_word(mock_page):
+    signed_out(mock_page)
+
+    text = mock_page.locator(".landing").inner_text()
+    # A single-letter word followed by a plain space could end a line.
+    assert not re.search(r"(?<![^\s(„])[aiouwzAIOUWZ] (?=\S)", text), text
+
+
+def test_the_page_declares_a_favicon_that_follows_the_color_scheme(mock_page):
+    mock_page.goto(f"{mock_page.base}?mock=1")
+
+    href = mock_page.locator('link[rel="icon"]').get_attribute("href")
+    assert href == "favicon.svg"
+    svg = mock_page.request.get(mock_page.url.split("index.html")[0] + href)
+    assert svg.ok
+    assert "prefers-color-scheme: dark" in svg.text()

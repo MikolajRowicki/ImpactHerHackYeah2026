@@ -563,3 +563,15 @@ export const t = {
     ideaAdded: (title) => `Dodano zadanie: ${title}.`,
   },
 };
+
+// A one-letter word must not end a line, so it is glued to the word after it (a no-break space).
+// Used for the landing page, where long lines of prose are set in wide columns.
+const glue = (value) => {
+  if (typeof value === "string") return value.replace(/(?<=^|[\s(„])([aiouwzAIOUWZ])\s+/g, "$1\u00a0");
+  if (Array.isArray(value)) return value.map(glue);
+  if (value && typeof value === "object") {
+    return Object.fromEntries(Object.entries(value).map(([key, item]) => [key, glue(item)]));
+  }
+  return value;
+};
+t.landing = glue(t.landing);
