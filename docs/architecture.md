@@ -33,9 +33,9 @@ sequenceDiagram
     participant Browser
     participant Django
     participant DB as SQLite
-    Browser->>Django: GET / (sets the csrftoken cookie)
-    Django-->>Browser: redirect to /static/index.html
-    Browser->>Django: GET /static/js/app.js, css/, ...
+    Browser->>Django: GET / (the page itself; sets the csrftoken cookie)
+    Django-->>Browser: index.html
+    Browser->>Django: GET /js/app.js, /css/, /fonts/, ... (also under /static/)
     Browser->>Django: POST /api/v1/... (sessionid cookie, X-CSRFToken header)
     Django->>Django: check session, role and group status
     Django->>DB: read or write
