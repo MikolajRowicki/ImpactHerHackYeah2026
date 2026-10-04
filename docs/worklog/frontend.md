@@ -198,3 +198,24 @@ One entry per task group. Change: `frontend-app`, branch `change/frontend-app`.
   they read example files without UTF-8; they compare mojibake with correct text.
 - **Verification:** `ruff check .`, `ruff format --check .`, `pytest tests` without `tests/api`,
   `pytest tests_e2e` (136 passed).
+
+## Change user-flow-and-groups: panel, switcher, education, help, landing
+
+- **Goal:** accounts first, groups second; one general place for everyone; first-run fixes.
+- **Built:**
+  - Wording ("Partner"), mock narrative hidden, neutral `uncertain` sentence (`be758ef`).
+  - Session with memberships and the selected group (`localStorage`, validated); `api.js` sends
+    `X-Group-Id` except for account-level calls; mock store with many memberships and a person who
+    is a mother and a supporter ("Julia"); panel after sign-up and the "Dodaj grupę" dialog; group
+    bar with switcher; invite at once; issued invitations with revoke; leave group (`e3c3da7`).
+  - Education, help from `get_help` (also signed out and on failure), extended summary with reasons
+    and crisis lines, task ideas, delete account with the mother's warning (`38f7175`).
+  - Landing page in the style of the team's presentation (cream, forest green, coral, handwritten
+    lines, a phone drawn in markup); Caveat font added next to Nunito; one settling animation, off
+    under reduced motion (`0fb01b3`).
+- **Deviations:** the signed-out root shows the landing page, but a failed session read at the root
+  still shows the error state. A mother may leave (delete) a closed group; the spec only forbids it
+  for an active one.
+- **Verification:** `ruff check .`, `ruff format --check .`, `pytest tests`, `pytest tests_e2e`
+  (194 passed), including a live test against the seeded backend.
+- **Not done:** the education texts are drafts and need a specialist's read before release.

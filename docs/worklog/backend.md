@@ -280,3 +280,22 @@ environment sets `groq`).
 A real activation and a real reset mail were sent through Gmail SMTP (`EMAIL_MODE=smtp`) to a
 mailbox the owner controls; the owner confirmed both arrived. The activation link works through
 the service. Nothing was sent to the console path or logged with an address.
+
+## Change user-flow-and-groups: many groups per person
+
+- **Goal:** one account in many groups (the woman of one, partner or supporter of others), chosen
+  per request.
+- **Built:** `Membership.user` is a foreign key with two partial/unique constraints (`(user, group)`,
+  one woman per user); migration `0002_many_memberships` with a guard on the way back. `X-Group-Id`
+  resolved in `permissions.selected_membership` (422 bad value, 403 `not_a_member` foreign group,
+  earliest membership by default); `get_me`, `get_group` and `accept_invitation` use it. New
+  `list_memberships` (`GET /api/v1/me/memberships`) with contract text, schemas and examples.
+  `create_group`, `accept`, `delete_account` and the reminder mail work per membership.
+  `seed_demo` adds Ewa, whose group has Anna as supporter.
+- **Deviations:** `accept_invitation` answers with the membership of the group just joined, not
+  the earliest one. The 422/403 of the header are described in the conventions, not per v0
+  operation (those are frozen); tests call such cases with `check=False`.
+- **Verification:** `ruff check .`, `ruff format --check .`, `pytest tests` (1580 passed). Migration
+  forward, backward and the guard are in `tests/test_membership_migration.py`.
+- **Commit:** `5d15086`
+- **Needs the owner:** the configured `db.sqlite3` is untouched; run `migrate` on it (additive).

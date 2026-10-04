@@ -47,13 +47,13 @@ nothing to `/api/v1`.
 
 ## Data model
 
-One initial migration holds the whole schema. The application checks every rule first; the database
+The initial migration holds the schema; `0002_many_memberships` lets a person belong to many groups. The application checks every rule first; the database
 has the last word (unique and check constraints), so a path that bypasses the application cannot
 break an invariant.
 
 ```mermaid
 erDiagram
-    USER ||--o| MEMBERSHIP : has
+    USER ||--o{ MEMBERSHIP : has
     GROUP ||--|{ MEMBERSHIP : holds
     GROUP ||--o{ INVITATION : issues
     GROUP ||--o{ CHECK_IN : collects
@@ -120,7 +120,8 @@ erDiagram
 
 | Rule | Where the database enforces it |
 |---|---|
-| A person is in one group | unique `membership.user` |
+| A person is in a group at most once | unique `(membership.user, membership.group)` |
+| A person is the woman of at most one group | unique `membership.user` where `role = 'woman'` |
 | One woman per group | unique `membership.group` where `role = 'woman'` |
 | An invitation makes one membership | unique `membership.invitation` |
 | An invitation is not both used and revoked | check constraint |
@@ -130,7 +131,10 @@ erDiagram
 | E-mail addresses are unique in any letter case | unique on `lower(email)` |
 | Check-in and answer values, roles, statuses come from fixed sets | check constraints |
 
-A person belongs to one group. The role is on the membership, not on the account. Check-ins and
+A person can belong to many groups: the woman of one group (at most) and the partner or supporter
+of any number of others. The role is on the membership, not on the account. A partner waits in at
+most one pending group at a time; that rule lives in the service, because it spans the group table.
+Going back from migration 0002 fails loudly while a person has more than one membership. Check-ins and
 observations point at the membership of their author. Observation answers are stored per author,
 but no operation ever returns one answer or its author; only the trend engine (plain, explainable
 rules) reads them. Stored times are UTC; "today" and "the last 7 days" are Europe/Warsaw calendar
@@ -185,6 +189,28 @@ sequenceDiagram
 `EMAIL_MODE=console` (default) prints messages; `smtp` sends them through `EMAIL_HOST`. Links in
 messages start with `APP_BASE_URL`. A rolled back request sends nothing and counts nothing.
 
+## Selected group
+
+Every group-bound request names its group in the optional header `X-Group-Id`. `member_context` is
+the only place that resolves it, so each router gets the behaviour without edits.
+
+```mermaid
+flowchart LR
+  R[Request] --> H{X-Group-Id?}
+  H -- "not a whole number" --> V[422]
+  H -- yes --> M{Member of it?}
+  M -- yes --> C[MemberContext of that group]
+  M -- no --> E[403 not_a_member]
+  H -- no --> F[Earliest membership]
+  F --> C
+  F -- none --> E
+```
+
+`get_me` and `get_group` read the same header. `list_memberships` and the other account-level
+operations ignore it. The frontend session reads `get_me`, then `list_memberships`, keeps the
+selected group in `localStorage`, drops it when the person is no longer a member, and sends the
+header on every call that is not account-level (`ACCOUNT_LEVEL` in `js/api.js`).
+
 ## Roles and permissions
 
 `x` means allowed. Every group operation also needs a membership (otherwise 403 `not_a_member`),
@@ -193,7 +219,7 @@ and the operations marked with `*` need an active group (otherwise 409 `group_pe
 | Operation | woman | partner | supporter | Notes |
 |---|---|---|---|---|
 | health, register, login | anyone | anyone | anyone | no session needed |
-| logout, get_me, get_group, create_group, accept_invitation | x | x | x | any signed-in person, in a group or not; get_group answers 404 without a group; a supporter cannot create a group |
+| logout, get_me, get_group, create_group, accept_invitation, list_memberships | x | x | x | any signed-in person, in a group or not; get_group answers 404 without a group; a supporter cannot create a group; a person who is the woman of a group cannot create or accept a second one as the woman |
 | get_invitation | anyone | anyone | anyone | the token is the secret |
 | list_members, get_summary, list_tasks | x | x | x | summary wording depends on the role |
 | create_invitation | x | x | | the woman invites a partner or a supporter; a partner invites only the woman, and only while the group is pending |
@@ -256,7 +282,7 @@ Any other value, or `groq` without a key, stops startup with a message that name
 
 ## Operations added after v0
 
-`contracts/README.md` lists the 19 operations added after v0. Their roles:
+`contracts/README.md` lists the 20 operations added after v0. Their roles:
 
 | Operation | woman | partner | supporter | Notes |
 |---|---|---|---|---|
