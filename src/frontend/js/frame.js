@@ -28,6 +28,7 @@ const NAV = [
     show: (me) => isActiveOrClosed(me?.membership),
   },
   { path: "/group", label: () => t.nav.group, iconName: "people", show: (me) => Boolean(me?.membership) },
+  { path: "/education", label: () => t.nav.education, iconName: "book", show: (me) => Boolean(me) },
   { path: "/help", label: () => t.nav.help, iconName: "lifebuoy", show: () => true },
 ];
 

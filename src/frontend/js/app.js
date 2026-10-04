@@ -4,6 +4,7 @@ import { clearMockState, createMockStore } from "./mock-store.js";
 import { createRouter, currentPath, guard } from "./router.js";
 import { checkIn } from "./screens/check-in.js";
 import { group } from "./screens/group.js";
+import { education } from "./screens/education.js";
 import { help } from "./screens/help.js";
 import { invite } from "./screens/invite.js";
 import { account, activate, forgot, login, register, reset } from "./screens/account.js";
@@ -28,6 +29,7 @@ const match = createRouter([
   { path: "/tasks", screen: tasks, roles: ALL_ROLES, statuses: ["active", "closed"] },
   { path: "/group", screen: group, member: true },
   { path: "/invite/:token", screen: invite, access: "anyone" },
+  { path: "/education", screen: education, access: "signed-in" },
   { path: "/help", screen: help, access: "anyone" },
   { path: "/activate/:token", screen: activate, access: "anyone" },
   { path: "/forgot", screen: forgot, access: "anyone" },
@@ -79,6 +81,12 @@ function makeCtx(params = {}) {
     async reloadSession() {
       await session.load();
       await sessionChanged();
+    },
+    // The session ended without a sign-out call, for example after the account was deleted.
+    async endSession() {
+      session.clear();
+      await showNotice();
+      navigate("/");
     },
     // Reads the groups again and selects one the person just created or joined.
     async enterGroup(groupId) {

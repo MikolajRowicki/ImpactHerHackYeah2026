@@ -518,6 +518,22 @@ export function createMockStore({ base, storage, perspective = "", fetchFn = (..
       return example(role === "woman" ? "get_summary.200.json" : `get_summary.200.${role}.json`);
     },
 
+    async get_summary_extended(s, me, _opts, _group, membership) {
+      const role = membership.role;
+      const extended = await example(
+        role === "woman" ? "get_summary_extended.200.json" : "get_summary_extended.200.partner.json",
+      );
+      if (role !== "supporter") return extended;
+      // A supporter reads her own wording, with the reasons and help of the extended answer.
+      const own = await example("get_summary.200.supporter.json");
+      return { ...extended, ...own, reasons: extended.reasons, help: extended.help };
+    },
+
+    // The demo asks without a voivodeship, so it gets the general answer.
+    get_help: () => example("get_help.200.general.json"),
+
+    list_task_suggestions: () => example("list_task_suggestions.200.json"),
+
     list_tasks(s, _me, _opts, group) {
       const items = s.tasks
         .filter((task) => task.group_id === group.id)
@@ -672,6 +688,7 @@ export function createMockStore({ base, storage, perspective = "", fetchFn = (..
     "logout",
     "get_me",
     "list_memberships",
+    "get_help",
     "create_group",
     "get_group",
     "accept_invitation",

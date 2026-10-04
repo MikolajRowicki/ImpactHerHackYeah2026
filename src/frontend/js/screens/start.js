@@ -1,7 +1,7 @@
 import { h } from "../dom.js";
 import { icon, SELF_CARE_ICONS } from "../icons.js";
 import { t } from "../strings.pl.js";
-import { pageHead, section } from "../ui/layout.js";
+import { ctaCard, pageHead, section } from "../ui/layout.js";
 import { summaryCard } from "../ui/summary.js";
 import { invitationForm } from "./invitation-form.js";
 import { onboarding, waiting } from "./onboarding.js";
@@ -21,21 +21,6 @@ function greeting(ctx) {
     title: t.start.greeting(ctx.session.me.display_name),
     eyebrow: t.common.roles[ctx.session.me.membership?.role],
   });
-}
-
-function ctaCard(href, iconName, title, lead) {
-  return h(
-    "a",
-    { class: "cta-card", href },
-    h("span", { class: "icon-badge" }, icon(iconName, 26)),
-    h(
-      "span",
-      { class: "cta-card__text" },
-      h("span", { class: "cta-card__title" }, title),
-      h("span", { class: "cta-card__lead" }, lead),
-    ),
-    icon("arrow"),
-  );
 }
 
 // Shown to the mother while nobody else is in her group yet: invite at once, right here.
@@ -89,7 +74,7 @@ function selfCare(items) {
 
 async function motherStart(ctx) {
   const [summary, members, care, tasks] = await Promise.all([
-    ctx.api.call("get_summary"),
+    ctx.api.call("get_summary_extended"),
     ctx.api.call("list_members"),
     ctx.api.call("list_self_care"),
     ctx.api.call("list_tasks"),
@@ -124,7 +109,7 @@ async function motherStart(ctx) {
 
 async function lovedStart(ctx) {
   const [summary, tasks] = await Promise.all([
-    ctx.api.call("get_summary"),
+    ctx.api.call("get_summary_extended"),
     ctx.api.call("list_tasks"),
   ]);
   const active = ctx.session.groupStatus === "active";

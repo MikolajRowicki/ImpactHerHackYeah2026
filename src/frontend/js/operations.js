@@ -37,4 +37,7 @@ export const OPERATIONS = {
   list_invitations: ["GET", "/api/v1/invitations", 200],
   revoke_invitation: ["DELETE", "/api/v1/invitations/{token}", 200],
   delete_account: ["DELETE", "/api/v1/me", 200],
+  get_summary_extended: ["GET", "/api/v1/summary/extended", 200],
+  get_help: ["GET", "/api/v1/help", 200],
+  list_task_suggestions: ["GET", "/api/v1/tasks/suggestions", 200],
 };

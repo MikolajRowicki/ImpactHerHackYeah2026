@@ -296,3 +296,60 @@ def test_live_sign_in_sends_the_form_and_shows_the_start(mock_page):
 
     expect(h1(mock_page)).to_have_text("Cześć, Anna")
     assert sent == [{"email": "anna@example.com", "password": PASSWORD}]
+
+
+# Deleting the account
+
+
+def delete_dialog(page):
+    page.get_by_role("button", name="Usuń konto").click()
+    return page.get_by_role("dialog", name="Usunąć konto?")
+
+
+def test_the_mother_is_warned_that_her_group_goes_too(mock_page):
+    open_as(mock_page, "woman", "/account")
+
+    dialog = delete_dialog(mock_page)
+
+    expect(dialog).to_contain_text("usuniemy też całą grupę razem z jej danymi")
+
+
+def test_a_supporter_gets_no_group_warning(mock_page):
+    open_as(mock_page, "supporter", "/account")
+
+    dialog = delete_dialog(mock_page)
+
+    expect(dialog).to_contain_text("Tego nie da się cofnąć.")
+    expect(dialog).not_to_contain_text("całą grupę")
+
+
+def test_canceling_keeps_the_account(mock_page):
+    open_as(mock_page, "supporter", "/account")
+
+    delete_dialog(mock_page).get_by_role("button", name="Anuluj").click()
+
+    expect(h1(mock_page)).to_have_text("Moje konto")
+    nav(mock_page).get_by_role("link", name="Start").click()
+    expect(h1(mock_page)).to_have_text("Cześć, Marta")
+
+
+def test_deleting_signs_the_person_out_and_the_account_is_gone(mock_page):
+    open_as(mock_page, "supporter", "/account")
+
+    delete_dialog(mock_page).get_by_role("button", name="Usuń konto").click()
+
+    expect(mock_page.get_by_role("button", name="Wyloguj")).to_have_count(0)
+    expect(mock_page.get_by_role("link", name="Zaloguj się").first).to_be_visible()
+    mock_page.goto(f"{mock_page.base}?mock=1#/login")
+    sign_in(mock_page, "marta@example.com", "tajne-haslo-123")
+    expect(mock_page.get_by_role("alert")).to_have_text("Nieprawidłowy e-mail lub hasło.")
+
+
+def test_a_deleted_mothers_group_is_gone_for_the_others(mock_page):
+    open_as(mock_page, "woman", "/account")
+    delete_dialog(mock_page).get_by_role("button", name="Usuń konto").click()
+    expect(mock_page.get_by_role("button", name="Wyloguj")).to_have_count(0)
+
+    open_as(mock_page, "supporter")
+
+    expect(mock_page.get_by_role("heading", name="Co chcesz zrobić?")).to_be_visible()

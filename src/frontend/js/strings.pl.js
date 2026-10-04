@@ -25,6 +25,7 @@ export const t = {
     questions: "Pytania",
     tasks: "Zadania",
     group: "Grupa",
+    education: "Wiedza",
     help: "Pomoc",
     login: "Zaloguj się",
     signOut: "Wyloguj",
@@ -50,15 +51,102 @@ export const t = {
 
   help: {
     title: "Pomoc",
-    lead: "Tu będzie spokojne miejsce z kontaktami do wsparcia, gdy jest trudno.",
-    comingTitle: "Kontakty pojawią się wkrótce",
-    coming:
-      "Sprawdzamy je starannie, zanim je tu pokażemy. Wolimy nie podawać niczego, czego nie jesteśmy pewni.",
+    lead: "Jeśli jest Ci trudno, nie musisz czekać. Tu są miejsca, do których możesz zadzwonić.",
+    linesTitle: "Telefony wsparcia",
+    pathTitle: "Co możesz zrobić krok po kroku",
+    regionalTitle: "Pomoc w Twoim województwie",
+    regionalLink: "Strona instytucji",
+    sourceLink: (name) => `Źródło: ${name}`,
+    emergency: {
+      name: "Numer alarmowy",
+      number: "112",
+      hours: "całą dobę",
+      description: "Gdy ktoś jest w bezpośrednim niebezpieczeństwie. Zadzwoń od razu.",
+    },
+    signedOutTitle: "Gdy ktoś jest w niebezpieczeństwie",
+    signedOutText:
+      "Po zalogowaniu zobaczysz więcej telefonów wsparcia i spokojną ścieżkę pomocy. Numer alarmowy działa zawsze.",
+    signedOutLink: "Zaloguj się",
+    failedTitle: "Nie udało się wczytać wszystkich kontaktów",
+    failedText: "Numer alarmowy jest zawsze pod ręką. Pozostałe kontakty spróbujemy wczytać jeszcze raz.",
     notADoctorTitle: "MaydayMama nie zastępuje lekarza",
     notADoctor:
-      "Aplikacja niczego nie diagnozuje. Pomaga zauważyć zmiany i podzielić się codziennymi obowiązkami.",
+      "Aplikacja niczego nie diagnozuje i nie daje porad medycznych. Pomaga zauważyć zmiany i podzielić się codziennymi obowiązkami.",
     talkTitle: "Nie musisz zostawać z tym w pojedynkę",
     talk: "Jeśli coś Cię niepokoi, porozmawiaj z kimś, komu ufasz: z bliską osobą, położną albo lekarzem.",
+  },
+
+  education: {
+    title: "Wiedza o depresji poporodowej",
+    lead: "Krótko i spokojnie: co warto wiedzieć, jak zauważyć trudne chwile i jak wspierać.",
+    note: "To ogólne informacje, nie diagnoza. Tylko lekarz albo psycholog może ocenić, co się z kimś dzieje.",
+    sections: [
+      {
+        id: "what",
+        title: "Czym jest depresja poporodowa",
+        icon: "heart",
+        paragraphs: [
+          "Depresja poporodowa to zaburzenie nastroju, które może pojawić się po narodzinach dziecka. Najczęściej w pierwszych miesiącach, ale bywa, że później. Dotyka wielu mam. Nie jest niczyją winą ani słabością.",
+          "Można ją leczyć. Im wcześniej pojawi się wsparcie, tym łatwiej wrócić do równowagi.",
+        ],
+      },
+      {
+        id: "blues",
+        title: "Baby blues a depresja poporodowa",
+        icon: "cloud",
+        paragraphs: [
+          "Baby blues to chwilowe wahania nastroju, płaczliwość i zmęczenie w pierwszych dniach po porodzie. Zwykle mija samo w ciągu około dwóch tygodni.",
+          "Gdy smutek, lęk albo pustka trwają dłużej, są silniejsze albo utrudniają codzienne życie, warto porozmawiać z lekarzem lub położną.",
+        ],
+      },
+      {
+        id: "signs",
+        title: "Co warto zauważyć",
+        icon: "leaf",
+        paragraphs: ["Te sygnały mogą pojawić się u mamy. Każdy z nich osobno bywa zwyczajny. Niepokojące jest to, gdy jest ich kilka i trwają."],
+        items: [
+          "smutek, pustka albo płaczliwość przez większość dni",
+          "brak radości z rzeczy, które zwykle cieszyły",
+          "silny lęk, napięcie albo ciągłe martwienie się o dziecko",
+          "kłopoty ze snem nawet wtedy, gdy dziecko śpi",
+          "zmęczenie większe niż zwykłe zmęczenie po porodzie",
+          "poczucie winy albo przekonanie, że jest się złą mamą",
+          "wycofanie się z kontaktu z bliskimi",
+          "myśli, że lepiej byłoby zniknąć, albo myśli o zrobieniu sobie krzywdy: wtedy od razu szukaj pomocy",
+        ],
+      },
+      {
+        id: "support",
+        title: "Jak może wspierać bliska osoba",
+        icon: "people",
+        items: [
+          "Zapytaj wprost i spokojnie, jak się naprawdę czuje.",
+          "Słuchaj bez oceniania i bez rad na siłę.",
+          "Weź na siebie konkretne sprawy: zakupy, obiad, spacer z dzieckiem, nocną zmianę.",
+          "Zadbaj o to, żeby miała czas na sen i odpoczynek.",
+          "Zachęć do rozmowy z lekarzem lub położną i, jeśli chce, pójdź razem z nią.",
+          "Pamiętaj o sobie: bliska osoba też potrzebuje odpoczynku.",
+        ],
+      },
+      {
+        id: "help",
+        title: "Kiedy i gdzie szukać pomocy",
+        icon: "lifebuoy",
+        paragraphs: [
+          "Porozmawiaj z położną, lekarzem rodzinnym albo ginekologiem, jeśli trudne chwile trwają dłużej niż dwa tygodnie albo narastają.",
+          "Gdy pojawiają się myśli o zrobieniu sobie krzywdy albo dziecku, nie czekaj: zadzwoń pod 112 albo zgłoś się na szpitalny oddział ratunkowy.",
+        ],
+      },
+    ],
+    helpLink: "Zobacz telefony wsparcia i ścieżkę pomocy",
+  },
+
+  startGeneral: {
+    title: "Dla każdego",
+    educationTitle: "Wiedza",
+    educationLead: "Co to jest depresja poporodowa i jak ją zauważyć.",
+    helpTitle: "Pomoc",
+    helpLead: "Telefony wsparcia i kolejne kroki.",
   },
 
   mock: {
@@ -103,6 +191,8 @@ export const t = {
       },
     },
     helpLink: "Zobacz, gdzie szukać wsparcia",
+    reasonsTitle: "Skąd ten obraz",
+    crisisTitle: "Gdzie szukać wsparcia",
     reminderTitle: "Na dziś",
     narrativeLabel: "Opis",
     generated: (when) => `Przygotowano ${when}`,
@@ -153,6 +243,18 @@ export const t = {
     accountTitle: "Moje konto",
     accountLink: "Moje konto",
     accountLead: (email) => `Zalogowano jako ${email}.`,
+    deleteTitle: "Usuń konto",
+    deleteText:
+      "Usuniemy Twoje konto, Twoje odpowiedzi i Twoje członkostwo w grupach. Tego nie da się cofnąć.",
+    deleteButton: "Usuń konto",
+    deleteDialogTitle: "Usunąć konto?",
+    deleteDialogText: [
+      "Usuniemy Twoje konto, Twoje odpowiedzi i Twoje członkostwo w grupach. Zadania, które wzięłaś albo wziąłeś, wrócą do wspólnej listy.",
+      "Tego nie da się cofnąć.",
+    ],
+    deleteMotherWarning:
+      "Jesteś mamą w swojej grupie, więc usuniemy też całą grupę razem z jej danymi: wpisami, zadaniami i zaproszeniami. Osoby z grupy stracą do niej dostęp.",
+    deleteConfirm: "Usuń konto",
     changeTitle: "Zmień hasło",
     currentPassword: "Obecne hasło",
     changeSubmit: "Zmień hasło",
@@ -362,5 +464,10 @@ export const t = {
     finish: "Oznacz jako zrobione",
     release: "Oddaj zadanie",
     closed: "Grupa jest zamknięta, więc nie można dodawać ani brać zadań. Lista zostaje do wglądu.",
+    ideasTitle: "Pomysły na zadania",
+    ideasLead: "Gotowe propozycje. Dodaj te, które pasują.",
+    ideaAdd: "Dodaj",
+    ideaAddLabel: (title) => `Dodaj: ${title}`,
+    ideaAdded: (title) => `Dodano zadanie: ${title}.`,
   },
 };

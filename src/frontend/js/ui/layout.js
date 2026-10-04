@@ -64,3 +64,19 @@ export function button(label, { variant, iconName, small, onclick, type = "butto
     label,
   );
 }
+
+// A large link card, used for the main next step of a start screen.
+export function ctaCard(href, iconName, title, lead) {
+  return h(
+    "a",
+    { class: "cta-card", href },
+    h("span", { class: "icon-badge" }, icon(iconName, 26)),
+    h(
+      "span",
+      { class: "cta-card__text" },
+      h("span", { class: "cta-card__title" }, title),
+      h("span", { class: "cta-card__lead" }, lead),
+    ),
+    icon("arrow"),
+  );
+}

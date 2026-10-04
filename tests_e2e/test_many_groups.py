@@ -54,7 +54,7 @@ def test_waiting_for_a_link_creates_no_group(mock_page):
     expect(mock_page.get_by_text("Poproś mamę o link")).to_be_visible()
     expect(mock_page.get_by_text("Żadna grupa nie została założona.")).to_be_visible()
     expect(mock_page.get_by_role("heading", name="Co chcesz zrobić?")).to_be_visible()
-    assert nav_names(mock_page) == ["Start", "Pomoc"]
+    assert nav_names(mock_page) == ["Start", "Wiedza", "Pomoc"]
 
 
 def test_partner_starts_a_group_from_the_panel(mock_page):
@@ -111,17 +111,17 @@ def test_the_switcher_lists_both_groups_with_the_role_in_each(mock_page):
 def test_switching_changes_the_navigation_and_the_start(mock_page):
     open_as(mock_page, "both")
     expect(h1(mock_page)).to_have_text("Cześć, Julia")
-    assert nav_names(mock_page) == ["Start", "Mój dzień", "Zadania", "Grupa", "Pomoc"]
+    assert nav_names(mock_page) == ["Start", "Mój dzień", "Zadania", "Grupa", "Wiedza", "Pomoc"]
 
     switcher(mock_page).select_option(label=EWAS)
 
     expect(mock_page.get_by_text("Bliska osoba", exact=True).first).to_be_visible()
-    assert nav_names(mock_page) == ["Start", "Pytania", "Zadania", "Grupa", "Pomoc"]
+    assert nav_names(mock_page) == ["Start", "Pytania", "Zadania", "Grupa", "Wiedza", "Pomoc"]
     expect(mock_page.get_by_role("link", name="Pytania")).to_be_visible()
 
     switcher(mock_page).select_option(label=OWN)
 
-    assert nav_names(mock_page) == ["Start", "Mój dzień", "Zadania", "Grupa", "Pomoc"]
+    assert nav_names(mock_page) == ["Start", "Mój dzień", "Zadania", "Grupa", "Wiedza", "Pomoc"]
     expect(mock_page.get_by_text("Mama", exact=True).first).to_be_visible()
 
 
@@ -175,8 +175,10 @@ def test_the_group_travels_in_the_header_of_group_calls_only(mock_page):
         bodies = {
             "/api/v1/me": me,
             "/api/v1/me/memberships": memberships,
-            "/api/v1/summary": example(
-                "get_summary.200.supporter.json" if second else "get_summary.200.json"
+            "/api/v1/summary/extended": example(
+                "get_summary_extended.200.partner.json"
+                if second
+                else "get_summary_extended.200.json"
             ),
             "/api/v1/tasks": example("list_tasks.200.json"),
             "/api/v1/members": example("list_members.200.json"),
@@ -197,7 +199,7 @@ def test_the_group_travels_in_the_header_of_group_calls_only(mock_page):
     expect(mock_page.locator(".page-head__eyebrow")).to_have_text("Bliska osoba")
 
     after = seen[seen.index(("/api/v1/me/memberships", None)) :]
-    switched = [call for call in after if call[0] in ("/api/v1/tasks", "/api/v1/summary")]
+    switched = [call for call in after if call[0] in ("/api/v1/tasks", "/api/v1/summary/extended")]
     assert switched[-2:] and all(group == "2" for _, group in switched[-2:]), seen
     assert all(group is None for path, group in seen if path == "/api/v1/me/memberships")
 
@@ -214,7 +216,7 @@ def test_a_mother_accepts_a_supporter_invitation_and_gets_both_groups(mock_page)
 
     expect(switcher(mock_page).locator("option")).to_have_text([OWN, JULIAS])
     expect(switcher(mock_page)).to_have_value("3")
-    assert nav_names(mock_page) == ["Start", "Pytania", "Zadania", "Grupa", "Pomoc"]
+    assert nav_names(mock_page) == ["Start", "Pytania", "Zadania", "Grupa", "Wiedza", "Pomoc"]
 
 
 def test_accepting_the_invitation_of_a_group_one_is_in_keeps_the_screen_and_says_why(mock_page):
@@ -261,7 +263,7 @@ def test_leaving_the_last_group_shows_the_panel(mock_page):
     mock_page.get_by_role("dialog").get_by_role("button", name="Opuść grupę").click()
 
     expect(mock_page.get_by_role("heading", name="Co chcesz zrobić?")).to_be_visible()
-    assert nav_names(mock_page) == ["Start", "Pomoc"]
+    assert nav_names(mock_page) == ["Start", "Wiedza", "Pomoc"]
 
 
 def test_canceling_keeps_the_group(mock_page):

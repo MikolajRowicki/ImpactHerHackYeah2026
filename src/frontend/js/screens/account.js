@@ -4,6 +4,7 @@ import { DEMO_PASSWORD } from "../mock-store.js";
 import { t } from "../strings.pl.js";
 import { messageOf, messageSlot, notice } from "../ui/feedback.js";
 import { field, showFieldErrors, submitButton, whileBusy } from "../ui/forms.js";
+import { confirmDialog } from "../ui/dialog.js";
 import { button, linkButton, pageHead, stateScreen } from "../ui/layout.js";
 
 const MIN_PASSWORD = 8;
@@ -356,6 +357,29 @@ export async function account(ctx) {
     });
   });
 
+  const deleteMessage = messageSlot();
+  async function onDelete() {
+    deleteMessage.clear();
+    const ok = await confirmDialog({
+      title: t.account.deleteDialogTitle,
+      // A mother's group goes with her account, so the warning names it.
+      text: [
+        ...t.account.deleteDialogText.slice(0, 1),
+        ...(ctx.session.hasWomanGroup ? [t.account.deleteMotherWarning] : []),
+        ...t.account.deleteDialogText.slice(1),
+      ],
+      confirmLabel: t.account.deleteConfirm,
+      danger: true,
+    });
+    if (!ok) return;
+    try {
+      await ctx.api.call("delete_account");
+      await ctx.endSession();
+    } catch (error) {
+      deleteMessage.error(messageOf(error));
+    }
+  }
+
   return h(
     "div",
     { class: "account" },
@@ -369,6 +393,14 @@ export async function account(ctx) {
       { class: "card account__card", "aria-labelledby": "change-title" },
       h("h2", { id: "change-title", class: "card__title" }, t.account.changeTitle),
       form,
+    ),
+    h(
+      "section",
+      { class: "card account__card account__delete", "aria-labelledby": "delete-title" },
+      h("h2", { id: "delete-title", class: "card__title" }, t.account.deleteTitle),
+      h("p", {}, t.account.deleteText),
+      deleteMessage.node,
+      button(t.account.deleteButton, { variant: "danger", iconName: "logout", onclick: onDelete }),
     ),
   );
 }

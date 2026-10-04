@@ -1,5 +1,4 @@
 import json
-import re
 
 from playwright.sync_api import expect
 
@@ -17,7 +16,7 @@ def test_mother_navigation(mock_page):
     open_as(mock_page, "woman")
     expect(h1(mock_page)).to_have_text("Cześć, Anna")
 
-    assert nav_names(mock_page) == ["Start", "Mój dzień", "Zadania", "Grupa", "Pomoc"]
+    assert nav_names(mock_page) == ["Start", "Mój dzień", "Zadania", "Grupa", "Wiedza", "Pomoc"]
 
 
 def test_loved_one_navigation(mock_page):
@@ -25,7 +24,7 @@ def test_loved_one_navigation(mock_page):
         open_as(mock_page, perspective)
         expect(h1(mock_page)).to_have_text(f"Cześć, {name}")
 
-        assert nav_names(mock_page) == ["Start", "Pytania", "Zadania", "Grupa", "Pomoc"]
+        assert nav_names(mock_page) == ["Start", "Pytania", "Zadania", "Grupa", "Wiedza", "Pomoc"]
 
 
 def test_no_group_navigation_offers_no_data_sections(mock_page):
@@ -104,14 +103,17 @@ def test_help_is_reachable_from_any_screen_signed_in_or_not(mock_page):
     expect(h1(mock_page)).to_have_text("Pomoc")
 
 
-def test_help_place_shows_no_phone_number(mock_page):
-    open_as(mock_page, "woman", "/help")
-    expect(h1(mock_page)).to_have_text("Pomoc")
-    expect(mock_page.get_by_text("Kontakty pojawią się wkrótce")).to_be_visible()
+def test_signed_out_help_shows_112_and_a_note_about_signing_in(mock_page):
+    open_as(mock_page, "woman")
+    mock_page.get_by_role("button", name="Wyloguj").click()
+    expect(h1(mock_page)).to_have_text("Zaloguj się")
 
-    text = mock_page.locator("main").inner_text()
-    assert not re.search(r"\d{3}", text), text
-    assert mock_page.locator("main a[href^='tel:']").count() == 0
+    nav(mock_page).get_by_role("link", name="Pomoc").click()
+
+    expect(h1(mock_page)).to_have_text("Pomoc")
+    expect(mock_page.get_by_role("link", name="112")).to_have_attribute("href", "tel:112")
+    expect(mock_page.get_by_text("Po zalogowaniu zobaczysz więcej telefonów")).to_be_visible()
+    expect(mock_page.get_by_role("link", name="116 123")).to_have_count(0)
 
 
 def test_failed_call_shows_the_error_message_and_try_again_reloads(mock_page):

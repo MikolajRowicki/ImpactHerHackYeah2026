@@ -80,6 +80,52 @@ function addForm(ctx, onAdded) {
   return form;
 }
 
+// Ready-made ideas for an active group. Each one becomes a task with its own title and details.
+function ideasCard(ctx, items, { onAdded, message }) {
+  async function add(item, control) {
+    message.clear();
+    await whileBusy(control, async () => {
+      try {
+        await ctx.api.call("create_task", {
+          body: { title: item.title, ...(item.details ? { details: item.details } : {}) },
+        });
+      } catch (error) {
+        message.error(messageOf(error));
+        return;
+      }
+      message.success(t.tasks.ideaAdded(item.title));
+      await onAdded();
+    });
+  }
+
+  return h(
+    "section",
+    { class: "card task-ideas", "aria-labelledby": "task-ideas-title" },
+    h("h2", { id: "task-ideas-title", class: "card__title" }, icon("sparkle"), t.tasks.ideasTitle),
+    h("p", { class: "muted" }, t.tasks.ideasLead),
+    h(
+      "ul",
+      { class: "task-ideas__list" },
+      ...items.map((item) => {
+        const control = button(t.tasks.ideaAdd, { small: true, iconName: "plus" });
+        control.setAttribute("aria-label", t.tasks.ideaAddLabel(item.title));
+        control.addEventListener("click", () => add(item, control));
+        return h(
+          "li",
+          { class: "task-idea" },
+          h(
+            "div",
+            { class: "task-idea__text" },
+            h("h3", { class: "task-idea__title" }, item.title),
+            item.details && h("p", { class: "task__details" }, item.details),
+          ),
+          control,
+        );
+      }),
+    ),
+  );
+}
+
 export async function tasks(ctx) {
   const me = ctx.session.me;
   const closed = ctx.session.groupStatus === "closed";
@@ -160,6 +206,17 @@ export async function tasks(ctx) {
 
   render((await ctx.api.call("list_tasks")).items);
 
+  // The ideas are a help, not the screen's job: when they cannot be read the list still works.
+  let ideas = null;
+  if (ctx.session.groupStatus === "active") {
+    try {
+      const { items } = await ctx.api.call("list_task_suggestions");
+      if (items.length) ideas = ideasCard(ctx, items, { onAdded: reload, message });
+    } catch {
+      ideas = null;
+    }
+  }
+
   const node = h(
     "div",
     { class: "tasks" },
@@ -179,6 +236,7 @@ export async function tasks(ctx) {
               h("h2", { id: "task-add-title", class: "card__title" }, icon("plus"), t.tasks.addTitle),
               addForm(ctx, reload),
             ),
+        ideas,
       ),
     ),
   );

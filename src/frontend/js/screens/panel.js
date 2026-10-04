@@ -58,6 +58,7 @@ export function groupPanel(ctx, { onStarted } = {}) {
       h(
         "div",
         { class: "actions" },
+        linkButton("#/education", t.nav.education, { variant: "ghost", iconName: "book" }),
         linkButton("#/help", t.nav.help, { variant: "ghost", iconName: "lifebuoy" }),
       ),
     );

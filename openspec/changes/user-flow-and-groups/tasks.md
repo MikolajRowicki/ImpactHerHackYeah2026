@@ -29,13 +29,13 @@
 
 ## 4. Education, help, summary and tasks
 
-- [ ] 4.1 `get_help`, `get_summary_extended`, `list_task_suggestions` in `operations.js` and the mock store.
-- [ ] 4.2 Education screen and content; start without a group with education and help entries.
-- [ ] 4.3 Help place from `get_help` (lines, `tel:` links, ordered path, notice, calm failure, signed-out view with 112).
-- [ ] 4.4 Summary: use the extended answer; reasons and crisis lines for `needs_attention`.
-- [ ] 4.5 Tasks screen: suggestions card.
-- [ ] 4.6 Account screen: delete account with the mother's warning.
-- [ ] 4.7 Tests for each scenario above. Verify as in 1.5. Commit.
+- [x] 4.1 `get_help`, `get_summary_extended`, `list_task_suggestions` in `operations.js` and the mock store.
+- [x] 4.2 Education screen and content; start without a group with education and help entries.
+- [x] 4.3 Help place from `get_help` (lines, `tel:` links, ordered path, notice, calm failure, signed-out view with 112).
+- [x] 4.4 Summary: use the extended answer; reasons and crisis lines for `needs_attention`.
+- [x] 4.5 Tasks screen: suggestions card.
+- [x] 4.6 Account screen: delete account with the mother's warning.
+- [x] 4.7 Tests for each scenario above. Verify as in 1.5. Commit.
 
 ## 5. Landing page
 

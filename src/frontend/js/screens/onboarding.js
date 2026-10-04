@@ -1,6 +1,6 @@
 import { h } from "../dom.js";
 import { t } from "../strings.pl.js";
-import { pageHead, section } from "../ui/layout.js";
+import { ctaCard, pageHead, section } from "../ui/layout.js";
 import { invitationForm } from "./invitation-form.js";
 import { groupPanel } from "./panel.js";
 
@@ -14,6 +14,15 @@ export async function onboarding(ctx) {
       lead: t.group.onboardingLead,
     }),
     section({ title: t.group.startAsTitle, id: "start-as-title" }, groupPanel(ctx)),
+    section(
+      { title: t.startGeneral.title, id: "general-title" },
+      h(
+        "div",
+        { class: "stack" },
+        ctaCard("#/education", "book", t.startGeneral.educationTitle, t.startGeneral.educationLead),
+        ctaCard("#/help", "lifebuoy", t.startGeneral.helpTitle, t.startGeneral.helpLead),
+      ),
+    ),
   );
 }
 

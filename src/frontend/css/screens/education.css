@@ -1,0 +1,118 @@
+/* Education, and the crisis lines and care path that the help place and the summary share. */
+
+.education__section > * + * {
+  margin-top: var(--space-2);
+}
+
+.education__list {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding-left: var(--space-4);
+}
+
+.crisis-lines {
+  display: grid;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.crisis-line {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+}
+
+.crisis-line__text {
+  min-width: 0;
+}
+
+.crisis-line__name {
+  margin: 0 0 var(--space-1);
+  font-size: var(--font-size-h3);
+}
+
+.crisis-line__number {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-2) var(--space-3);
+  margin: 0;
+  font-weight: var(--weight-bold);
+  font-size: var(--font-size-h2);
+}
+
+.crisis-line__hours {
+  color: var(--color-ink-soft);
+  font-size: var(--font-size-small);
+  font-weight: var(--weight-regular);
+}
+
+.crisis-line__description {
+  margin: var(--space-1) 0 0;
+  color: var(--color-ink-soft);
+}
+
+.help-path {
+  display: grid;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: step;
+}
+
+.help-path__step {
+  counter-increment: step;
+}
+
+.help-path__step h3 {
+  margin: 0 0 var(--space-1);
+}
+
+.help-path__step h3::before {
+  content: counter(step) ". ";
+}
+
+.help-path__step p {
+  margin: 0;
+  color: var(--color-ink-soft);
+}
+
+.summary__reasons,
+.summary__crisis {
+  margin-top: var(--space-3);
+}
+
+.summary__reasons ul {
+  margin: 0;
+  padding-left: var(--space-4);
+}
+
+.task-ideas__list {
+  display: grid;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.task-idea {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-3);
+  align-items: center;
+  justify-content: space-between;
+}
+
+.task-idea__text {
+  flex: 1 1 12rem;
+  min-width: 0;
+}
+
+.task-idea__title {
+  margin: 0;
+  font-size: var(--font-size-h3);
+}
