@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <style>
+    .bg { fill: #3e5a47; }
+    .leaf { fill: #f6efe4; }
+    .vein { stroke: #3e5a47; }
+    @media (prefers-color-scheme: dark) {
+      .bg { fill: #9cc4a9; }
+      .leaf { fill: #1d2f26; }
+      .vein { stroke: #9cc4a9; }
+    }
+  </style>
+  <rect class="bg" width="64" height="64" rx="15"/>
+  <g transform="translate(32 32) scale(1.18) translate(-33 -30.5)">
+    <path class="leaf" d="M18 46C18 27 29 16 48 15C47 35 36 46 18 46Z"/>
+    <path class="vein" d="M22 42.5C26.5 37.5 31.5 32 39 26.5" fill="none" stroke-width="2.6" stroke-linecap="round"/>
+  </g>
+</svg>
