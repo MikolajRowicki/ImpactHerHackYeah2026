@@ -20,6 +20,8 @@ The code lives in a git clone on the VM. An update is `git pull` and a rebuild.
 | `DJANGO_ALLOWED_HOSTS` | `maydaymama.pl,www.maydaymama.pl` |
 | `APP_BASE_URL` | `https://maydaymama.pl/` (https here turns on secure cookies and proxy trust) |
 | `AI_PROVIDER` | `groq`, with `GROQ_API_KEY` |
+| `GROQ_MODEL` | empty (default `qwen/qwen3.8-27b`); Groq retires models, so check its console if AI texts turn into fixed ones |
+| `KNOWLEDGE_SOURCE` | empty or `curated` (cited sources in the conversation guide); `none` switches them off |
 | `EMAIL_MODE` | `smtp`, with `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_USER`, `EMAIL_PASS`, `EMAIL_FROM` |
 
 `DATABASE_PATH` is set by `docker-compose.yml`; whatever `.env` says is ignored.
