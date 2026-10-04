@@ -49,4 +49,4 @@
 - [x] 6.1 Update `docs/architecture.md` (data model with many memberships, header flow) and `docs/worklog/` (backend and frontend entries per group).
 - [x] 6.2 Independent review against all specs by a fresh reviewer; fix and repeat until PASS.
 - [x] 6.3 Run the real app, take screenshots of the panel, switcher, landing, education and help; check by eye.
-- [ ] 6.4 Archive the change before merging.
+- [x] 6.4 Archive the change before merging.
