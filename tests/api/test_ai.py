@@ -90,6 +90,16 @@ def test_the_prompt_holds_her_text_the_recipient_and_the_tone(api, monkeypatch):
     assert "bliskim osobom" in second and "bezpośredni" in second
 
 
+def test_the_prompt_keeps_her_feminine_voice_and_no_gender_for_the_recipient(api, monkeypatch):
+    anna(api)
+    provider = use(monkeypatch, Fixed())
+    api.call("ai_say_it_for_me", body=BODY)
+    prompt = provider.prompts[0]
+    assert "formach żeńskich" in prompt
+    assert "Nie zakładaj płci adresata" in prompt
+    assert "„żebyś wiedział”" in prompt
+
+
 @pytest.mark.parametrize("length", [1, 500])
 def test_the_text_boundaries_are_accepted(api, length):
     anna(api)
@@ -478,6 +488,56 @@ def test_an_answer_without_a_usable_line_gives_the_fixed_guide(api, monkeypatch,
     result = api.call("ai_conversation_guide", query={"topic": "offer_help"})
     assert result["opening_lines"] == GUIDE["offer_help"]["opening_lines"]
     assert result["source"] == "rules"
+
+
+def test_a_line_that_shows_the_speakers_gender_is_dropped(api, monkeypatch):
+    supporter(api)
+    text = "Widzę, że jest Ci ciężko.\nMartwię się i chciałbym pomóc.\nJestem tu dla Ciebie."
+    use(monkeypatch, Fixed(text, "groq"))
+    result = api.call("ai_conversation_guide", query={"topic": "hard_day"})
+    assert result["opening_lines"] == ["Widzę, że jest Ci ciężko.", "Jestem tu dla Ciebie."]
+    assert result["source"] == "groq"
+
+
+@pytest.mark.parametrize(
+    "line",
+    [
+        "Myślałem o Tobie cały dzień.",
+        "Zauważyłam, że jesteś zmęczona.",
+        "Chciałabym Ci pomóc.",
+        "Byłbym spokojniejszy, gdybyś odpoczęła.",
+        "ZROBIŁEM dziś zakupy.",
+    ],
+)
+def test_gendered_first_person_forms_are_recognised(api, monkeypatch, line):
+    supporter(api)
+    use(monkeypatch, Fixed(f"{line}\nJestem obok.", "groq"))
+    result = api.call("ai_conversation_guide", query={"topic": "how_are_you"})
+    assert result["opening_lines"] == ["Jestem obok."]
+
+
+def test_only_gendered_lines_give_the_fixed_guide_without_sources(api, monkeypatch):
+    class One:
+        def retrieve(self, query):
+            return [Passage("Pierwsze", "https://example.org/1", "tekst 1")]
+
+    monkeypatch.setattr("core.ai.assist.get_knowledge", lambda: One())
+    supporter(api)
+    use(monkeypatch, Fixed("Myślałem o Tobie.\nChciałabym pomóc.", "groq"))
+    result = api.call("ai_conversation_guide", query={"topic": "offer_help"})
+    assert result["opening_lines"] == GUIDE["offer_help"]["opening_lines"]
+    assert (result["source"], result["sources"]) == ("rules", [])
+
+
+def test_the_guide_prompt_names_the_gendered_forms_to_avoid(api, monkeypatch):
+    supporter(api)
+    provider = use(monkeypatch, Fixed("Linia."))
+    api.call("ai_conversation_guide", query={"topic": "how_are_you"})
+    prompt = provider.prompts[0]
+    assert "zdradzają płeć" in prompt
+    for form in ("myślałem", "zauważyłam", "chciałbym", "chciałabym"):
+        assert form in prompt
+    assert "czasie teraźniejszym" in prompt
 
 
 def test_the_source_of_a_fixed_guide_is_never_groq(api, monkeypatch):

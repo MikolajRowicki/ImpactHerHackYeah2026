@@ -146,3 +146,29 @@ capabilities (`api-contract`, `frontend-mock-mode`, `ai-provider-config`) are no
   store refuses a second mother invitation like the backend, and a test checks the header text in
   the contract. Left as is: contrast probe covers text elements only; no test for suggestions in a
   pending group (that screen is closed to a pending group by the route guard).
+
+## Change ai-assist-and-sources, group 1: Groq model and prompts
+
+- **Goal:** Groq works again and its texts do not guess anyone's gender.
+- **Built:**
+  - The default `GROQ_MODEL` is `qwen/qwen3.8-27b`. `llama-3.3-70b-versatile` answered 404
+    `model_not_found` on 2026-10-04. The key listed `openai/gpt-oss-120b`, `openai/gpt-oss-20b`
+    and `qwen/qwen3.8-27b` as chat models; Qwen wrote the most natural Polish in 0.2–0.5 s. Free
+    limits for this key: 1000 requests a day, 8000 tokens a minute per model.
+  - A `<think>` block in a Groq answer is dropped. An answer of only thinking counts as empty.
+  - The guide prompt names the gendered forms to avoid. Generated guide lines that still hold a
+    first-person past or conditional form are dropped. When no line is left, the fixed lines are
+    used with `source: rules` and no sources.
+  - The "say it for me" prompt keeps her feminine voice and asks not to assume the partner's
+    gender.
+  - `load_settings` in the tests now also clears `GROQ_MODEL` and `KNOWLEDGE_SOURCE`.
+- **Deviations:**
+  - The line filter and the empty sources for the fixed lines were added to the spec
+    (`ai-assist`). A prompt alone still gave "chciałbym" in 2 of 6 guides.
+  - The "say it for me" result will be editable on screen, because the model still writes
+    "byłbyś" now and then (frontend spec updated).
+- **Manual check (real Groq):**
+  - 10 guides (2 per topic) gave 30 lines, of which 29 were kept. The dropped one held
+    "chciałbym".
+  - Three "say it for me" messages read naturally. One used "byłbyś" for the partner.
+- **Verification:** `ruff check .`, `ruff format --check .`, `pytest tests` (1600 passed).

@@ -80,8 +80,13 @@ def test_legacy_registration_follows_debug_unless_set(load_settings):
 def test_groq_and_knowledge_settings_have_safe_defaults(load_settings):
     settings = load_settings(DJANGO_SECRET_KEY="x")
     assert settings.GROQ_API_KEY == ""
-    assert settings.GROQ_MODEL
+    assert settings.GROQ_MODEL == "qwen/qwen3.8-27b"
     assert settings.KNOWLEDGE_SOURCE == "none"
+
+
+def test_the_groq_model_comes_from_the_environment(load_settings):
+    settings = load_settings(DJANGO_SECRET_KEY="x", GROQ_MODEL="openai/gpt-oss-120b")
+    assert settings.GROQ_MODEL == "openai/gpt-oss-120b"
 
 
 def test_the_custom_user_model_is_the_login_model(load_settings):

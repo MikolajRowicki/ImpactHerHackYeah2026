@@ -17,6 +17,10 @@ The mother SHALL have a "Powiedz to za mnie" screen. On it she writes what she w
 - **WHEN** she presses the copy button
 - **THEN** the message is on the clipboard and a short confirmation is visible
 
+#### Scenario: Edit before copying
+- **WHEN** she changes a word in the suggested message and presses the copy button
+- **THEN** the clipboard holds her edited text
+
 #### Scenario: Empty text
 - **WHEN** she sends the form with an empty text
 - **THEN** a message under the text field says what is missing and no request is sent

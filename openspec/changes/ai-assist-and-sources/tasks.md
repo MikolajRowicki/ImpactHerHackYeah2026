@@ -4,10 +4,10 @@ Each group is one commit. Before each commit: `ruff check .`, `ruff format --che
 
 ## 1. Groq model and prompts (backend)
 
-- [ ] 1.1 Set the default `GROQ_MODEL` to `qwen/qwen3.8-27b` in `config/settings.py` and the `.env.example` comment; verify with tests that the request body names the default model when the variable is unset and the chosen one when it is set.
-- [ ] 1.2 Remove a `<think>…</think>` block from Groq answers before the empty check; verify with tests for "think block then text" and "only a think block gives the fallback labelled rules".
-- [ ] 1.3 Reword the guide prompt (no first-person forms that show gender, with examples) and the "say it for me" prompt (do not assume the partner's gender); verify with tests that the prompts hold these instructions, and with one manual Groq call per prompt, noted in the worklog.
-- [ ] 1.4 Add the worklog entry for this group in `docs/worklog/main.md`; verify ruff, format check and `pytest tests` pass, then commit.
+- [x] 1.1 Set the default `GROQ_MODEL` to `qwen/qwen3.8-27b` in `config/settings.py` and the `.env.example` comment; verify with tests that the request body names the default model when the variable is unset and the chosen one when it is set.
+- [x] 1.2 Remove a `<think>…</think>` block from Groq answers before the empty check; verify with tests for "think block then text" and "only a think block gives the fallback labelled rules".
+- [x] 1.3 Reword the guide prompt (no first-person forms that show gender, with examples) and the "say it for me" prompt (do not assume the partner's gender), drop generated guide lines with such forms, and cite nothing when the fixed lines are used; verify with tests that the prompts hold these instructions and for the scenarios of "Opening lines do not show the speaker's gender", and with one manual Groq call per prompt, noted in the worklog.
+- [x] 1.4 Add the worklog entry for this group in `docs/worklog/main.md`; verify ruff, format check and `pytest tests` pass, then commit.
 
 ## 2. Curated knowledge source (backend)
 

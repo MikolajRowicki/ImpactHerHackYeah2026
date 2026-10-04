@@ -59,6 +59,17 @@ With `KNOWLEDGE_SOURCE=curated`, which is the default, passages SHALL come from 
 - **WHEN** a query matches no topic and no keyword
 - **THEN** the list is empty
 
+### Requirement: Opening lines do not show the speaker's gender
+The guide SHALL drop a generated opening line that holds a first-person past or conditional form, which shows the speaker's gender (for example "myślałem", "zauważyłam", "chciałbym"). When no generated line is left, the guide SHALL answer with its fixed opening lines, `source` `rules` and an empty `sources` list.
+
+#### Scenario: One gendered line
+- **WHEN** the provider writes three lines and one of them holds "chciałbym"
+- **THEN** the guide shows the other two lines
+
+#### Scenario: Only gendered lines
+- **WHEN** every generated line holds such a form
+- **THEN** the guide has the fixed opening lines, `source` `rules` and no sources
+
 ### Requirement: Passages are well formed
 Every passage in the curated file SHALL have a unique id, a title, an `https` link to a public page, a short text of at most 400 characters, at least one keyword, and topics only from the guide's set. Every guide topic SHALL have at least one passage.
 
