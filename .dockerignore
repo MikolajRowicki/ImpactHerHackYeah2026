@@ -1,0 +1,15 @@
+.git
+.venv
+.env
+.claude
+.pytest_cache
+.ruff_cache
+__pycache__
+*.sqlite3
+test-results
+playwright-report
+tests
+tests_e2e
+docs
+openspec
+repo-ginekologia
