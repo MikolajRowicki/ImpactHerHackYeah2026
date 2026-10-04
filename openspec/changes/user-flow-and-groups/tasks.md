@@ -1,10 +1,10 @@
 ## 1. Wording, summary and mock narrative
 
-- [ ] 1.1 Replace every "partner lub partnerka", "partnerka" and related forms in `strings.pl.js` with "Partner" forms.
-- [ ] 1.2 Hide a `mock` narrative in `ui/summary.js`; remove the `sample` string and chip style.
-- [ ] 1.3 Neutral `uncertain` sentences (mother and loved-one versions).
-- [ ] 1.4 Tests: hidden mock narrative, uncertain sentence, no "partnerka" on the main screens.
-- [ ] 1.5 Verify: `ruff check .`, `ruff format --check .`, `pytest tests`, `pytest tests_e2e`. Commit.
+- [x] 1.1 Replace every "partner lub partnerka", "partnerka" and related forms in `strings.pl.js` with "Partner" forms.
+- [x] 1.2 Hide a `mock` narrative in `ui/summary.js`; remove the `sample` string and chip style.
+- [x] 1.3 Neutral `uncertain` sentences (mother and loved-one versions).
+- [x] 1.4 Tests: hidden mock narrative, uncertain sentence, no "partnerka" on the main screens.
+- [x] 1.5 Verify: `ruff check .`, `ruff format --check .`, `pytest tests`, `pytest tests_e2e`. Commit.
 
 ## 2. Backend: many groups per person
 

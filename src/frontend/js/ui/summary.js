@@ -50,14 +50,10 @@ export function summaryCard(summary) {
           h("p", { class: "summary__reminder-text" }, summary.care_reminder),
         ),
       ),
+    // A mock narrative is placeholder text; people never see it.
     summary.narrative &&
-      h(
-        "figure",
-        { class: "summary__narrative" },
-        h("p", {}, summary.narrative.text),
-        summary.narrative.source === "mock" &&
-          h("figcaption", {}, h("span", { class: "chip chip--plain" }, t.summary.sample)),
-      ),
+      summary.narrative.source !== "mock" &&
+      h("figure", { class: "summary__narrative" }, h("p", {}, summary.narrative.text)),
     h(
       "p",
       { class: "summary__time" },

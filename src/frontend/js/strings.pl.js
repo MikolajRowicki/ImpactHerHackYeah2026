@@ -13,7 +13,7 @@ export const t = {
     close: "Zamknij",
     roles: {
       woman: "Mama",
-      partner: "Partner lub partnerka",
+      partner: "Partner",
       supporter: "Bliska osoba",
     },
   },
@@ -93,8 +93,8 @@ export const t = {
         loved: "Ostatnie dni wyglądają u niej spokojnie.",
       },
       uncertain: {
-        woman: "Ostatnie dni były różne. Przyglądamy się temu z uwagą i spokojem.",
-        loved: "Ostatnie dni były u niej różne. Przyglądamy się temu z uwagą i spokojem.",
+        woman: "Na razie nie da się powiedzieć nic pewnego. Przyglądamy się temu z uwagą i spokojem.",
+        loved: "Na razie nie da się powiedzieć nic pewnego. Przyglądamy się temu z uwagą i spokojem.",
       },
       needs_attention: {
         woman: "Wygląda na to, że ostatnio jest Ci trudniej. Nie musisz radzić sobie z tym sama.",
@@ -104,7 +104,6 @@ export const t = {
     helpLink: "Zobacz, gdzie szukać wsparcia",
     reminderTitle: "Na dziś",
     narrativeLabel: "Opis",
-    sample: "Przykładowy tekst",
     generated: (when) => `Przygotowano ${when}`,
   },
 
@@ -169,8 +168,8 @@ export const t = {
     onboardingLead: "Zacznijmy od tego, kim jesteś w tej historii.",
     startAsTitle: "Załóż grupę",
     asMother: "Jestem mamą",
-    asMotherText: "Założysz grupę i zaprosisz do niej partnera albo partnerkę, a potem innych bliskich.",
-    asPartner: "Jestem partnerem lub partnerką",
+    asMotherText: "Założysz grupę i zaprosisz do niej Partnera, a potem innych bliskich.",
+    asPartner: "Jestem Partnerem",
     asPartnerText:
       "Założysz grupę i zaprosisz mamę. Grupa zacznie działać dopiero wtedy, gdy ona przyjmie zaproszenie.",
     joinTitle: "Masz zaproszenie?",
@@ -183,12 +182,12 @@ export const t = {
     inviteMotherTitle: "Zaproś mamę",
     inviteMotherText: "Utwórz link i wyślij go mamie w wiadomości, której używacie na co dzień.",
     inviteTitle: "Zaproś bliską osobę",
-    invitePartnerTitle: "Zaproś partnera lub partnerkę",
+    invitePartnerTitle: "Zaproś Partnera",
     invitePartnerText: "Razem łatwiej zauważyć, kiedy potrzebujesz więcej wsparcia.",
     invitePartnerLink: "Przejdź do zapraszania",
     whoLegend: "Kogo zapraszasz?",
     roleOptions: {
-      partner: "Partnera lub partnerkę",
+      partner: "Partnera",
       supporter: "Bliską osobę z rodziny albo przyjaciół",
       woman: "Mamę",
     },

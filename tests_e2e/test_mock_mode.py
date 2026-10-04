@@ -21,7 +21,7 @@ def test_mock_variant_shows_another_role(mock_page):
     mock_page.goto(f"{mock_page.base}?mock=1&variant=partner")
 
     expect(h1(mock_page)).to_have_text("Cześć, Piotr")
-    expect(mock_page.get_by_text("Partner lub partnerka", exact=True)).to_be_visible()
+    expect(mock_page.get_by_text("Partner", exact=True)).to_be_visible()
 
 
 def test_mock_mode_is_remembered_until_it_is_turned_off(mock_page):

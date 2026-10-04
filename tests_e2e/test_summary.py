@@ -26,9 +26,7 @@ def test_mothers_summary_shows_statements_and_narrative(mock_page):
     card = summary(mock_page)
     expect(card.get_by_text("W ostatnich dniach było trochę trudniej niż zwykle.")).to_be_visible()
     expect(card.get_by_text("Dobrze, że zaglądasz tu regularnie. To ważny krok.")).to_be_visible()
-    expect(
-        card.get_by_text("To przykładowy tekst. Prawdziwe podsumowanie powstanie")
-    ).to_be_visible()
+    expect(card.get_by_text("To przykładowy tekst.")).to_have_count(0)
     expect(card.get_by_role("complementary", name="Na dziś")).to_have_count(0)
 
 
@@ -84,13 +82,26 @@ def test_trend_is_never_a_number(mock_page):
     assert not any(ch.isdigit() for ch in text), text
 
 
-def test_mock_narrative_is_labelled_as_sample(mock_page):
+def test_mock_narrative_is_hidden(mock_page):
     open_as(mock_page, "supporter")
 
-    expect(summary(mock_page).get_by_text("Przykładowy tekst", exact=True)).to_be_visible()
+    card = summary(mock_page)
+    expect(card).to_be_visible()
+    expect(card.locator(".summary__narrative")).to_have_count(0)
+    expect(card.get_by_text("Przykładowy tekst", exact=True)).to_have_count(0)
 
 
-def test_narrative_from_rules_carries_no_sample_label(mock_page):
+@pytest.mark.parametrize("name", ["get_summary.200.json", "get_summary.200.partner.json"])
+def test_uncertain_trend_does_not_claim_the_last_days_were_different(mock_page, name):
+    serve_summary(mock_page, name, trend="uncertain")
+    open_as(mock_page, "woman" if name == "get_summary.200.json" else "partner")
+
+    text = summary(mock_page).locator(".summary__trend").inner_text()
+    assert "Na razie nie da się powiedzieć nic pewnego." in text
+    assert "były różne" not in text
+
+
+def test_narrative_from_rules_is_shown(mock_page):
     serve_summary(
         mock_page,
         "get_summary.200.json",
