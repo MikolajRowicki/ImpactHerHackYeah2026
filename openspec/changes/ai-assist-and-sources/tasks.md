@@ -26,10 +26,10 @@ Each group is one commit. Before each commit: `ruff check .`, `ruff format --che
 
 ## 4. Conversation guide with sources (frontend)
 
-- [ ] 4.1 Add a mock-store handler for `ai_conversation_guide` (partner and supporter only, topic check, per-topic content, sample sources); verify with a mock-mode browser test.
-- [ ] 4.2 Build `#/talk` and `#/talk/:topic` (topic list, three sections, sources with site name opening in a new tab, labels, other opening lines), the card on the loved ones' start screen and the `needs_attention` link in their summary, with strings and CSS; verify with browser tests for every scenario of "Conversation guide screen", "Sources under the guide", "Entry points" and the guide labels, at 375 px and on a laptop width.
-- [ ] 4.3 Add a live browser test against the seeded backend with the curated source: a supporter opens a topic and sees source links from the file; verify it passes.
-- [ ] 4.4 Add the worklog entry; verify ruff, format check, `pytest tests` and `pytest tests_e2e` pass, then commit.
+- [x] 4.1 Add a mock-store handler for `ai_conversation_guide` (partner and supporter only, topic check, per-topic content, sample sources); verify with a mock-mode browser test.
+- [x] 4.2 Build `#/talk` and `#/talk/:topic` (topic list, three sections, sources with site name opening in a new tab, labels, other opening lines), the card on the loved ones' start screen and the `needs_attention` link in their summary, with strings and CSS; verify with browser tests for every scenario of "Conversation guide screen", "Sources under the guide", "Entry points" and the guide labels, at 375 px and on a laptop width.
+- [x] 4.3 Add a live browser test against the seeded backend with the curated source: a supporter opens a topic and sees source links from the file; verify it passes.
+- [x] 4.4 Add the worklog entry; verify ruff, format check, `pytest tests` and `pytest tests_e2e` pass, then commit.
 
 ## 5. Verification and archive
 

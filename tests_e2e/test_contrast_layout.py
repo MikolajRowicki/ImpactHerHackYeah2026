@@ -103,6 +103,8 @@ ROUTES = [
     ("partner", "/"),
     ("partner", "/questions"),
     ("partner", "/group"),
+    ("partner", "/talk"),
+    ("partner", "/talk/suggest_professional_help"),
     ("supporter", "/tasks"),
     ("no_group", "/"),
     ("no_group", "/invite/k3p9x2vb7qd4"),

@@ -31,6 +31,15 @@ export function summaryCard(summary) {
             t.summary.helpLink,
             icon("arrow", 18),
           ),
+        // Loved ones also get the guide on how to bring up professional help, gently.
+        summary.trend === "needs_attention" &&
+          reader === "loved" &&
+          h(
+            "a",
+            { class: "summary__help", href: "#/talk/suggest_professional_help" },
+            t.summary.talkLink,
+            icon("arrow", 18),
+          ),
       ),
     ),
     summary.statements.length > 0 &&

@@ -629,7 +629,9 @@ textarea.field__input {
 }
 
 .summary__help {
-  display: inline-flex;
+  /* One link per line, also when the guide link follows the help link. */
+  display: flex;
+  width: fit-content;
   align-items: center;
   gap: var(--space-1);
   margin-top: var(--space-1);

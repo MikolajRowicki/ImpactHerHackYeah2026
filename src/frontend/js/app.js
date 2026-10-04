@@ -11,6 +11,7 @@ import { account, activate, forgot, login, register, reset } from "./screens/acc
 import { notAllowed, notFound } from "./screens/not-found.js";
 import { questions } from "./screens/questions.js";
 import { sayIt } from "./screens/say-it.js";
+import { talk } from "./screens/talk.js";
 import { start } from "./screens/start.js";
 import { tasks } from "./screens/tasks.js";
 import { groupPanel } from "./screens/panel.js";
@@ -29,6 +30,13 @@ const match = createRouter([
   { path: "/check-in", screen: checkIn, roles: ["woman"], statuses: ["active", "closed"] },
   { path: "/questions", screen: questions, roles: ["partner", "supporter"], statuses: ["active"] },
   { path: "/say-it", screen: sayIt, roles: ["woman"], statuses: ["active", "closed"] },
+  { path: "/talk", screen: talk, roles: ["partner", "supporter"], statuses: ["active", "closed"] },
+  {
+    path: "/talk/:topic",
+    screen: talk,
+    roles: ["partner", "supporter"],
+    statuses: ["active", "closed"],
+  },
   { path: "/tasks", screen: tasks, roles: ALL_ROLES, statuses: ["active", "closed"] },
   { path: "/group", screen: group, member: true },
   { path: "/invite/:token", screen: invite, access: "anyone" },

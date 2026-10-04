@@ -243,3 +243,24 @@ capabilities (`api-contract`, `frontend-mock-mode`, `ai-provider-config`) are no
 - **Verification:** `ruff check .`, `ruff format --check .`, `pytest tests`, `pytest tests_e2e`
   (212 passed, 16 of them new for this screen). Screenshots in mock mode at 390 px and 1280 px
   were checked by eye.
+
+## Change ai-assist-and-sources, group 4: conversation guide with sources
+
+- **Goal:** a partner or supporter prepares a caring conversation and sees the sources behind
+  the text.
+- **Built:**
+  - `#/talk` (topic list and a hint) and `#/talk/<topic>` for partners and supporters of an
+    active or closed group. The current topic is marked with `aria-current`. The guide has three
+    parts ("Od czego zacząć", "Czego unikać", "O co dopytać"), "Inne propozycje zdań", the origin
+    label, a "Źródła" list (title, site name, new tab, https only) and a short note.
+  - A quiet card on the loved ones' start screen. When the trend needs attention, their summary
+    also links to the professional-help topic. The mother's summary has no such link.
+  - Help and guide links in the summary now sit on their own lines.
+- **Deviations:** none from the spec. An unknown topic shows the list with a hint and sends no
+  request.
+- **Verification:**
+  - `ruff check .`, `ruff format --check .`, `pytest tests` (1626 passed), `pytest tests_e2e`
+    (233 passed, 21 new). Two of the new tests run against the seeded backend: Marta sees three
+    curated sources for "Po trudnym dniu", and Anna gets a message and the crisis answer with
+    116 123 "całą dobę".
+  - Screenshots in mock mode at 390 px and 1280 px were checked by eye.
