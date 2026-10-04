@@ -172,3 +172,16 @@ capabilities (`api-contract`, `frontend-mock-mode`, `ai-provider-config`) are no
     "chciałbym".
   - Three "say it for me" messages read naturally. One used "byłbyś" for the partner.
 - **Verification:** `ruff check .`, `ruff format --check .`, `pytest tests` (1600 passed).
+
+## Fix found on the way: 116 123 hours and link
+
+- **Problem:** the help data said 116 123 works "codziennie, 14:00-22:00" and linked to
+  `https://116123.pl/`, which is a parked domain for sale (checked 2026-10-04). The line moved to
+  the state platform 116sos.pl and works around the clock with a chat (116sos.pl, the line's page
+  at psychologia.edu.pl, and the Ministry of Health page "Gdzie uzyskać pomoc psychologiczną i
+  psychiatryczną?").
+- **Changed:** hours "całą dobę", link `https://116sos.pl/`, and the description now names the
+  chat. The help data and the five contract examples that repeat it were updated; one test was
+  added.
+- **Verification:** `ruff check .`, `ruff format --check .`, `pytest tests` (1601 passed), the
+  browser tests for summary and help (23 passed).
