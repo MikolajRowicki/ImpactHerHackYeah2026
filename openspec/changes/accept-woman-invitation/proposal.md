@@ -11,7 +11,7 @@ The earlier change `user-flow-and-groups` dropped the idea "leave my empty group
 - **Two different messages** for the two refusals that share the code `already_in_group`: "already a member of *this* group" and "already the mother of *another* group".
 - **The invitation screen says it before the person presses accept.** For a signed-in mother opening a `woman` invitation, it explains the rule and offers a link to her own group screen. Mock mode behaves like the backend.
 
-**Non-goals:** cache headers and deployment. A new response field or operation (the contract keeps its shapes; only message texts and examples change). Replacing a group on `create_group` as the mother (it keeps refusing). Merging two groups or moving data between them. Letting a mother keep two groups as the mother.
+**Non-goals:** cache headers and deployment. A new response field or operation, and any edit of a frozen v0 contract file (the baseline guard forbids it). Replacing a group on `create_group` as the mother (it keeps refusing). Merging two groups or moving data between them. Letting a mother keep two groups as the mother.
 
 ## Capabilities
 
@@ -25,7 +25,7 @@ None.
 ## Impact
 
 - Backend: `services/invitations.py` (accept), `services/groups.py` (message), `services/cleanup.py` (delete an empty group), tests in `tests/api/test_invitations.py` and `tests/api/test_groups.py`.
-- Contract: text of the 409 description of `accept_invitation` in `contracts/openapi.yaml`, and the examples `accept_invitation.409.json` (+ a new `accept_invitation.409.mother.json`). No schema changes.
+- Contract: one new example, `accept_invitation.409.mother.json`. Nothing existing changes: the v0 baseline guard freezes the operation descriptions and the example files, and the messages are free text, not part of any schema.
 - Frontend: `screens/invite.js`, `strings.pl.js`, the mock store, mock and live browser tests.
 - Existing tests that assert the old message change on purpose.
 

@@ -337,7 +337,7 @@ def test_a_person_who_is_already_the_woman_cannot_accept_a_woman_invitation(api)
     make_invitation(pending, pending.memberships.get().user, role="woman", token="woman-token-2")
     result = api.sign_in(circle.anna).call("accept_invitation", path={"token": "woman-token-2"})
     assert (result.status, result.code) == (409, "already_in_group")
-    assert result.error["message"] == "Należysz już do grupy."
+    assert result.error["message"].startswith("Jesteś już mamą w innej grupie")
     assert Invitation.objects.get(token="woman-token-2").used_at is None
     assert Group.objects.get(pk=pending.pk).status == "pending"
 

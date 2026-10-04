@@ -12,6 +12,12 @@ from ..permissions import MemberContext
 from . import cleanup
 
 ALREADY_IN_GROUP = "Należysz już do grupy."
+ALREADY_IN_THIS_GROUP = "Należysz już do tej grupy."
+ALREADY_MOTHER = "Jesteś już mamą jednej grupy."
+ALREADY_MOTHER_ELSEWHERE = (
+    "Jesteś już mamą w innej grupie, w której są dane albo inne osoby. "
+    "Zamknij ją i usuń na jej ekranie, a potem przyjmij zaproszenie jeszcze raz."
+)
 NO_GROUP = "Nie należysz jeszcze do żadnej grupy."
 NO_SUCH_MEMBER = "Nie ma takiej osoby w grupie."
 CANNOT_REMOVE_OWNER = "Nie można usunąć właścicielki grupy."
@@ -37,8 +43,8 @@ def group_out(group: Group, role: str) -> dict:
     }
 
 
-def already_in_group() -> ApiError:
-    return ApiError(409, "already_in_group", ALREADY_IN_GROUP)
+def already_in_group(message: str = ALREADY_IN_GROUP) -> ApiError:
+    return ApiError(409, "already_in_group", message)
 
 
 def create_group(user, role: str) -> dict:
@@ -46,7 +52,7 @@ def create_group(user, role: str) -> dict:
     # A person is the woman of one group, and waits in at most one group they started as partner.
     # The database backs the first rule; the second is not a safety invariant.
     if role == ROLE_WOMAN and mine.filter(role=ROLE_WOMAN).exists():
-        raise already_in_group()
+        raise already_in_group(ALREADY_MOTHER)
     if (
         role == ROLE_PARTNER
         and mine.filter(role=ROLE_PARTNER, group__status=GROUP_PENDING).exists()
@@ -60,7 +66,7 @@ def create_group(user, role: str) -> dict:
             Membership.objects.create(user=user, group=group, role=role, joined_at=clock.now())
     except IntegrityError:
         # The unique constraint on the woman decided a race between two creations.
-        raise already_in_group() from None
+        raise already_in_group(ALREADY_MOTHER if role == ROLE_WOMAN else ALREADY_IN_GROUP) from None
     return group_out(group, role)
 
 

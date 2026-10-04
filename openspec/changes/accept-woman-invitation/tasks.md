@@ -1,11 +1,11 @@
 ## 1. Backend: replace an empty group, clearer refusals
 
-- [ ] 1.1 `cleanup.delete_empty_group(group_id, user_id)`: one conditional `DELETE` (only member is that user, no check-in, task or observation); returns whether a group went.
-- [ ] 1.2 `invitations.accept`: for a `woman` invitation, inside the transaction after the invitation is consumed, delete the person's empty woman group before creating the membership; refuse and roll back with the "another group" message when it is not empty. Keep `role_taken` before any delete.
-- [ ] 1.3 Messages: "this group" and "another group" in `invitations.py`, "already the mother of a group" in `groups.create_group`; code stays `already_in_group`.
-- [ ] 1.4 Contract: description of the `accept_invitation` 409 in `contracts/openapi.yaml`; update `accept_invitation.409.json` and `create_group.409.json`, add `accept_invitation.409.mother.json`; the contract-example tests cover both.
-- [ ] 1.5 Tests for every scenario of the delta `group-membership`: empty active and closed group replaced, issued invitation dies, second member keeps the group, check-in / task / observation each keep it, `role_taken` deletes nothing, concurrent task creation, failure rolls back (force the membership insert to fail), the three messages. Change the old tests that assert the old text on purpose.
-- [ ] 1.6 Verify: `ruff check .`, `ruff format --check .`, `pytest tests`. Break `delete_empty_group` on purpose in a throwaway copy (drop the task filter) and confirm the content test fails. Commit.
+- [x] 1.1 `cleanup.delete_group_if_empty(group_id, user_id)`: lock the group row, check that the only member is that user and that there is no check-in, task or observation, then delete; returns whether a group went.
+- [x] 1.2 `invitations.accept`: for a `woman` invitation, inside the transaction after the invitation is consumed, delete the person's empty woman group before creating the membership; refuse and roll back with the "another group" message when it is not empty. Keep `role_taken` before any delete.
+- [x] 1.3 Messages: "this group" and "another group" in `invitations.py`, "already the mother of a group" in `groups.create_group`; code stays `already_in_group`.
+- [x] 1.4 Contract: add `accept_invitation.409.mother.json` only and refresh `contracts/baseline/v0.json` (one new line); existing contract files stay as they are (the baseline guard freezes them).
+- [x] 1.5 Tests for every scenario of the delta `group-membership`: empty active and closed group replaced, issued invitation dies, second member keeps the group, check-in / task / observation each keep it, `role_taken` deletes nothing, concurrent task creation, failure rolls back (force the membership insert to fail), the messages. Change the old tests that assert the old text on purpose.
+- [x] 1.6 Verify: `ruff check .`, `ruff format --check .`, `pytest tests`. Break `delete_group_if_empty` on purpose in a throwaway copy (drop the task filter) and confirm the content test fails. Commit.
 
 ## 2. Frontend: the invitation screen and the mock
 

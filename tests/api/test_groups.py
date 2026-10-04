@@ -95,7 +95,7 @@ def test_a_woman_cannot_create_a_second_group_as_the_woman(api):
     circle = make_circle()
     result = api.sign_in(circle.anna).call("create_group", body={"role": "woman"})
     assert (result.status, result.code) == (409, "already_in_group")
-    assert result.error["message"] == "Należysz już do grupy."
+    assert result.error["message"] == "Jesteś już mamą jednej grupy."
     assert Group.objects.count() == 1
 
 

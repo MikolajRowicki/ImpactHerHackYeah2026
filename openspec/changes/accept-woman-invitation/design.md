@@ -21,7 +21,7 @@ flowchart TD
   U -- lost --> N[404 invitation_not_found]
   U -- won --> M{person is the woman of a group?}
   M -- no --> J[create membership, activate pending group]
-  M -- yes --> X[delete that group only if empty: one conditional delete]
+  M -- yes --> X[lock that group, delete it only if empty]
   X -- deleted --> J
   X -- not empty --> E3[roll back, 409 already_in_group: another group]
 ```
@@ -29,8 +29,8 @@ Order inside the transaction matters twice. The invitation is consumed first, as
 
 Alternative: check emptiness first, outside the transaction, and delete later. Rejected: a task added in between would be deleted with the group.
 
-### 2. Emptiness is decided by the delete itself
-`cleanup.delete_empty_group(group_id, user_id)` runs one `DELETE` on `Group` with filters: the group has exactly one membership and it is that user's, and no row in `CheckIn`, `Task` or `Observation` points to it. The number of deleted rows says what happened: 1 means replaced, 0 means refuse. There is no read-then-write gap, no reliance on SQLite's single-writer lock, and it works on any database (rule "atomic conditional UPDATE instead of read-modify-write"). Memberships, invitations and the rest cascade as for any group delete. Alternative: count the rows first and delete after. Rejected as above.
+### 2. Emptiness is checked under a lock on the group row
+`cleanup.delete_group_if_empty(group_id, user_id)` runs inside the accept transaction. It locks the group row (`select_for_update`), checks that the only membership is that user's and that no `CheckIn`, `Task` or `Observation` points to the group, and only then deletes the group. A writer that adds a task at the same moment has to wait for the lock (on SQLite the write lock taken at the start of the transaction does the same), so the task is either seen by the check or refused after the delete; it is never deleted together with the group. Memberships and invitations cascade as for any group delete. Alternative: one conditional `DELETE`. Rejected: Django cascades in Python, so a single statement would leave memberships and invitations behind. Alternative: count first, delete later, outside a lock. Rejected: a task added in between would be deleted with the group.
 
 ### 3. Two messages, one code
 `already_in_group` stays, so the frozen error shape and the frontend's handling do not change. Messages (drafts, Polish):
@@ -38,7 +38,7 @@ Alternative: check emptiness first, outside the transaction, and delete later. R
 - woman elsewhere, with content: "Jesteś już mamą w innej grupie, w której są dane albo inne osoby. Zamknij ją i usuń na jej ekranie, a potem przyjmij zaproszenie jeszcze raz."
 - `create_group` as the woman while already a woman: "Jesteś już mamą jednej grupy."
 
-Examples: `accept_invitation.409.json` becomes the "same group" answer, `accept_invitation.409.mother.json` is new. The contract tests that compare examples with real answers get both. Alternative: new code `mother_elsewhere`. Rejected: it changes the contract for a text problem, and older clients would not know the code.
+Contract files: the v0 baseline guard (`tests/test_contract_baseline.py`) freezes the existing example files and operation descriptions, so none of them is edited. The existing examples keep their generic text "Należysz już do grupy."; they show the shape of the answer, not the exact message. One new example, `accept_invitation.409.mother.json`, carries the "another group" message and is what mock mode returns for that case. The contract example tests pick it up. Alternative: new code `mother_elsewhere`. Rejected: it changes the contract for a text problem, and older clients would not know the code.
 
 ### 4. The invitation screen explains before the click
 The session already holds the person's memberships (`list_memberships`), so the screen knows whether they are a mother (role `woman`) and which group is theirs. For a `woman` invitation it adds a notice above the accept button and a link "Przejdź do swojej grupy" (selects the mother's group and opens `#/group`). The notice cannot say whether the group is empty, because the memberships carry no such field, so it says both outcomes. After a refused accept the server's message is shown under it as today.
@@ -58,7 +58,7 @@ The mock store's `accept_invitation` applies the same rule on its in-memory data
 
 ## Risks / Trade-offs
 
-- Deleting a group is irreversible. Mitigation: only a group with no data and no other member, decided in one statement; the screen warns first; the deleted group's unused invitation links die (said in the assumptions).
+- Deleting a group is irreversible. Mitigation: only a group with no data and no other member, decided under a lock on the group row; the screen warns first; the deleted group's unused invitation links die (said in the assumptions).
 - A person may open the invitation, see the notice, and not understand "empty". Mitigation: wording reviewed; the link to the group screen lets them look.
 - The real-case mother had already closed her group. A closed empty group is replaceable, so she would have gone through; closing was never needed.
 - No data migration. No schema change.
