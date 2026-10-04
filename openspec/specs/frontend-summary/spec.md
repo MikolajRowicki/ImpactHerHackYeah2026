@@ -18,7 +18,7 @@ Every member of an active group SHALL see the summary for their role on their st
 - **THEN** the care reminder is shown, set apart from the statements
 
 ### Requirement: Trend in gentle words
-The trend SHALL be shown as a short gentle sentence with an icon, never as a number, a score or a red, amber or green signal. A trend that needs attention SHALL point to the help place.
+The trend SHALL be shown as a short gentle sentence with an icon, never as a number, a score or a red, amber or green signal. A trend that needs attention SHALL point to the help place. The `uncertain` trend SHALL be worded so that it is true when there is too little data, and SHALL NOT claim that the last days were of any kind.
 
 #### Scenario: Needs attention
 - **WHEN** the summary trend is `needs_attention`
@@ -28,12 +28,9 @@ The trend SHALL be shown as a short gentle sentence with an icon, never as a num
 - **WHEN** the summary trend is `stable`
 - **THEN** a calm sentence is shown and no help prompt is added
 
-### Requirement: Sample narrative is labelled
-A narrative with source `mock` SHALL carry a visible label that it is a sample text.
-
-#### Scenario: Mock narrative
-- **WHEN** the summary narrative has source `mock`
-- **THEN** a "sample text" label is shown with it
+#### Scenario: Uncertain with no data
+- **WHEN** the summary trend is `uncertain` and the statements say there is too little information
+- **THEN** the trend sentence does not say that the last days were different
 
 ### Requirement: Summary time
 The summary SHALL show when it was prepared, in the person's local time.
@@ -41,3 +38,25 @@ The summary SHALL show when it was prepared, in the person's local time.
 #### Scenario: Generated time
 - **WHEN** a summary is shown
 - **THEN** its preparation time is shown as a local date and time
+
+### Requirement: Sample narrative is hidden
+The frontend SHALL NOT show a narrative whose source is `mock`, and SHALL show no sample label.
+
+#### Scenario: Mock narrative
+- **WHEN** the summary narrative has source `mock`
+- **THEN** no narrative text and no "sample text" label are shown
+
+#### Scenario: Real narrative
+- **WHEN** the summary narrative has source `rules` or `ai`
+- **THEN** its text is shown
+
+### Requirement: Reasons and help with the summary
+The start screens SHALL read the extended summary. When it carries reasons, they SHALL be shown under the trend as a general explanation. When it carries help, the crisis lines SHALL be shown with the summary.
+
+#### Scenario: Needs attention with help
+- **WHEN** the extended summary has trend `needs_attention`, reasons and help
+- **THEN** the reasons and the crisis lines are shown with the summary
+
+#### Scenario: Stable
+- **WHEN** the extended summary has no help
+- **THEN** no crisis lines are shown

@@ -294,3 +294,14 @@ def test_the_day_follows_warsaw_time(run, circle, outbox, clock_at):
     run()
     assert set(ReminderLog.objects.values_list("day", flat=True)) == {clock.today()}
     assert clock.today().isoformat() == "2026-10-04"
+
+
+def test_a_person_in_two_groups_gets_one_e_mail_per_kind(run, circle, outbox):
+    ewa = make_user("Ewa")
+    make_group(woman=ewa, supporters=[circle.anna])
+    run()
+    # Anna owes a check-in in her group and an observation in Ewa's: two kinds, one mail each.
+    assert sorted(subjects_for(outbox, "anna@example.com")) == [
+        "MaydayMama: dzisiejsza obserwacja",
+        "MaydayMama: dzisiejszy wpis w dzienniku",
+    ]

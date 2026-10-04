@@ -32,4 +32,12 @@ export const OPERATIONS = {
   confirm_password_reset: ["POST", "/api/v1/auth/password-reset/confirm", 200],
   change_password: ["POST", "/api/v1/auth/change-password", 200],
   release_task: ["POST", "/api/v1/tasks/{task_id}/release", 200],
+  list_memberships: ["GET", "/api/v1/me/memberships", 200],
+  leave_group: ["POST", "/api/v1/groups/current/leave", 200],
+  list_invitations: ["GET", "/api/v1/invitations", 200],
+  revoke_invitation: ["DELETE", "/api/v1/invitations/{token}", 200],
+  delete_account: ["DELETE", "/api/v1/me", 200],
+  get_summary_extended: ["GET", "/api/v1/summary/extended", 200],
+  get_help: ["GET", "/api/v1/help", 200],
+  list_task_suggestions: ["GET", "/api/v1/tasks/suggestions", 200],
 };

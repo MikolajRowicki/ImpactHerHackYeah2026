@@ -50,7 +50,7 @@ CHECKS = [
     ("partner", "/", ".summary__help", "color", 4.5),
     ("partner", "/", ".summary__reminder-text", "color", 4.5),
     ("partner", "/", ".summary__time", "color", 4.5),
-    ("partner", "/", ".chip", "color", 4.5),
+    ("woman", "/group", ".chip", "color", 4.5),
     ("partner", "/", ".cta-card__title", "color", 4.5),
     ("woman", "/check-in", ".choice__label", "color", 4.5),
     ("woman", "/check-in", ".choice", "border", 3),

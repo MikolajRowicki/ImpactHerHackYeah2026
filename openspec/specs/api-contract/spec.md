@@ -132,3 +132,14 @@ The test suite SHALL keep end-to-end journeys that run only v0 operations, and t
 #### Scenario: Partner-first journey
 - **WHEN** a partner creates a pending group and the woman accepts
 - **THEN** the group is empty until she accepts and active afterwards
+
+### Requirement: Group selection convention
+The contract SHALL describe the optional `X-Group-Id` request header as a convention for every group-bound operation, and SHALL declare `list_memberships` as a new operation with examples. No v0 operation, schema or example SHALL change.
+
+#### Scenario: Convention documented
+- **WHEN** the contract is read
+- **THEN** the header, its default and its refusals are described in the conventions
+
+#### Scenario: Baseline guard still holds
+- **WHEN** the baseline guard test runs after this change
+- **THEN** it passes

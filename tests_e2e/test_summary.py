@@ -24,11 +24,9 @@ def test_mothers_summary_shows_statements_and_narrative(mock_page):
     open_as(mock_page, "woman")
 
     card = summary(mock_page)
-    expect(card.get_by_text("W ostatnich dniach było trochę trudniej niż zwykle.")).to_be_visible()
+    expect(card.get_by_text("W ostatnich dniach było trudniej niż zwykle.")).to_be_visible()
     expect(card.get_by_text("Dobrze, że zaglądasz tu regularnie. To ważny krok.")).to_be_visible()
-    expect(
-        card.get_by_text("To przykładowy tekst. Prawdziwe podsumowanie powstanie")
-    ).to_be_visible()
+    expect(card.get_by_text("To przykładowy tekst.")).to_have_count(0)
     expect(card.get_by_role("complementary", name="Na dziś")).to_have_count(0)
 
 
@@ -37,7 +35,7 @@ def test_loved_ones_summary_sets_the_care_reminder_apart(mock_page):
 
     reminder = summary(mock_page).get_by_role("complementary", name="Na dziś")
     expect(reminder).to_contain_text("Zadbaj dziś o nią szczególnie")
-    statements = summary(mock_page).get_by_role("list")
+    statements = summary(mock_page).locator(".summary__statements")
     expect(statements).not_to_contain_text("Zadbaj dziś o nią szczególnie")
 
 
@@ -69,12 +67,38 @@ def test_needs_attention_points_to_help_without_red(mock_page):
 
 
 def test_stable_trend_is_calm_and_adds_no_help_prompt(mock_page):
-    serve_summary(mock_page, "get_summary.200.json", trend="stable")
+    serve_summary(mock_page, "get_summary_extended.200.json", trend="stable")
     open_as(mock_page, "woman")
 
     card = summary(mock_page)
     expect(card.get_by_text("Ostatnie dni wyglądają spokojnie.")).to_be_visible()
     expect(card.get_by_role("link", name="Zobacz, gdzie szukać wsparcia")).to_have_count(0)
+
+
+def test_needs_attention_shows_the_reasons_and_the_crisis_lines(mock_page):
+    open_as(mock_page, "woman")
+
+    card = summary(mock_page)
+    expect(card.get_by_role("heading", name="Skąd ten obraz")).to_be_visible()
+    expect(card.get_by_text("To obraz ogólny, nie ocena.")).to_be_visible()
+    lines = card.get_by_role("region", name="Gdzie szukać wsparcia")
+    expect(lines.get_by_role("link", name="116 123")).to_have_attribute("href", "tel:116123")
+    expect(lines.get_by_role("link", name="112")).to_have_attribute("href", "tel:112")
+
+
+def test_stable_summary_shows_no_crisis_lines_and_no_reasons(mock_page):
+    serve_summary(
+        mock_page,
+        "get_summary_extended.200.json",
+        trend="stable",
+        reasons=[],
+        help=None,
+    )
+    open_as(mock_page, "woman")
+
+    expect(summary(mock_page)).to_be_visible()
+    expect(summary(mock_page).get_by_role("region", name="Gdzie szukać wsparcia")).to_have_count(0)
+    expect(summary(mock_page).get_by_role("heading", name="Skąd ten obraz")).to_have_count(0)
 
 
 def test_trend_is_never_a_number(mock_page):
@@ -84,16 +108,31 @@ def test_trend_is_never_a_number(mock_page):
     assert not any(ch.isdigit() for ch in text), text
 
 
-def test_mock_narrative_is_labelled_as_sample(mock_page):
+def test_mock_narrative_is_hidden(mock_page):
     open_as(mock_page, "supporter")
 
-    expect(summary(mock_page).get_by_text("Przykładowy tekst", exact=True)).to_be_visible()
+    card = summary(mock_page)
+    expect(card).to_be_visible()
+    expect(card.locator(".summary__narrative")).to_have_count(0)
+    expect(card.get_by_text("Przykładowy tekst", exact=True)).to_have_count(0)
 
 
-def test_narrative_from_rules_carries_no_sample_label(mock_page):
+@pytest.mark.parametrize(
+    "name", ["get_summary_extended.200.json", "get_summary_extended.200.partner.json"]
+)
+def test_uncertain_trend_does_not_claim_the_last_days_were_different(mock_page, name):
+    serve_summary(mock_page, name, trend="uncertain")
+    open_as(mock_page, "woman" if name == "get_summary_extended.200.json" else "partner")
+
+    text = summary(mock_page).locator(".summary__trend").inner_text()
+    assert "Na razie nie da się powiedzieć nic pewnego." in text
+    assert "były różne" not in text
+
+
+def test_narrative_from_rules_is_shown(mock_page):
     serve_summary(
         mock_page,
-        "get_summary.200.json",
+        "get_summary_extended.200.json",
         narrative={"text": "Spokojny tydzień.", "source": "rules"},
     )
     open_as(mock_page, "woman")

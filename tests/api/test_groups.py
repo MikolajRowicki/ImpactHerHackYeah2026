@@ -91,18 +91,50 @@ def test_a_group_request_needs_exactly_a_role(api, body):
     assert Group.objects.count() == 0
 
 
-def test_a_person_in_a_group_cannot_create_another(api):
+def test_a_woman_cannot_create_a_second_group_as_the_woman(api):
     circle = make_circle()
-    result = api.sign_in(circle.marta).call("create_group", body={"role": "woman"})
+    result = api.sign_in(circle.anna).call("create_group", body={"role": "woman"})
     assert (result.status, result.code) == (409, "already_in_group")
     assert result.error["message"] == "Należysz już do grupy."
     assert Group.objects.count() == 1
 
 
-def test_the_same_person_creating_twice_gets_one_group(api):
+def test_a_person_who_is_not_the_woman_can_still_start_her_own_group(api):
+    circle = make_circle()
+    result = api.sign_in(circle.marta).call("create_group", body={"role": "woman"})
+    assert (result.status, result["my_role"]) == (201, "woman")
+    assert Group.objects.count() == 2
+    assert sorted(Membership.objects.filter(user=circle.marta).values_list("role", flat=True)) == [
+        "supporter",
+        "woman",
+    ]
+
+
+def test_the_woman_can_start_a_group_as_a_partner_too(api):
+    circle = make_circle()
+    result = api.sign_in(circle.anna).call("create_group", body={"role": "partner"})
+    assert (result.status, result["status"], result["my_role"]) == (201, "pending", "partner")
+    assert Membership.objects.filter(user=circle.anna).count() == 2
+
+
+def test_a_second_pending_group_as_a_partner_is_refused(api):
+    api.sign_in(make_user("Piotr"))
+    assert api.call("create_group", body={"role": "partner"}).status == 201
+    second = api.call("create_group", body={"role": "partner"})
+    assert (second.status, second.code) == (409, "already_in_group")
+    assert Group.objects.count() == 1
+
+
+def test_a_partner_of_an_active_group_may_start_a_pending_one(api):
+    circle = make_circle()
+    result = api.sign_in(circle.piotr).call("create_group", body={"role": "partner"})
+    assert (result.status, result["status"]) == (201, "pending")
+
+
+def test_the_same_person_creating_twice_as_the_woman_gets_one_group(api):
     api.sign_in(make_user())
     assert api.call("create_group", body={"role": "woman"}).status == 201
-    second = api.call("create_group", body={"role": "partner"})
+    second = api.call("create_group", body={"role": "woman"})
     assert (second.status, second.code) == (409, "already_in_group")
     assert Group.objects.count() == 1
 

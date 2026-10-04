@@ -1,0 +1,10 @@
+{
+  "items": [
+    {
+      "group_id": 1,
+      "role": "woman",
+      "group_status": "active",
+      "woman_name": "Anna"
+    }
+  ]
+}

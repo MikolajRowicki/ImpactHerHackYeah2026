@@ -21,7 +21,7 @@ def test_mock_variant_shows_another_role(mock_page):
     mock_page.goto(f"{mock_page.base}?mock=1&variant=partner")
 
     expect(h1(mock_page)).to_have_text("Cześć, Piotr")
-    expect(mock_page.get_by_text("Partner lub partnerka", exact=True)).to_be_visible()
+    expect(mock_page.get_by_text("Partner", exact=True)).to_be_visible()
 
 
 def test_mock_mode_is_remembered_until_it_is_turned_off(mock_page):
@@ -118,9 +118,7 @@ def test_reset_brings_back_the_contract_examples(mock_page):
     notice(mock_page).get_by_role("button", name="Zacznij demo od nowa").click()
 
     expect(h1(mock_page)).to_have_text("Cześć, Anna")
-    expect(
-        mock_page.get_by_text("W ostatnich dniach było trochę trudniej niż zwykle.")
-    ).to_be_visible()
+    expect(mock_page.get_by_text("W ostatnich dniach było trudniej niż zwykle.")).to_be_visible()
 
 
 def test_turning_mock_off_clears_the_demo_state(mock_page):

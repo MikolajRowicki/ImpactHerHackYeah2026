@@ -4,6 +4,7 @@ import { clearMockState, createMockStore } from "./mock-store.js";
 import { createRouter, currentPath, guard } from "./router.js";
 import { checkIn } from "./screens/check-in.js";
 import { group } from "./screens/group.js";
+import { education } from "./screens/education.js";
 import { help } from "./screens/help.js";
 import { invite } from "./screens/invite.js";
 import { account, activate, forgot, login, register, reset } from "./screens/account.js";
@@ -11,13 +12,17 @@ import { notAllowed, notFound } from "./screens/not-found.js";
 import { questions } from "./screens/questions.js";
 import { start } from "./screens/start.js";
 import { tasks } from "./screens/tasks.js";
+import { groupPanel } from "./screens/panel.js";
 import { createSession } from "./session.js";
+import { openDialog } from "./ui/dialog.js";
 import { errorState, loading } from "./ui/feedback.js";
+import { t } from "./strings.pl.js";
 
 // Who may open what: `access` (anyone, signed-out, signed-in), then `roles` and group `statuses`.
 const ALL_ROLES = ["woman", "partner", "supporter"];
 const match = createRouter([
-  { path: "/", screen: start, access: "signed-in" },
+  // A visitor sees the landing page here, a signed-in person their start.
+  { path: "/", screen: start, access: "anyone" },
   { path: "/login", screen: login, access: "signed-out" },
   { path: "/register", screen: register, access: "signed-out" },
   { path: "/check-in", screen: checkIn, roles: ["woman"], statuses: ["active", "closed"] },
@@ -25,6 +30,7 @@ const match = createRouter([
   { path: "/tasks", screen: tasks, roles: ALL_ROLES, statuses: ["active", "closed"] },
   { path: "/group", screen: group, member: true },
   { path: "/invite/:token", screen: invite, access: "anyone" },
+  { path: "/education", screen: education, access: "signed-in" },
   { path: "/help", screen: help, access: "anyone" },
   { path: "/activate/:token", screen: activate, access: "anyone" },
   { path: "/forgot", screen: forgot, access: "anyone" },
@@ -40,17 +46,76 @@ function storage() {
   }
 }
 
+// The selected group is remembered in the browser, not only in the tab.
+function remembered() {
+  try {
+    return window.localStorage;
+  } catch {
+    return null;
+  }
+}
+
 const mode = readMode(location.search, storage());
 const base = examplesBase(location.pathname);
 if (!mode.mock) clearMockState(storage());
 const api = mode.mock
   ? createMockStore({ base, storage: storage(), perspective: mode.variant })
   : createApi({ ...mode, base });
-const session = createSession(api, storage());
+const session = createSession(api, storage(), remembered());
 const outlet = document.getElementById("screen");
-const frame = createFrame({ onSignOut: signOut });
+const frame = createFrame({
+  onSignOut: signOut,
+  onSwitchGroup: switchGroup,
+  onAddGroup: addGroup,
+});
 
 let shown = 0;
+
+function makeCtx(params = {}) {
+  return {
+    api,
+    session,
+    params,
+    navigate,
+    refresh: show,
+    // After sign-in, group changes and sign-out the person's role or group may differ.
+    async reloadSession() {
+      await session.load();
+      await sessionChanged();
+    },
+    // The session ended without a sign-out call, for example after the account was deleted.
+    async endSession() {
+      session.clear();
+      await showNotice();
+      navigate("/");
+    },
+    // Reads the groups again and selects one the person just created or joined.
+    async enterGroup(groupId) {
+      await session.load(groupId);
+      await sessionChanged();
+    },
+  };
+}
+
+async function switchGroup(groupId) {
+  try {
+    await session.load(groupId);
+  } catch (error) {
+    render(errorState(error, retry));
+    return;
+  }
+  await sessionChanged();
+  show();
+}
+
+// The panel of "what do you want to do" as a dialog, for a person who already has groups.
+function addGroup() {
+  openDialog({
+    title: t.group.addGroupTitle,
+    content: (close) =>
+      groupPanel(makeCtx(), { onStarted: close }),
+  });
+}
 
 function navigate(path) {
   if (currentPath() === path) show();
@@ -95,16 +160,17 @@ async function show() {
     } catch (error) {
       if (stale()) return;
       // Help and invitation previews still work when the session cannot be read.
-      if (!found || found.route.access !== "anyone") {
+      // The start also needs the session: a visitor and a failed read look the same without it.
+      if (!found || found.route.access !== "anyone" || path === "/") {
         // A failed read is not a sign-out: keep the frame of the person known so far.
-        frame.update(session.me, path);
+        frame.update(session.me, path, session);
         render(errorState(error, retry));
         return;
       }
     }
   }
   if (stale()) return;
-  frame.update(session.me, path);
+  frame.update(session.me, path, session);
   if (!found) {
     render(notFound());
     return;
@@ -125,22 +191,7 @@ async function show() {
     return;
   }
 
-  const ctx = {
-    api,
-    session,
-    params: found.params,
-    navigate,
-    refresh: show,
-    // After sign-in, group changes and sign-out the person's role or group may differ.
-    async reloadSession() {
-      await session.load();
-      await sessionChanged();
-    },
-    async setMe(me) {
-      session.set(me);
-      await sessionChanged();
-    },
-  };
+  const ctx = makeCtx(found.params);
   try {
     const node = await found.route.screen(ctx);
     if (stale()) return;
@@ -173,7 +224,7 @@ async function signOut() {
 }
 
 async function sessionChanged() {
-  frame.update(session.me, currentPath());
+  frame.update(session.me, currentPath(), session);
   await showNotice();
 }
 

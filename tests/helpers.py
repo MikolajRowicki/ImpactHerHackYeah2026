@@ -70,11 +70,14 @@ class Api:
         return self.client.cookies["csrftoken"].value
 
     def call(
-        self, operation_id, *, body=None, path=None, query=None, csrf=True, check=True
+        self, operation_id, *, body=None, path=None, query=None, csrf=True, check=True, group=None
     ) -> Response:
         method, template, op = c.operation_by_id()[operation_id]
         url = template.format(**(path or {}))
         extra = {"HTTP_X_CSRFTOKEN": self.csrf_token()} if csrf else {}
+        if group is not None:
+            # The selected group, as the `X-Group-Id` header. A string is sent as it is.
+            extra["HTTP_X_GROUP_ID"] = str(group)
         send = {"content_type": "application/json", **extra}
         verb = getattr(self.client, method)
         if self._capture:

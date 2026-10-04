@@ -6,25 +6,6 @@ dark themes, a permanent place for help, clear loading and error states, and acc
 
 ## Requirements
 
-### Requirement: Navigation fits the role
-The frontend SHALL show navigation that matches the role of the signed-in person: the mother sees her start, her check-in, tasks, group and help; a partner or supporter sees their start, questions, tasks, group and help. A person without an active group sees no data sections.
-
-#### Scenario: Mother navigation
-- **WHEN** the mother is signed in and her group is active
-- **THEN** the navigation offers start, check-in, tasks, group and help, and no questions section
-
-#### Scenario: Loved one navigation
-- **WHEN** a partner or supporter is signed in and the group is active
-- **THEN** the navigation offers start, questions, tasks, group and help, and no check-in section
-
-#### Scenario: No group yet
-- **WHEN** a signed-in person belongs to no group
-- **THEN** the navigation offers no check-in, questions or tasks sections
-
-#### Scenario: Current place is marked
-- **WHEN** a person opens a section from the navigation
-- **THEN** that navigation item is marked as the current page for assistive technology
-
 ### Requirement: Screen the person may not use
 The frontend SHALL show a calm explanation, not an error, when a person opens a section their role or group state does not allow.
 
@@ -49,17 +30,6 @@ Text and controls SHALL keep a contrast ratio of at least 4.5:1 for body text an
 #### Scenario: Body text in both themes
 - **WHEN** a screen is shown in the light theme and in the dark theme
 - **THEN** body text against its background has a contrast ratio of at least 4.5:1
-
-### Requirement: Help place is always reachable
-Every screen SHALL offer a way to the help place, which explains calmly that help contacts will appear there and SHALL NOT show phone numbers or medical advice.
-
-#### Scenario: Help from any screen
-- **WHEN** any screen is shown, signed in or not
-- **THEN** a link to the help place is visible and opens it
-
-#### Scenario: No invented contacts
-- **WHEN** the help place is shown
-- **THEN** it contains no phone number
 
 ### Requirement: Loading and failure states
 While data loads the frontend SHALL show a loading state, and when a call fails it SHALL show the Polish message from the error, or a general message, with a way to try again.
@@ -96,3 +66,37 @@ The frontend SHALL show a "page not found" screen with a way back to start for a
 #### Scenario: Unknown hash
 - **WHEN** the person opens an address the app does not know
 - **THEN** the not-found heading and a link back to start are shown
+
+### Requirement: Navigation fits the place and the role
+The frontend SHALL show a general part of the navigation to every signed-in person (start, education, help) and, when a group is selected, a group part that fits the person's role in that group: the mother sees check-in, tasks and group; a partner or supporter sees questions, tasks and group. A person without a group, or whose selected group is pending, sees no data sections.
+
+#### Scenario: Mother in her group
+- **WHEN** the mother is signed in and her selected group is active
+- **THEN** the navigation offers start, education, help, check-in, tasks and group, and no questions section
+
+#### Scenario: Loved one in a group
+- **WHEN** a partner or supporter is signed in and the selected group is active
+- **THEN** the navigation offers start, education, help, questions, tasks and group, and no check-in section
+
+#### Scenario: Mother who is also a supporter elsewhere
+- **WHEN** a person is the mother of one group and switches to a group where they are a supporter
+- **THEN** the navigation changes to the supporter's, and switching back restores the mother's
+
+#### Scenario: No group yet
+- **WHEN** a signed-in person belongs to no group
+- **THEN** the navigation offers start, education and help only
+
+#### Scenario: Current place is marked
+- **WHEN** a person opens a section from the navigation
+- **THEN** that navigation item is marked as the current page for assistive technology
+
+### Requirement: Help is always reachable
+Every screen SHALL offer a way to the help place, signed in or not. The help place SHALL NOT give medical advice. Its contacts come from the backend (see `frontend-help`).
+
+#### Scenario: Help from any screen
+- **WHEN** any screen is shown, signed in or not
+- **THEN** a link to the help place is visible and opens it
+
+#### Scenario: Signed out
+- **WHEN** a signed-out person opens the help place
+- **THEN** it shows the emergency number 112 and a calm note that more help is available after signing in

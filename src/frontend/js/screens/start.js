@@ -1,13 +1,16 @@
 import { h } from "../dom.js";
 import { icon, SELF_CARE_ICONS } from "../icons.js";
 import { t } from "../strings.pl.js";
-import { linkButton, pageHead, section } from "../ui/layout.js";
+import { ctaCard, pageHead, section } from "../ui/layout.js";
 import { summaryCard } from "../ui/summary.js";
+import { landing } from "./landing.js";
+import { invitationForm } from "./invitation-form.js";
 import { onboarding, waiting } from "./onboarding.js";
 import { tasksPreview } from "./tasks-preview.js";
 
 // `#/` shows a different start for each situation of the signed-in person.
 export async function start(ctx) {
+  if (!ctx.session.me) return landing();
   const membership = ctx.session.me.membership;
   if (!membership) return onboarding(ctx);
   if (membership.group_status === "pending") return waiting(ctx);
@@ -22,29 +25,19 @@ function greeting(ctx) {
   });
 }
 
-function ctaCard(href, iconName, title, lead) {
+// Shown to the mother while nobody else is in her group yet: invite at once, right here.
+function inviteAtOnceCard(ctx) {
   return h(
-    "a",
-    { class: "cta-card", href },
-    h("span", { class: "icon-badge" }, icon(iconName, 26)),
+    "section",
+    { class: "card card--accent invite-offer", "aria-labelledby": "invite-at-once-title" },
     h(
-      "span",
-      { class: "cta-card__text" },
-      h("span", { class: "cta-card__title" }, title),
-      h("span", { class: "cta-card__lead" }, lead),
+      "h2",
+      { id: "invite-at-once-title", class: "card__title" },
+      icon("people"),
+      t.group.inviteAtOnceTitle,
     ),
-    icon("arrow"),
-  );
-}
-
-// Shown to the mother while nobody else is in her group yet.
-function invitePartnerCard() {
-  return h(
-    "div",
-    { class: "card card--accent invite-offer" },
-    h("h2", { class: "card__title" }, icon("people"), t.group.invitePartnerTitle),
-    h("p", {}, t.group.invitePartnerText),
-    linkButton("#/group", t.group.invitePartnerLink, { iconName: "arrow" }),
+    h("p", {}, t.group.inviteAtOnceText),
+    invitationForm(ctx, ["partner", "supporter"]),
   );
 }
 
@@ -83,7 +76,7 @@ function selfCare(items) {
 
 async function motherStart(ctx) {
   const [summary, members, care, tasks] = await Promise.all([
-    ctx.api.call("get_summary"),
+    ctx.api.call("get_summary_extended"),
     ctx.api.call("list_members"),
     ctx.api.call("list_self_care"),
     ctx.api.call("list_tasks"),
@@ -101,7 +94,7 @@ async function motherStart(ctx) {
         "div",
         { class: "start-grid__main stack-large" },
         active && ctaCard("#/check-in", "leaf", t.wellbeing.ctaTitle, t.wellbeing.ctaLead),
-        alone && invitePartnerCard(),
+        alone && inviteAtOnceCard(ctx),
         summaryCard(summary),
       ),
       h(
@@ -118,7 +111,7 @@ async function motherStart(ctx) {
 
 async function lovedStart(ctx) {
   const [summary, tasks] = await Promise.all([
-    ctx.api.call("get_summary"),
+    ctx.api.call("get_summary_extended"),
     ctx.api.call("list_tasks"),
   ]);
   const active = ctx.session.groupStatus === "active";

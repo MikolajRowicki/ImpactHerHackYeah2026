@@ -71,7 +71,8 @@ export async function invite(ctx) {
         await whileBusy(accept, async () => {
           try {
             const me = await ctx.api.call("accept_invitation", { params: { token } });
-            await ctx.setMe(me);
+            // The new group is the one shown, also when the person has other groups.
+            await ctx.enterGroup(me.membership.group_id);
             ctx.navigate("/");
           } catch (error) {
             message.error(messageOf(error));

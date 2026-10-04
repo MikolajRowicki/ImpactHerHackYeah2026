@@ -2,6 +2,7 @@ import { h } from "../dom.js";
 import { dateTime } from "../format.js";
 import { icon } from "../icons.js";
 import { t } from "../strings.pl.js";
+import { crisisLines } from "./crisis-lines.js";
 
 // One calm icon per trend. No colour carries meaning on its own, and none of them is red.
 const TREND_ICONS = { stable: "leaf", uncertain: "cloud", needs_attention: "heart" };
@@ -38,6 +39,20 @@ export function summaryCard(summary) {
         { class: "summary__statements" },
         ...summary.statements.map((line) => h("li", {}, line)),
       ),
+    summary.reasons?.length > 0 &&
+      h(
+        "div",
+        { class: "summary__reasons" },
+        h("h3", {}, t.summary.reasonsTitle),
+        h("ul", {}, ...summary.reasons.map((line) => h("li", {}, line))),
+      ),
+    summary.help &&
+      h(
+        "section",
+        { class: "summary__crisis", "aria-label": t.summary.crisisTitle },
+        h("h3", {}, t.summary.crisisTitle),
+        crisisLines(summary.help.crisis_lines),
+      ),
     summary.care_reminder &&
       h(
         "aside",
@@ -50,14 +65,10 @@ export function summaryCard(summary) {
           h("p", { class: "summary__reminder-text" }, summary.care_reminder),
         ),
       ),
+    // A mock narrative is placeholder text; people never see it.
     summary.narrative &&
-      h(
-        "figure",
-        { class: "summary__narrative" },
-        h("p", {}, summary.narrative.text),
-        summary.narrative.source === "mock" &&
-          h("figcaption", {}, h("span", { class: "chip chip--plain" }, t.summary.sample)),
-      ),
+      summary.narrative.source !== "mock" &&
+      h("figure", { class: "summary__narrative" }, h("p", {}, summary.narrative.text)),
     h(
       "p",
       { class: "summary__time" },

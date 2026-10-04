@@ -12,6 +12,7 @@ NEW_OPERATIONS = {
     "leave_group",
     "list_invitations",
     "revoke_invitation",
+    "list_memberships",
     "signup",
     "activate_account",
     "resend_activation",
@@ -38,10 +39,10 @@ def reachable_from(operation_id):
     return names
 
 
-def test_the_new_operations_are_exactly_the_planned_nineteen():
+def test_the_new_operations_are_exactly_the_planned_twenty():
     ids = set(c.operation_by_id())
     assert ids - set(V0_OPERATIONS) == NEW_OPERATIONS
-    assert len(ids) == 23 + 19
+    assert len(ids) == 23 + 20
 
 
 def test_no_new_operation_returns_a_check_in_or_an_answer():
@@ -96,3 +97,10 @@ def test_account_security_answers_never_depend_on_the_address():
 def test_release_task_needs_an_active_group_like_the_other_task_changes():
     op = c.operation_by_id()["release_task"][2]
     assert op["x-requires-active-group"] is True
+
+
+def test_the_group_header_convention_is_in_the_contract():
+    text = c.DOC["info"]["description"]
+    assert "X-Group-Id" in text
+    assert "not_a_member" in text
+    assert "earliest membership" in text

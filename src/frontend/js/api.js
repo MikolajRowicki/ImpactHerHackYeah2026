@@ -48,6 +48,26 @@ export function examplesBase(pathname) {
   return `${root}contracts/examples/`;
 }
 
+// Operations that belong to the account, not to one group. They never carry `X-Group-Id`.
+export const ACCOUNT_LEVEL = new Set([
+  "health",
+  "register",
+  "login",
+  "logout",
+  "signup",
+  "activate_account",
+  "resend_activation",
+  "request_password_reset",
+  "confirm_password_reset",
+  "change_password",
+  "create_group",
+  "get_invitation",
+  "accept_invitation",
+  "list_memberships",
+  "delete_account",
+  "get_help",
+]);
+
 function operation(operationId) {
   const found = OPERATIONS[operationId];
   if (!found) throw new Error(`Unknown operation: ${operationId}`);
@@ -76,9 +96,10 @@ async function readJson(response) {
 }
 
 function liveAdapter({ fetchFn, getCookies }) {
-  return async function call(operationId, { params, body } = {}) {
+  return async function call(operationId, { params, body, group } = {}) {
     const { method, template } = operation(operationId);
     const headers = { Accept: "application/json" };
+    if (group) headers["X-Group-Id"] = String(group);
     if (body !== undefined) headers["Content-Type"] = "application/json";
     if (method !== "GET") {
       const token = cookie("csrftoken", getCookies());
@@ -123,8 +144,19 @@ export function createApi({
   fetchFn = (...args) => fetch(...args),
   getCookies = () => document.cookie,
 }) {
-  const call = mock
+  const adapter = mock
     ? mockAdapter({ fetchFn, base, variant })
     : liveAdapter({ fetchFn, getCookies });
-  return { mock, call };
+  // The selected group travels with every call that works inside a group.
+  let selected = null;
+  return {
+    mock,
+    setGroup(id) {
+      selected = id || null;
+    },
+    call(operationId, options = {}) {
+      const group = ACCOUNT_LEVEL.has(operationId) ? null : selected;
+      return adapter(operationId, { ...options, group });
+    },
+  };
 }

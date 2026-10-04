@@ -138,3 +138,11 @@ and `create_observation` do not exist (not a spec scenario), `[::1]` is not in t
 Change archived as `openspec/changes/archive/2026-10-03-foundation-and-api-contract`. The three
 capabilities (`api-contract`, `frontend-mock-mode`, `ai-provider-config`) are now main specs
 (16 requirements). `openspec validate --specs` passes.
+
+## Change user-flow-and-groups: review
+
+- A fresh reviewer mapped every scenario to a test and ended with PASS. Low findings fixed: the
+  remembered group is forgotten at sign-out, a failed group switch shows the error state, the mock
+  store refuses a second mother invitation like the backend, and a test checks the header text in
+  the contract. Left as is: contrast probe covers text elements only; no test for suggestions in a
+  pending group (that screen is closed to a pending group by the route guard).

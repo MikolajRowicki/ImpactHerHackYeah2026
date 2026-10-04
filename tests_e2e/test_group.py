@@ -17,22 +17,22 @@ def create_link(page, role_label=None):
     page.get_by_role("button", name="Utwórz link zaproszenia").click()
 
 
-def test_mother_starts_a_group_and_is_offered_to_invite_her_partner(mock_page):
+def test_mother_starts_a_group_and_is_offered_to_invite_her_partner_at_once(mock_page):
     open_as(mock_page, "no_group")
 
     mock_page.get_by_role("button", name="Jestem mamą").click()
 
     expect(h1(mock_page)).to_have_text("Cześć, Anna")
-    expect(mock_page.get_by_role("heading", name="Zaproś partnera lub partnerkę")).to_be_visible()
-    mock_page.get_by_role("link", name="Przejdź do zapraszania").click()
-    expect(h1(mock_page)).to_have_text("Twoja grupa")
-    expect(mock_page.get_by_label("Partnera lub partnerkę")).to_be_checked()
+    expect(mock_page.get_by_role("heading", name="Zaproś Partnera i bliskie osoby")).to_be_visible()
+    expect(mock_page.get_by_role("radio", name="Partnera")).to_be_checked()
+    create_link(mock_page)
+    expect(mock_page.get_by_label("Link zaproszenia")).to_have_value(re.compile(r"#/invite/\w+$"))
 
 
 def test_partner_starts_a_group_and_waits_with_a_step_to_invite_the_mother(mock_page):
     open_as(mock_page, "no_group")
 
-    mock_page.get_by_role("button", name="Jestem partnerem lub partnerką").click()
+    mock_page.get_by_role("button", name="Jestem Partnerem").click()
 
     expect(h1(mock_page)).to_have_text("Czekamy na mamę")
     expect(mock_page.get_by_role("heading", name="Zaproś mamę")).to_be_visible()
@@ -109,7 +109,7 @@ def test_valid_invitation_shows_inviter_role_and_accept(mock_page):
     open_as(mock_page, "no_group", EXAMPLE_LINK)
 
     expect(h1(mock_page)).to_have_text("Anna zaprasza Cię do grupy")
-    expect(mock_page.get_by_text("Partner lub partnerka", exact=True)).to_be_visible()
+    expect(mock_page.get_by_text("Partner", exact=True)).to_be_visible()
     expect(mock_page.get_by_text("Link jest ważny do 10 października 2026.")).to_be_visible()
     expect(mock_page.get_by_role("button", name="Przyjmij zaproszenie")).to_be_visible()
 
@@ -120,7 +120,7 @@ def test_accepting_shows_the_start_for_the_new_role(mock_page):
     mock_page.get_by_role("button", name="Przyjmij zaproszenie").click()
 
     expect(h1(mock_page)).to_have_text("Cześć, Anna")
-    expect(mock_page.get_by_text("Partner lub partnerka", exact=True)).to_be_visible()
+    expect(mock_page.get_by_text("Partner", exact=True)).to_be_visible()
     expect(nav(mock_page).get_by_role("link", name="Pytania")).to_be_visible()
 
 
@@ -156,7 +156,7 @@ def test_member_list_shows_names_and_roles_in_words(mock_page):
     expect(members(mock_page)).to_have_count(3)
     for name, role in (
         ("Anna", "Mama"),
-        ("Piotr", "Partner lub partnerka"),
+        ("Piotr", "Partner"),
         ("Marta", "Bliska osoba"),
     ):
         row = members(mock_page).filter(has_text=name)
@@ -187,7 +187,7 @@ def test_loved_ones_cannot_remove(mock_page):
     open_as(mock_page, "partner", "/group")
     expect(members(mock_page)).to_have_count(3)
 
-    expect(mock_page.get_by_role("button", name=re.compile("^Usuń"))).to_have_count(0)
+    expect(mock_page.get_by_role("button", name=re.compile("^Usuń: "))).to_have_count(0)
     expect(mock_page.get_by_role("button", name="Zamknij grupę")).to_have_count(0)
 
 
@@ -202,7 +202,7 @@ def test_mother_closes_the_group_after_confirming(mock_page):
     expect(mock_page.get_by_text("Grupa jest zamknięta")).to_be_visible()
     expect(mock_page.get_by_role("button", name="Utwórz link zaproszenia")).to_have_count(0)
     expect(mock_page.get_by_role("button", name="Zamknij grupę")).to_have_count(0)
-    expect(mock_page.get_by_role("button", name=re.compile("^Usuń"))).to_have_count(0)
+    expect(mock_page.get_by_role("button", name=re.compile("^Usuń: "))).to_have_count(0)
 
 
 def test_closed_group_is_shown_as_closed_to_every_member(mock_page):
@@ -241,3 +241,10 @@ def test_partner_invites_the_mother_and_her_acceptance_starts_the_group(mock_pag
     open_as(mock_page, "pending")
     expect(h1(mock_page)).to_have_text("Cześć, Piotr")
     expect(nav(mock_page).get_by_role("link", name="Pytania")).to_be_visible()
+
+
+def test_partner_role_is_never_called_partnerka(mock_page):
+    for perspective, path in (("woman", "/group"), ("partner", "/group"), ("no_group", "/")):
+        open_as(mock_page, perspective, path)
+        expect(h1(mock_page)).to_be_visible()
+        assert "partnerk" not in mock_page.locator("body").inner_text().lower()

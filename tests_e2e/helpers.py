@@ -31,6 +31,19 @@ def h1(page):
     return page.get_by_role("heading", level=1)
 
 
+def memberships_from(me_answer):
+    """The group list that matches a routed `get_me` answer, unless the test routes its own."""
+    status, me = me_answer or (401, {"error": {"code": "unauthorized", "message": "Zaloguj się."}})
+    if status != 200:
+        return status, me
+    membership = me.get("membership")
+    items = []
+    if membership:
+        woman = me["display_name"] if membership["role"] == "woman" else "Anna"
+        items.append({**membership, "woman_name": woman})
+    return 200, {"items": items}
+
+
 def live(page, answers, path="/"):
     """Opens the page in live mode with routed API answers.
 
@@ -42,7 +55,12 @@ def live(page, answers, path="/"):
     def answer(route):
         key = f"{route.request.method} {urlparse(route.request.url).path}"
         calls.append(key)
-        status, body = answers.get(key, (404, {"error": {"code": "not_found", "message": "Brak."}}))
+        if key == "GET /api/v1/me/memberships" and key not in answers:
+            status, body = memberships_from(answers.get("GET /api/v1/me"))
+        else:
+            status, body = answers.get(
+                key, (404, {"error": {"code": "not_found", "message": "Brak."}})
+            )
         route.fulfill(status=status, json=body)
 
     page.route("**/api/v1/**", answer)

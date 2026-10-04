@@ -33,7 +33,7 @@ def me_with(group_status=None, role="partner", account_id=2, name="Piotr"):
 def test_start_notices_that_the_mother_accepted_meanwhile(mock_page):
     answers = {
         "GET /api/v1/me": (200, me_with("pending")),
-        "GET /api/v1/summary": ok("get_summary.200.partner.json"),
+        "GET /api/v1/summary/extended": ok("get_summary_extended.200.partner.json"),
         "GET /api/v1/tasks": ok("list_tasks.200.json"),
     }
     live(mock_page, answers)
@@ -168,7 +168,7 @@ def test_first_sign_in_after_a_redirect_lands_on_starting_a_group(mock_page):
     mock_page.get_by_role("button", name="Zaloguj się").click()
 
     expect(h1(mock_page)).to_have_text("Cześć, Ola")
-    expect(mock_page.get_by_role("heading", name="Załóż grupę")).to_be_visible()
+    expect(mock_page.get_by_role("heading", name="Co chcesz zrobić?")).to_be_visible()
 
 
 def test_signup_sends_the_form_and_opens_no_session(mock_page):

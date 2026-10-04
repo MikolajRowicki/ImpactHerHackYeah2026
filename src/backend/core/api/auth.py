@@ -6,6 +6,7 @@ from pydantic import Field
 
 from ..constants import VOIVODESHIPS
 from ..errors import invalid
+from ..permissions import selected_membership
 from ..schemas import DisplayName, Email, In, MeOut, NewPassword, OkOut
 from ..services import accounts, cleanup
 
@@ -58,7 +59,7 @@ def sign_out(request):
 
 @router.get("/me", response=MeOut, operation_id="get_me")
 def get_me(request):
-    return accounts.me(request.user)
+    return accounts.me(request.user, selected_membership(request))
 
 
 @router.delete("/me", response=OkOut, operation_id="delete_account")

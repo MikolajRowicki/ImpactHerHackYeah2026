@@ -4,7 +4,7 @@ from typing import Literal
 from ninja import Router, Schema
 
 from ..constants import ROLE_WOMAN, ROLES
-from ..permissions import member_context
+from ..permissions import member_context, selected_membership
 from ..schemas import Email, In, MeOut, OkOut
 from ..services import groups, invitations
 
@@ -25,6 +25,17 @@ class GroupOut(Schema):
     status: str
     my_role: str
     created_at: datetime
+
+
+class GroupMembershipOut(Schema):
+    group_id: int
+    role: str
+    group_status: str
+    woman_name: str | None
+
+
+class GroupMembershipListOut(Schema):
+    items: list[GroupMembershipOut]
 
 
 class MemberOut(Schema):
@@ -61,9 +72,14 @@ def create_group(request, payload: CreateGroupIn):
     return 201, groups.create_group(request.user, payload.role)
 
 
+@router.get("/me/memberships", response=GroupMembershipListOut, operation_id="list_memberships")
+def list_memberships(request):
+    return groups.list_memberships(request.user)
+
+
 @router.get("/groups/current", response=GroupOut, operation_id="get_group")
 def get_group(request):
-    return groups.current_group(request.user)
+    return groups.current_group(selected_membership(request))
 
 
 @router.post("/groups/current/close", response=GroupOut, operation_id="close_group")

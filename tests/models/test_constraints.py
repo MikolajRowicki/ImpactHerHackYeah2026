@@ -28,10 +28,26 @@ def refused(create):
         create()
 
 
-def test_one_membership_per_person():
+def test_one_membership_per_person_and_group():
+    circle = make_circle()
+    refused(
+        lambda: Membership.objects.create(user=circle.marta, group=circle.group, role="partner")
+    )
+
+
+def test_one_woman_membership_per_person():
     circle = make_circle()
     other = Group.objects.create(status="active")
-    refused(lambda: Membership.objects.create(user=circle.marta, group=other, role="supporter"))
+    refused(lambda: Membership.objects.create(user=circle.anna, group=other, role="woman"))
+
+
+def test_a_person_may_hold_other_roles_in_other_groups():
+    circle = make_circle()
+    other = Group.objects.create(status="active")
+    Membership.objects.create(user=circle.anna, group=other, role="supporter")
+    third = Group.objects.create(status="pending")
+    Membership.objects.create(user=circle.marta, group=third, role="woman")
+    assert Membership.objects.filter(user=circle.anna).count() == 2
 
 
 def test_one_woman_per_group():
