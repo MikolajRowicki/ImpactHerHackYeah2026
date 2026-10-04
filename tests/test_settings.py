@@ -69,6 +69,31 @@ def test_links_start_with_the_configured_base_url(load_settings):
     assert settings.APP_BASE_URL == "https://mama.example/"
 
 
+def test_an_https_base_url_trusts_the_proxy_and_secures_cookies(load_settings):
+    settings = load_settings(DJANGO_SECRET_KEY="x", APP_BASE_URL="https://mama.example/app/")
+    assert settings.SECURE_PROXY_SSL_HEADER == ("HTTP_X_FORWARDED_PROTO", "https")
+    assert settings.CSRF_TRUSTED_ORIGINS == ["https://mama.example"]
+    assert settings.SESSION_COOKIE_SECURE is True
+    assert settings.CSRF_COOKIE_SECURE is True
+
+
+def test_a_plain_http_base_url_keeps_cookies_usable_without_https(load_settings):
+    from config import settings as module
+
+    # reload() keeps names that an earlier load (with https) set, so drop them first.
+    for name in (
+        "SECURE_PROXY_SSL_HEADER",
+        "CSRF_TRUSTED_ORIGINS",
+        "SESSION_COOKIE_SECURE",
+        "CSRF_COOKIE_SECURE",
+    ):
+        vars(module).pop(name, None)
+    settings = load_settings(DJANGO_SECRET_KEY="x", APP_BASE_URL="http://localhost:8000/")
+    assert not getattr(settings, "SESSION_COOKIE_SECURE", False)
+    assert not getattr(settings, "CSRF_COOKIE_SECURE", False)
+    assert not getattr(settings, "SECURE_PROXY_SSL_HEADER", None)
+
+
 def test_legacy_registration_follows_debug_unless_set(load_settings):
     assert load_settings(DJANGO_DEBUG="1").ALLOW_LEGACY_REGISTER is True
     assert load_settings(DJANGO_SECRET_KEY="x").ALLOW_LEGACY_REGISTER is False

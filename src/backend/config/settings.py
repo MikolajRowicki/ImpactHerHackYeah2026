@@ -1,4 +1,5 @@
 from pathlib import Path
+from urllib.parse import urlsplit
 
 from django.core.exceptions import ImproperlyConfigured
 
@@ -81,6 +82,14 @@ EMAIL_USE_TLS = True
 EMAIL_TIMEOUT = 10
 DEFAULT_FROM_EMAIL = env.get("EMAIL_FROM") or EMAIL_HOST_USER or "MaydayMama <noreply@localhost>"
 APP_BASE_URL = env.get("APP_BASE_URL") or "http://localhost:8000/"
+
+# Behind the reverse proxy the app only sees plain HTTP. An https APP_BASE_URL means the public
+# address is https, so trust the proxy's header and keep cookies off plain HTTP.
+if APP_BASE_URL.startswith("https://"):
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+    CSRF_TRUSTED_ORIGINS = ["https://" + urlsplit(APP_BASE_URL).netloc]
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
 if EMAIL_MODE == "smtp":
     for _name, _value in (("EMAIL_USER", EMAIL_HOST_USER), ("EMAIL_PASS", EMAIL_HOST_PASSWORD)):
         if not _value:
