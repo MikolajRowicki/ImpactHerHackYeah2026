@@ -46,8 +46,8 @@ class Invitation(models.Model):
 
 
 class Membership(models.Model):
-    user = models.OneToOneField(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="membership"
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="memberships"
     )
     group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name="memberships")
     role = models.CharField(max_length=10)
@@ -65,6 +65,13 @@ class Membership(models.Model):
                 fields=["group"],
                 condition=models.Q(role=ROLE_WOMAN),
                 name="membership_one_woman_per_group",
+            ),
+            # A person belongs to a group once, and is the woman of at most one group.
+            models.UniqueConstraint(fields=["user", "group"], name="membership_user_group_unique"),
+            models.UniqueConstraint(
+                fields=["user"],
+                condition=models.Q(role=ROLE_WOMAN),
+                name="membership_one_woman_per_user",
             ),
         ]
 

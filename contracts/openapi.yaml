@@ -18,6 +18,12 @@ info:
       its message and appears on 422 only.
     - Calling an operation that needs a group role without being a member of a group answers 403
       with the code `not_a_member`.
+    - **Selected group.** A person can belong to many groups. Every operation that works inside a
+      group (and `get_me`) takes the optional request header `X-Group-Id` with the group's id.
+      Without it the person's earliest membership is used. A value that is not a whole number
+      answers 422, and a group the person does not belong to answers 403 with the code
+      `not_a_member`. `list_memberships` lists the groups to choose from. Account-level
+      operations (`login`, `delete_account`, `list_memberships`, ...) ignore the header.
 
     **Roles.** A role belongs to a membership, not to an account: `woman`, `partner`, `supporter`.
     The woman owns the group. Each operation lists the allowed roles in `x-roles`
@@ -310,6 +316,24 @@ paths:
           content:
             application/json:
               schema: { $ref: "#/components/schemas/Ok" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/v1/me/memberships:
+    get:
+      operationId: list_memberships
+      tags: [group]
+      summary: Every group the person belongs to
+      description: |
+        The data for a group switcher, earliest membership first. `woman_name` is the display name
+        of the group's woman, which every member already sees in `list_members`; it is null while
+        the group has none. Ignores `X-Group-Id`.
+      x-roles: [signed_in]
+      responses:
+        "200":
+          description: The memberships. An empty list for a person without a group.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/GroupMembershipList" }
         "401": { $ref: "#/components/responses/Unauthorized" }
 
   /api/v1/me/preferences:
@@ -1117,6 +1141,27 @@ components:
         group_id: { type: integer }
         role: { $ref: "#/components/schemas/Role" }
         group_status: { $ref: "#/components/schemas/GroupStatus" }
+
+    GroupMembership:
+      type: object
+      required: [group_id, role, group_status, woman_name]
+      additionalProperties: false
+      properties:
+        group_id: { type: integer }
+        role: { $ref: "#/components/schemas/Role" }
+        group_status: { $ref: "#/components/schemas/GroupStatus" }
+        woman_name:
+          description: Display name of the group's woman. Null while the group has none.
+          type: [string, "null"]
+
+    GroupMembershipList:
+      type: object
+      required: [items]
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items: { $ref: "#/components/schemas/GroupMembership" }
 
     Me:
       type: object

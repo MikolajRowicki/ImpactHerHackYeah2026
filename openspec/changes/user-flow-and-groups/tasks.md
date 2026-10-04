@@ -8,13 +8,13 @@
 
 ## 2. Backend: many groups per person
 
-- [ ] 2.1 Model and migration: `Membership.user` to a foreign key, constraints `(user, group)` and one woman per user; reversible with a guard; migration tested forward and backward.
-- [ ] 2.2 `member_context`: resolve the group from `X-Group-Id` (422 for a bad value, 403 `not_a_member` for a foreign group), default earliest membership. `accounts.me` uses the same resolution.
-- [ ] 2.3 Services: `create_group` (one mother, one pending partner group), `accept` (already in this group, second mother), `leave`, `remove_member`, `cleanup` and `delete_account` per group.
-- [ ] 2.4 `list_memberships` route, schema, examples and contract text (`X-Group-Id` convention); `contracts/README.md` operation table; update the operation count text if it is asserted.
-- [ ] 2.5 Tests for every new scenario of `group-membership` (two groups, different roles, header rules, constraints, concurrency); change the old "second group refused" tests on purpose; baseline guard passes.
-- [ ] 2.6 `seed_demo`: one person who is the mother of one group and a supporter in another.
-- [ ] 2.7 Verify as in 1.5. Commit.
+- [x] 2.1 Model and migration: `Membership.user` to a foreign key, constraints `(user, group)` and one woman per user; reversible with a guard; migration tested forward and backward.
+- [x] 2.2 `member_context`: resolve the group from `X-Group-Id` (422 for a bad value, 403 `not_a_member` for a foreign group), default earliest membership. `accounts.me` uses the same resolution.
+- [x] 2.3 Services: `create_group` (one mother, one pending partner group), `accept` (already in this group, second mother), `leave`, `remove_member`, `cleanup` and `delete_account` per group.
+- [x] 2.4 `list_memberships` route, schema, examples and contract text (`X-Group-Id` convention); `contracts/README.md` operation table; update the operation count text if it is asserted.
+- [x] 2.5 Tests for every new scenario of `group-membership` (two groups, different roles, header rules, constraints, concurrency); change the old "second group refused" tests on purpose; baseline guard passes.
+- [x] 2.6 `seed_demo`: one person who is the mother of one group and a supporter in another.
+- [x] 2.7 Verify as in 1.5. Commit.
 
 ## 3. Frontend: accounts, panel and group switcher
 

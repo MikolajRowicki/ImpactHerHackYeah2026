@@ -8,7 +8,6 @@ from django.db import transaction
 
 from ..constants import ROLE_WOMAN, TASK_CLAIMED, TASK_DONE, TASK_OPEN
 from ..models import Group, Membership, Observation, Task
-from .accounts import membership_of
 
 
 def _reopen_claimed_tasks(user_id: int, group_id: int) -> None:
@@ -40,13 +39,13 @@ def delete_group(group_id: int) -> None:
 
 
 def delete_account(user) -> None:
-    """Delete the person and what they wrote. The woman takes the whole group with her."""
-    membership = membership_of(user)
+    """Delete the person and what they wrote. The woman takes her whole group with her."""
     with transaction.atomic():
-        if membership is not None and membership.role == ROLE_WOMAN:
-            delete_group(membership.group_id)
-        elif membership is not None:
-            remove_membership(membership)
+        for membership in list(Membership.objects.filter(user=user)):
+            if membership.role == ROLE_WOMAN:
+                delete_group(membership.group_id)
+            else:
+                remove_membership(membership)
         # Task.claimed_by is SET_NULL, which a finished task cannot take (the database wants a
         # claimer on it). Claimed tasks were reopened above; finished ones go with their person.
         Task.objects.filter(claimed_by_id=user.pk, status=TASK_DONE).delete()

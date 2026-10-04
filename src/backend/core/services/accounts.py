@@ -14,12 +14,16 @@ LEGACY_OFF = (
 INVALID_CREDENTIALS = "Nieprawidłowy e-mail lub hasło albo konto nie zostało jeszcze aktywowane."
 
 
-def membership_of(user) -> Membership | None:
-    return Membership.objects.select_related("group").filter(user_id=user.pk).first()
+def membership_of(user, group_id: int | None = None) -> Membership | None:
+    """The person's membership in the given group, or the earliest one without a group."""
+    found = Membership.objects.select_related("group").filter(user_id=user.pk)
+    if group_id is not None:
+        return found.filter(group_id=group_id).first()
+    return found.order_by("joined_at", "pk").first()
 
 
-def me(user) -> dict:
-    membership = membership_of(user)
+def me(user, membership: Membership | None = None) -> dict:
+    membership = membership or membership_of(user)
     return {
         "id": user.pk,
         "email": user.email,

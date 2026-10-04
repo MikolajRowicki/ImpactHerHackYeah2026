@@ -1,8 +1,9 @@
 """Fill the database with the example people and two weeks of data for the demo.
 
-Anna (the woman), Piotr (partner) and Marta (supporter) match contracts/examples. Everything goes
-through the same services as the API, with the clock set to each past moment. Running it again
-replaces the demo people and their group; no other account is touched.
+Anna (the woman), Piotr (partner) and Marta (supporter) match contracts/examples. Ewa is the
+woman of a second group in which Anna is a supporter, so one person shows both roles. Everything
+goes through the same services as the API, with the clock set to each past moment. Running it
+again replaces the demo people and their groups; no other account is touched.
 """
 
 from datetime import timedelta
@@ -30,6 +31,7 @@ PEOPLE = (
     ("anna@example.com", "Anna", ROLE_WOMAN),
     ("piotr@example.com", "Piotr", ROLE_PARTNER),
     ("marta@example.com", "Marta", ROLE_SUPPORTER),
+    ("ewa@example.com", "Ewa", ROLE_WOMAN),
 )
 
 # Days back from today -> (mood, sleep, anxiety). Day 0 (today) has no check-in on purpose, so
@@ -72,7 +74,7 @@ class Days:
 
 
 class Command(BaseCommand):
-    help = "Create the demo people (Anna, Piotr, Marta), their group and two weeks of data."
+    help = "Create the demo people (Anna, Piotr, Marta, Ewa), their groups and two weeks of data."
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -97,8 +99,9 @@ class Command(BaseCommand):
             clock.freeze(None)
         self.stdout.write(
             self.style.SUCCESS(
-                f"Demo data is ready. Sign in as anna@example.com, piotr@example.com or "
-                f"marta@example.com with the password {PASSWORD}. "
+                f"Demo data is ready. Sign in as anna@example.com (mother of one group, supporter "
+                f"in Ewa's), piotr@example.com, marta@example.com or ewa@example.com with the "
+                f"password {PASSWORD}. "
                 f"Open invitation for a supporter: {INVITATION_TOKEN}"
             )
         )
@@ -122,7 +125,7 @@ class Command(BaseCommand):
         users = {}
         for number, (email, name, _) in enumerate(PEOPLE, start=1):
             users[name.lower()] = self.make_user(number, email, name)
-        anna, piotr, marta = users["anna"], users["piotr"], users["marta"]
+        anna, piotr, marta, ewa = (users[name] for name in ("anna", "piotr", "marta", "ewa"))
 
         clock.freeze(days.morning(14))
         groups.create_group(anna, ROLE_WOMAN)
@@ -138,6 +141,7 @@ class Command(BaseCommand):
         contexts = {
             name: MemberContext(user, Membership.objects.get(user=user), group)
             for name, user in users.items()
+            if name != "ewa"
         }
         for days_back, (mood, sleep, anxiety) in CHECK_INS.items():
             clock.freeze(days.morning(days_back))
@@ -147,10 +151,22 @@ class Command(BaseCommand):
             observations.create_observation(contexts[who], answers)
 
         self.build_tasks(contexts, days)
+        self.build_second_group(ewa, anna, days)
 
         clock.freeze(days.morning(0) + timedelta(hours=1))
         open_invitation = invitations.create_invitation(contexts["anna"], ROLE_SUPPORTER, None)
         Invitation.objects.filter(token=open_invitation["token"]).update(token=INVITATION_TOKEN)
+
+    def build_second_group(self, ewa, anna, days):
+        """Ewa's group, where Anna is a supporter. It starts after Anna's, so hers stays first."""
+        clock.freeze(days.morning(5))
+        groups.create_group(ewa, ROLE_WOMAN)
+        membership = Membership.objects.get(user=ewa)
+        ctx = MemberContext(ewa, membership, membership.group)
+        token = invitations.create_invitation(ctx, ROLE_SUPPORTER, None)["token"]
+        invitations.accept(anna, token)
+        clock.freeze(days.morning(2))
+        tasks.create_task(ctx, "Pomóc z praniem", "")
 
     def build_tasks(self, contexts, days):
         piotr, marta, anna = contexts["piotr"], contexts["marta"], contexts["anna"]

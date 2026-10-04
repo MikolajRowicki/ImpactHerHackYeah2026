@@ -92,13 +92,16 @@ def send_due_emails() -> dict[str, int]:
     day = clock.today()
     people = (
         User.objects.filter(
-            is_active=True, email_reminders=True, membership__group__status=GROUP_ACTIVE
+            is_active=True, email_reminders=True, memberships__group__status=GROUP_ACTIVE
         )
-        .select_related("membership__group")
+        .distinct()
         .order_by("pk")
     )
     for user in people:
-        kinds = dict.fromkeys(item["kind"] for item in due_reminders(user.membership))
+        memberships = user.memberships.select_related("group").order_by("pk")
+        kinds = dict.fromkeys(
+            item["kind"] for membership in memberships for item in due_reminders(membership)
+        )
         for kind in kinds:
             counts[_send_once(user, kind, day)] += 1
     return counts

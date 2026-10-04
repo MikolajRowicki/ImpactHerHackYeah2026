@@ -36,6 +36,9 @@ Variants added after v0: `get_summary_extended.200.{partner,stable}`, `get_help.
 that matched the crisis rules: `crisis` is true, no message, with help) and
 `release_task.409.closed`.
 
+Variants added with many groups: `list_memberships.200.{two_groups,empty}` (Anna as the woman of
+group 1 and Ola's supporter in group 2; no group at all).
+
 Example people: Anna (the woman, id 1), Piotr (partner, id 2), Marta (supporter, id 3).
 
 ## Versions: v0 is frozen
@@ -47,13 +50,13 @@ new schema or a new example file; those are added to `openapi.yaml` and never re
 them. A new method on an old path (for example `DELETE /api/v1/me`) is a new operation too. When a v0
 response is not enough, a new operation carries more and the frontend moves to it.
 
-The 19 operations added after v0 are:
+The 20 operations added after v0 are:
 
 | Area | Operations |
 |---|---|
 | Account | `delete_account`, `get_preferences`, `update_preferences` |
 | Account security | `signup`, `activate_account`, `resend_activation`, `request_password_reset`, `confirm_password_reset`, `change_password` |
-| Group | `leave_group` (the woman only from a closed group, which deletes it), `list_invitations`, `revoke_invitation` |
+| Group | `leave_group` (the woman only from a closed group, which deletes it), `list_invitations`, `revoke_invitation`, `list_memberships` |
 | Summary and help | `get_summary_extended`, `get_help` |
 | Tasks and reminders | `list_task_suggestions`, `release_task`, `list_reminders` |
 | AI | `ai_say_it_for_me`, `ai_conversation_guide` |
@@ -63,6 +66,13 @@ Two things follow from the freeze. The v0 text of `accept_invitation` lists only
 the group already has a woman and a `woman` invitation is accepted. Handle an unknown 409 code by
 showing its `message`. Links in e-mails have the forms `<APP_BASE_URL>#/activate/<token>` and
 `<APP_BASE_URL>#/reset/<token>`.
+
+## Selecting a group
+
+One account can belong to many groups. Every group-bound operation, and `get_me`, takes the
+optional header `X-Group-Id`. Without it the earliest membership is used, so a client that never
+sends it keeps working. `list_memberships` gives the groups to choose from. This is a convention
+only: no v0 operation, schema or example changed.
 
 ## Asking for a change
 

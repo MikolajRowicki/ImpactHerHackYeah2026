@@ -149,7 +149,7 @@ def accept(user, token: str) -> dict:
         raise not_found()
     if invitation.group.status == GROUP_CLOSED:
         raise ApiError(409, "group_closed", GROUP_CLOSED_MESSAGE)
-    if accounts.membership_of(user) is not None:
+    if _already_blocked(user, invitation):
         raise already_in_group()
     if (
         invitation.role == ROLE_WOMAN
@@ -181,10 +181,18 @@ def accept(user, token: str) -> dict:
                 )
     except IntegrityError:
         # The transaction rolled back, so the invitation is unused again.
-        if accounts.membership_of(user) is not None:
+        if _already_blocked(user, invitation):
             raise already_in_group() from None
         raise ApiError(409, "role_taken", ROLE_TAKEN) from None
-    return accounts.me(user)
+    return accounts.me(user, accounts.membership_of(user, invitation.group_id))
+
+
+def _already_blocked(user, invitation: Invitation) -> bool:
+    """Already in that group, or already the woman of a group when the invitation is for one."""
+    mine = Membership.objects.filter(user=user)
+    if mine.filter(group_id=invitation.group_id).exists():
+        return True
+    return invitation.role == ROLE_WOMAN and mine.filter(role=ROLE_WOMAN).exists()
 
 
 def _lost_race(invitation: Invitation) -> ApiError:

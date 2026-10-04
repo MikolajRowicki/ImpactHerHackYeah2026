@@ -9,7 +9,7 @@ from datetime import timedelta
 import pytest
 
 from core import clock
-from core.models import Invitation, MailLog, Membership
+from core.models import Group, Invitation, MailLog, Membership
 
 from ..factories import make_circle, make_group, make_invitation, make_user
 from ..helpers import Api
@@ -313,15 +313,44 @@ def test_two_simultaneous_accepts_give_one_membership_and_one_404():
     assert Membership.objects.filter(invitation__token="race-token-1").count() == 1
 
 
-def test_a_person_already_in_a_group_cannot_accept_and_the_invitation_stays_unused(api):
+def test_a_member_of_other_groups_can_accept_a_partner_or_supporter_invitation(api):
     circle = make_circle()
     other = make_group(woman=make_user("Ewa"))
     make_invitation(other, other.memberships.get().user, token="other-token-1")
     result = api.sign_in(circle.marta).call("accept_invitation", path={"token": "other-token-1"})
+    assert result.status == 200
+    assert result["membership"] == {
+        "group_id": other.pk,
+        "role": "supporter",
+        "group_status": "active",
+    }
+    assert Invitation.objects.get(token="other-token-1").used_at is not None
+    assert set(Membership.objects.filter(user=circle.marta).values_list("group_id", flat=True)) == {
+        circle.group.pk,
+        other.pk,
+    }
+
+
+def test_a_person_who_is_already_the_woman_cannot_accept_a_woman_invitation(api):
+    circle = make_circle()
+    pending = make_group("pending", partner=make_user("Jan"))
+    make_invitation(pending, pending.memberships.get().user, role="woman", token="woman-token-2")
+    result = api.sign_in(circle.anna).call("accept_invitation", path={"token": "woman-token-2"})
     assert (result.status, result.code) == (409, "already_in_group")
     assert result.error["message"] == "Należysz już do grupy."
-    assert Invitation.objects.get(token="other-token-1").used_at is None
-    assert api.call("get_group")["id"] == circle.group.pk
+    assert Invitation.objects.get(token="woman-token-2").used_at is None
+    assert Group.objects.get(pk=pending.pk).status == "pending"
+
+
+def test_a_supporter_elsewhere_can_become_the_woman_of_a_pending_group(api):
+    circle = make_circle()
+    pending = make_group("pending", partner=make_user("Jan"))
+    make_invitation(pending, pending.memberships.get().user, role="woman", token="woman-token-3")
+    result = api.sign_in(circle.marta).call("accept_invitation", path={"token": "woman-token-3"})
+    assert result.status == 200
+    assert result["membership"]["role"] == "woman"
+    assert Group.objects.get(pk=pending.pk).status == "active"
+    assert Membership.objects.filter(user=circle.marta).count() == 2
 
 
 def test_the_same_person_accepting_twice_is_refused_the_second_time(api):
