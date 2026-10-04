@@ -38,6 +38,8 @@ export async function sayIt(ctx) {
     "aria-describedby",
     `${text.input.getAttribute("aria-describedby")} ${counter.id}`,
   );
+  // Inside the field, right under the text, so it never overlaps the box.
+  text.input.after(counter);
   text.input.addEventListener("input", () => {
     counter.textContent = t.sayIt.counter(text.value.length, MAX_LENGTH);
     if (text.value.trim()) text.setError("");
@@ -59,7 +61,6 @@ export async function sayIt(ctx) {
     "form",
     { class: "form say-it-form", novalidate: true },
     text.node,
-    counter,
     recipient.node,
     tone.node,
     submit,
@@ -87,10 +88,12 @@ export async function sayIt(ctx) {
   }
 
   function messageCard(answer) {
+    // Tall enough for the whole message on a phone (about 34 characters a line).
+    const rows = Math.min(14, Math.max(6, Math.ceil(answer.message.length / 34) + 1));
     const message = h("textarea", {
       id: "say-it-message",
       class: "field__input say-it__message",
-      rows: 6,
+      rows,
     });
     message.value = answer.message;
     const status = h("p", { class: "say-it__copied", role: "status" });

@@ -1,7 +1,7 @@
 /* "Say it for me" and the conversation guide. */
 
 .say-it__counter {
-  margin: calc(-1 * var(--space-2)) 0 0;
+  margin: 0;
   color: var(--color-ink-soft);
   font-size: var(--font-size-small);
   text-align: right;
@@ -30,7 +30,9 @@
 
 /* Where a generated text came from: a small pill, never louder than the text. */
 .origin-label {
-  display: inline-flex;
+  /* A line of its own, so the label of the next field never shares it. */
+  display: flex;
+  width: fit-content;
   align-items: center;
   gap: var(--space-1);
   margin: 0;
